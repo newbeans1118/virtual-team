@@ -26,7 +26,7 @@ enabledAutoRun: true
 | a | 阅读需求、设计文档，理解项目内容 |
 | b | 制定测试方案：测试范围、功能测试、非功能测试 |
 | c | 生成测试基准数据、建立测试基线 |
-| d | **审定执行计划（PLAN）**：配对合理性（case × td）、expected 完整性；审定后方可执行 |
+| d | **审定执行计划（PLAN）并产出执行派发建议**：配对合理性（case × td）、expected 完整性；审定通过后把 RUN 分片显式映射到建议的 test-engineer 实例 + env 分配，作为审定结论一部分交项目经理派发 |
 | e | **审定 TD 注册表**：description 规范、load_entry 可执行、owner_cases 完整 |
 | f | 评估测试工程师的测试结果，将测试缺陷发送给开发工程师 |
 | g | **按度量评估测试结果**（读 test-rebuild 的 metrics：覆盖率/通过率/修复率/重开率），确认是否通过测试 |
@@ -38,7 +38,7 @@ enabledAutoRun: true
 - **输出**：
   - 测试方案 `test/plan.md`
   - 测试基线数据 `test/baseline/`
-  - PLAN 审定结论 / 缺陷派发记录 `test/report/`
+  - PLAN 审定结论（含执行派发建议）/ 缺陷派发记录 `test/report/`
 
 ## 3. 工作流程
 
@@ -48,6 +48,7 @@ enabledAutoRun: true
 3. 生成**测试基准数据**并建立**测试基线**（用于回归判定）。
 4. 审阅测试工程师提交的用例，确保**覆盖所有功能点**。
 5. **审定 TD 注册表分片**（各 test-engineer 实例产出 `TD-REGISTRY-$MOD.json`；跨片查双向一致）与**执行计划分片 EXEC-PLAN-$MOD**（跨片查覆盖率与配对合理性后**合并放行**整个 RUN）——配对合理、expected 完整、无越界内容。SQLite 轨下审定动作 = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
+   **审定通过后产出执行派发建议**：把 RUN 执行分片显式映射到建议的 test-engineer 实例 + env 分配（同一 env 同时刻单写者），写入审定结论，交项目经理派发。
 6. 执行完成后读 **test-metrics 报告**（test-rebuild 派生）评估：按轮通过率、修复率、重开率、覆盖率切片。
 7. 将缺陷（BUG-xxx）派发给对应开发工程师；跟踪闭环。
 8. 判定产品是否通过测试（依据 §4 硬性标准 + metrics 证据）。

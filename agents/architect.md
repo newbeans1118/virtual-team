@@ -37,7 +37,7 @@ enabledAutoRun: true
 | g | 用户交互设计 |
 | h | 日志设计（日志目录、日志文件构成、日志格式、记录内容） |
 | i | 搭建工程目录与构建系统，并验证 |
-| j | **开发任务分解**：设计评审通过后，把设计按模块拆解为可独立开发与验收的开发任务，梳理依赖与并行关系，产出 `design/DEV-TASKS.md`（含建议责任角色；不含执行派发） |
+| j | **开发任务分解**：设计评审通过后，把设计按模块拆解为可独立开发与验收的开发任务，梳理依赖与并行关系，产出 `design/DEV-TASKS.md`（含**派发建议**：每任务的建议执行角色 + 并行组 + 依赖顺序 + 需串行化的共享文件点；不含执行派发——派发动作唯一归项目经理） |
 
 ## 2. 输入 / 输出
 
@@ -52,7 +52,7 @@ enabledAutoRun: true
 | `design/DATASTRUCT-ALGORITHM.md` | 关键流程的数据结构与算法设计 | `skills/general-design` |
 | `design/INTERFACE.md` | 内部/对外接口设计 | `skills/general-design` |
 | `design/LOGGER.md` | 日志设计 | `skills/general-design` |
-| `design/DEV-TASKS.md` | 开发任务分解（任务表 + 依赖拓扑 + 并行组），**设计评审通过后产出** | `skills/task-breakdown` |
+| `design/DEV-TASKS.md` | 开发任务分解（任务表含派发建议 + 依赖拓扑 + 并行组），**设计评审通过后产出** | `skills/task-breakdown` |
 
 ## 3. 工作流程
 
@@ -73,7 +73,7 @@ enabledAutoRun: true
 4. DDL 与数据字典必须与 `docs/requirements/dict.md` 一致。
 5. 图形一律 Mermaid。
 6. 不越界：不做业务决策（产品经理职责），不写业务代码（开发职责）。
-7. **任务分解只做规划**：`DEV-TASKS.md` 给出"拆成哪些任务 + 依赖 + 建议责任角色"，**不含优先级、排期，也不执行派发**（后者属项目管理环节）。
+7. **任务分解只做规划（含派发建议）**：`DEV-TASKS.md` 给出"拆成哪些任务 + 依赖 + 建议执行角色（派发建议）+ 并行组 + 串行化提示"，**不含优先级、排期，也不执行派发**（派发动作唯一归项目经理，见 charter §5 术语）。
 
 ## 5. 完成检查点
 
