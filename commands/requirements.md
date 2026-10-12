@@ -22,7 +22,7 @@ $ARGUMENTS
    - `business-analysis` → `docs/requirements/overview.md`、`biz-$MOD.md`
    - `requirement` → `spec-$MOD.md`、`spec-nonfunc.md`、`dict.md`
    - `prototype` → `pages/prototype/`
-   - `req-structure` → `docs/requirements/req-structure.json`
+   - `req-structure` → `docs/requirements/trace/req-$MOD.json`
    - `diagramming` → 业务流程图（Mermaid）
 3. 所有输出遵循 `templates/` 对应模版。
 4. 校验：所有 `biz-xxx` 被 `fr-$MOD-xxx` 覆盖（附追溯矩阵）。

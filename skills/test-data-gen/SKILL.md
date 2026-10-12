@@ -40,6 +40,18 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 - `store=sqlite` → 机制数据写 `td_registry` 表；数据本体写业务表 `td_biz_*`（必含 td_id 外键）；加载脚本仍单独存文件（见「SQLite 轨附加流程」）。
 - 配置缺失 → **BLOCKED 报项目经理**（立项时未完成存储决策，不得代为默认选轨）。**数据契约（实体/字段/关联）两轨完全一致，仅读写方式不同。**
 
+### SQLite 轨附加流程
+
+`store=sqlite` 时，除主体流程外追加以下步骤：
+
+1. **设计业务表**：按项目数据域设计 `td_biz_<domain>` 表结构（DDL 参考 `templates/SQLITE-SCHEMA.sql` 样例：必含 `row_id` + `td_id`(FK→`td_registry(id)`) + 建议 `tags`）。
+2. **建表并写入**：执行 DDL 建表 → 生成数据行 INSERT（数据本体入库，不落文件）。
+3. **生成加载脚本**（单独文件 `test/data/scripts/TD-xxx-load.*`）：从业务表 SELECT 取数 → 装入被测系统；**幂等** + 可清理。
+4. **登记**：INSERT `td_registry`（**含 `module` 分片键** + description 六字段语义与 JSON 轨完全一致；`owner_cases` 与用例侧 `dataset_refs` 双向一致）。
+5. **实测验证**：执行加载脚本，验证结果写入 `td_registry.verified`。
+
+> **关联完整性（红线）**：业务表每行必须经 `td_id` 关联注册表——无 `td_id` 的业务数据行 = 孤儿数据（P0）；删除 TD 时须级联清理业务行。
+
 ## 前置（硬门禁，缺任一 → BLOCKED 报 PM）
 
 1. 需求定稿且已结构化（本模块 `req-$MOD.json` 存在）。

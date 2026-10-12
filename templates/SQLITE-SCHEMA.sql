@@ -51,6 +51,7 @@ CREATE INDEX IF NOT EXISTS idx_cases_module ON cases(module);
 -- 来自 TD-REGISTRY-$MOD.json 分片（SQLite 轨为本表）；黑盒：机制层只认这些列
 CREATE TABLE IF NOT EXISTS td_registry (
   id            TEXT PRIMARY KEY,        -- TD-xxx
+  module        TEXT NOT NULL,           -- $MOD（分片键，与 req_functions/cases 对齐）
   purpose       TEXT NOT NULL,
   suitable_for  TEXT NOT NULL,           -- JSON 数组 ["normal","boundary",...]
   preconditions TEXT,                    -- JSON 数组
@@ -60,6 +61,7 @@ CREATE TABLE IF NOT EXISTS td_registry (
   verified      TEXT,                    -- JSON {command,result,at}
   updated_at    TEXT
 );
+CREATE INDEX IF NOT EXISTS idx_td_registry_module ON td_registry(module);
 
 -- ---------- 执行轮 ----------
 CREATE TABLE IF NOT EXISTS runs (
