@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 22 个技能 skill + 11 个工作流命令 + 25 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 22 个技能 skill + 11 个工作流命令 + 29 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -28,7 +28,7 @@ virtual-team-plugin/
 │   ├── test-data-gen / test-rebuild
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 11 个工作流入口
-├── templates/                         # 25 个交付物模版
+├── templates/                         # 29 个交付物模版
 ├── pages/prototype/                   # 界面原型存放（运行时产出）
 ├── board/                             # 进度看板存放（运行时产出）
 ├── docs/ design/ src/ review/ test/ release/   # 各阶段交付目录约定
@@ -155,5 +155,6 @@ codebuddy --plugin-dir <本目录绝对路径>
 ## 说明
 
 - 本插件的角色定义基于 `statement.txt`；其中 **独立设计评审员（#10）** 与 **独立项目评审员（#11）** 在原文中未展开，已按其职责定位与流程要求补充定义（见对应 agent 文件顶部注记）。
+- 原文列出的 **bug-reporting（缺陷报告）/ bug-fixing（缺陷修改）** 两技能未单独设立：缺陷报告并入 `case-running`（失败 EXEC → 建 BUG → 回归验证闭环），缺陷修复并入开发者职责（修复 → 回报 → 测试侧 verify_pass 关闭）。可按需拆分。
 - 目录约定、编号规范、评审闭环等原文未明确处，采用团队公约统一补齐，可按需调整 `rules/team-charter.md`。
 - `rules/engineering-discipline.md` 与 `skills/code-review` 为工程实践增强，来源：Anthropic Skill 编写最佳实践、superpowers 系列技能（TDD/两阶段评审/验证先于完成）。可按需调整。

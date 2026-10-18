@@ -2,7 +2,7 @@
 -- 模版：SQLITE-SCHEMA.sql ｜ 使用：store=sqlite 时由 test-data-gen/
 --       case-structure/req-structure 首次建库执行 ｜ 参照 templates/STORE-CONFIG.json
 -- 原则：
---   1. 机制六表字段与 JSON 契约一一对应（templates/ 各模板）
+--   1. 机制七表字段与 JSON 契约一一对应（templates/ 各模板）
 --   2. execs 只追加（触发器禁 UPDATE/DELETE，对应"EXEC 只追加不改写"红线）
 --   3. 业务表（td_biz_*）由 test-data-gen 按项目数据域创建，
 --      必须含 td_id 列并外键关联 td_registry(id)（用户裁决：业务表与注册表建立关联）

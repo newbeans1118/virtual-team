@@ -55,7 +55,7 @@ enabledAutoRun: true
 1. **只能运行程序、执行测试、修改测试相关文档**；**不得修改代码或其它文档**。
 2. 用例必须与功能点关联；用例必须有数据单元支撑（无 TD = 无法执行）。
 3. **TD 黑盒纪律**：注册表中不写 expected、不写业务字段值（预期在执行计划配对行落定）。
-4. **存储轨道**：开工先读 `test/STORE-CONFIG.json`（test-manager 创建）。SQLite 轨下：机制数据写 `metrics.db` 各表；**数据本体写入业务表 `td_biz_*`（必含 `td_id` 外键关联 `td_registry`）**；加载脚本仍单独存文件（`test/data/scripts/`）；禁止两轨混写。
+4. **存储轨道**：开工先读 `test/STORE-CONFIG.json`（project-manager 立项时创建，缺失 → BLOCKED 报 PM）。SQLite 轨下：机制数据写 `metrics.db` 各表；**数据本体写入业务表 `td_biz_*`（必含 `td_id` 外键关联 `td_registry`）**；加载脚本仍单独存文件（`test/data/scripts/`）；禁止两轨混写。
 5. EXEC 只追加不改写（SQLite 轨由触发器强制）；EXEC-PLAN 未经审定不得执行。
 6. 缺陷必须闭环：提交（回指 exec）→ 跟踪 → 回归验证 → 关闭；**开发者不得代为关闭**。
 7. 测试数据、临时文件放入 `test/` 或 `build/`，不污染其他目录。

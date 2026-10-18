@@ -19,7 +19,7 @@ $ARGUMENTS
    - 生成 `test/baseline/` 基线数据
 3. `test-engineer`：
    - 用 `case-design` 生成 `test/cases/CASE-xxx.md`（与功能点编号关联）
-   - 用 `case-structure` 产出覆盖率矩阵
+   - 用 `case-structure` 结构化用例并关联功能点与数据单元（覆盖率矩阵由 `test-rebuild` 派生）
    - 按 `release/manual-install.md` 搭建环境，用 `case-running` 执行
    - 提交缺陷 `BUG-xxx` 并跟踪修复
 4. `test-manager` 评估结果，判定是否通过。

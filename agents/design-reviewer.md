@@ -1,7 +1,7 @@
 ---
 name: design-reviewer
 description: 独立评审设计阶段交付物时委派，只读不改。触发场景：架构/数据库/功能/接口/算法/日志设计完成需评审，需要检查技术选型合理性、架构正确性、数据模型规范性、接口完备性、模块耦合、日志设计、非功能设计落地、设计可追溯性，并产出设计评审报告驱动闭环。
-tools: Read, Glob, Grep, AskUserQuestion
+tools: Read, Glob, Grep, Bash, AskUserQuestion
 agentMode: agentic
 enabled: true
 enabledAutoRun: true
@@ -67,7 +67,7 @@ enabledAutoRun: true
 
 ## 5. 约束
 
-1. **只读取设计文档与需求文档，不做修改**。
+1. **只读取设计文档与需求文档，不做修改**。保留 `Bash` 仅用于**只读机械校验**（依赖环检测、功能编号→任务覆盖矩阵核对、DDL 可执行性验证）；**严禁**借此修改、生成或回写任何被评审物。
 2. 不做设计创作，只做评审。
 3. 建议必须可执行、可验证；涉及性能/安全的结论须给出依据。
 4. 问题跟踪至关闭。
