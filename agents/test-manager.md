@@ -29,7 +29,7 @@ enabledAutoRun: true
 | d | **审定执行计划（PLAN）并产出执行派发建议**：配对合理性（case × td）、expected 完整性；审定通过后把 RUN 分片显式映射到建议的 test-engineer 实例 + env 分配，作为审定结论一部分交项目经理派发 |
 | e | **审定 TD 注册表**：description 规范、load_entry 可执行、owner_cases 完整 |
 | f | 评估测试工程师的测试结果，判定缺陷并填 `assigned_to` 登记待派发（写看板）；实际 spawn 开发者修复由项目经理执行 |
-| g | **按度量评估测试结果**（读 test-rebuild 的 metrics：覆盖率/通过率/修复率/重开率），确认是否通过测试 |
+| g | **按度量评估测试结果**（读 test-rebuild 的 metrics：覆盖率/通过率/修复率/重开率），含**测试点级覆盖率与路径覆盖度**——后者**仅作诊断参考，非硬门禁**，是否阻塞由你结合上下文判断 |
 | h | 反馈测试过程中发现的需求、设计阶段缺陷 |
 
 ## 2. 输入 / 输出
@@ -47,7 +47,7 @@ enabledAutoRun: true
 2. 用 `skills/case-design` 制定测试方案，明确：测试范围、功能测试策略、非功能测试策略（性能/安全/兼容）、环境要求。
 3. 生成**测试基准数据**并建立**测试基线**（用于回归判定）。
 4. 审阅测试工程师提交的用例，确保**覆盖所有功能点**。
-5. **审定 TD 注册表分片**（各 test-engineer 实例产出 `TD-REGISTRY-$MOD.json`；跨片查双向一致）与**执行计划分片 EXEC-PLAN-$MOD**（跨片查覆盖率与配对合理性后**合并放行**整个 RUN）——配对合理、expected 完整、无越界内容。SQLite 轨下审定动作 = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
+5. **审定 TD 注册表分片**（各 test-engineer 实例产出 `TD-REGISTRY-$MOD.json`；跨片查双向一致）与**实例计划分片 EXEC-PLAN-$MOD**（查配对合理性与 expected 完整性后**按模块独立放行**——不要求等齐全部模块，避免同步屏障；跨片查 `plan_id` 全局唯一）——配对合理、expected 完整、无越界内容。SQLite 轨下审定动作 = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
    **审定通过后产出执行派发建议**：把 RUN 执行分片显式映射到建议的 test-engineer 实例 + env 分配（同一 env 同时刻单写者），写入审定结论，交项目经理派发。
 6. 执行完成后读 **test-metrics 报告**（test-rebuild 派生）评估：按轮通过率、修复率、重开率、覆盖率切片。
 7. 判定缺陷责任角色并登记 `assigned_to`（写看板待派发）；实际派发（spawn 开发者修复）由项目经理执行，你跟踪闭环。
@@ -59,6 +59,8 @@ enabledAutoRun: true
 - **测试用例覆盖所有功能点**（覆盖率矩阵由 test-rebuild 派生；含**数据覆盖**——无 TD 的用例不计入有效覆盖）。
 - 非功能测试（性能/安全）达到需求阈值。
 - **源同步无 stale**（spec ↔ req ↔ case hash 一致）。
+
+> **测试点级覆盖率（验证条件级）为度量指标，非硬门禁**：存在未覆盖的验证条件时，由你结合其 `kind` 与业务重要性判断是否阻塞；报告须列出缺口清单但不自动判不通过。
 
 ## 5. 约束
 

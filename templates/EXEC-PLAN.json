@@ -1,5 +1,5 @@
 {
-  "_comment": "模版：EXEC-PLAN.json（执行计划）｜ 产出：case-running 生成 → test-manager 审定后才可执行 ｜ 存放：test/runs/RUN-xxx/EXEC-PLAN.json。每行=一次「用例×数据」配对；expected 以文本形式落定在配对行（不属于数据单元）。",
+  "_comment": "模版：EXEC-PLAN.json（实例计划 = 实例化产物）｜ 产出：case-instantiate 生成 → test-manager 审定后才可执行 ｜ 存放：test/runs/RUN-xxx/EXEC-PLAN-$MOD.json。每行=一个可执行实例（用例×数据配对）；expected 是实例属性，落定在实例行（不属于数据单元）。source 取值见下。",
   "run": "RUN-xxx",
   "approved_by": "test-manager",
   "approved_at": "",
@@ -8,8 +8,8 @@
       "plan_id": "P-xxx",
       "case": "CASE-xxx",
       "td": "TD-xxx",
-      "expected": "本次配对的预期结果（文本；可从 TD description 语义提炼或项目补充）",
-      "source": "td-description | case-template | manual"
+      "expected": "本实例的预期结果（文本；从用例预期语义 / TD 单元 expected_hints / 需求 acceptance 提炼，或项目补充）",
+      "source": "case-expected | expected-hints | acceptance | manual"
     }
   ]
 }

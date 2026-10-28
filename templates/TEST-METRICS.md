@@ -11,6 +11,7 @@
 | 覆盖完整性 | | 无用例功能点 / 无数据用例 |
 | 源同步 | | spec ↔ req ↔ case hash 是否一致（stale 标记） |
 | 状态合法 | | 枚举/状态机/双向关联 |
+| 验证条件引用完整性 | | acceptance_refs 悬空 / 引用闭合违规（告警级） |
 
 ## 2. 本轮概览
 
@@ -26,6 +27,8 @@
 | 指标 | 公式 | 值 | 出处 |
 |------|------|-----|------|
 | 需求覆盖率 | 有≥1 active 用例的功能点 ÷ 全部 active 功能点 | | req×case |
+| **测试点级覆盖率**（度量，非门禁） | 被 ≥1 active 用例引用的验证条件数 ÷ 全部验证条件总数 | | req.acceptance×case.acceptance_refs |
+| **路径覆盖度**（度量，按 kind） | 各 kind 已覆盖 ÷ 该 kind 总数（normal/boundary/negative） | | req.acceptance.kind |
 | 用例执行率 | 已执行 PLAN 行 ÷ 计划 PLAN 行 | | PLAN vs EXEC |
 | 通过率 | pass ÷ executed | | EXEC |
 | 缺陷密度 | bug ÷ executed | | EXEC×BUG |
@@ -33,6 +36,14 @@
 | 重开率 | reopen ÷ closed | | BUG 状态历史 |
 | 回归通过率 | regression 轮 pass ÷ executed | | RUN.trigger |
 | 自动化率 | automatable 用例 ÷ 全部用例 | | CASE.automation |
+
+> **测试点级覆盖率与路径覆盖度仅作度量**——是否阻塞由 test-manager 判断，非自动门禁。
+
+## 3.5 验证条件缺口（未覆盖清单）
+
+| 功能点 | key | kind | 说明 |
+|--------|-----|------|------|
+| | | | |
 
 ## 4. 切片分析（可选维度：模块 / 优先级 / suitable_for / TD）
 

@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 22 个技能 skill + 11 个工作流命令 + 29 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 23 个技能 skill + 11 个工作流命令 + 29 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -20,11 +20,11 @@ virtual-team-plugin/
 │   ├── backend-developer.md   ui-developer.md      code-reviewer.md
 │   ├── test-manager.md        test-engineer.md     release-engineer.md
 │   └── requirement-reviewer.md design-reviewer.md  project-reviewer.md
-├── skills/                            # 22 个技能
+├── skills/                            # 23 个技能
 │   ├── planning / business-analysis / requirement / requirement-review
 │   ├── architecting / data-modelling / general-design / task-breakdown / design-review / datamodel-review
 │   ├── code-review
-│   ├── case-design / case-running / case-structure / req-structure
+│   ├── case-design / case-instantiate / case-running / case-structure / req-structure
 │   ├── test-data-gen / test-rebuild
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 11 个工作流入口
@@ -63,7 +63,7 @@ flowchart TD
 | 任务分解 | architect | task-breakdown |
 | 编码 | backend-developer / ui-developer | — |
 | 代码评审 | code-reviewer | code-review |
-| 测试 | test-manager / test-engineer | case-design, case-running, case-structure |
+| 测试 | test-manager / test-engineer | case-design, case-instantiate, case-running, case-structure |
 | 验收 / 发布 | project-reviewer / release-engineer | accepting, releasing, doc-writing |
 
 ## 命令
@@ -103,6 +103,7 @@ flowchart TD
 | 代码评审、规格符合性 + 代码质量两阶段 | `code-review` | code-reviewer |
 | 测试方案、测试用例（CASE-xxx）设计 | `case-design` | test-manager / test-engineer |
 | 执行测试、跑用例、缺陷跟踪、测试报告 | `case-running` | test-engineer |
+| 建 RUN、用例×数据配对成可执行实例、交审定 | `case-instantiate` | test-engineer |
 | 用例结构化、覆盖率矩阵 | `case-structure` | test-engineer |
 | 画图（架构图/ER/流程/时序/状态/甘特），统一 Mermaid | `diagramming` | 全体 |
 | 安装/发布/用户手册、配置说明 | `doc-writing` | release-engineer |
@@ -156,5 +157,6 @@ codebuddy --plugin-dir <本目录绝对路径>
 
 - 本插件的角色定义基于 `statement.txt`；其中 **独立设计评审员（#10）** 与 **独立项目评审员（#11）** 在原文中未展开，已按其职责定位与流程要求补充定义（见对应 agent 文件顶部注记）。
 - 原文列出的 **bug-reporting（缺陷报告）/ bug-fixing（缺陷修改）** 两技能未单独设立：缺陷报告并入 `case-running`（失败 EXEC → 建 BUG → 回归验证闭环），缺陷修复并入开发者职责（修复 → 回报 → 测试侧 verify_pass 关闭）。可按需拆分。
+- 原文的 **case-running** 已拆为两个技能：`case-instantiate`（建 RUN + 用例×数据配对生成**可执行实例**，交审定）与 `case-running`（执行已审定实例 + 记录 EXEC + 缺陷 + 汇总）。拆分依据：实例化（设计型产物，需审定）与执行（运行型产物，追加式）性质不同，中间夹着 test-manager 审定的真实门禁。
 - 目录约定、编号规范、评审闭环等原文未明确处，采用团队公约统一补齐，可按需调整 `rules/team-charter.md`。
 - `rules/engineering-discipline.md` 与 `skills/code-review` 为工程实践增强，来源：Anthropic Skill 编写最佳实践、superpowers 系列技能（TDD/两阶段评审/验证先于完成）。可按需调整。

@@ -62,7 +62,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 ## TD 单元黑盒规范（核心）
 
-注册表中每个条目**只有三个顶层字段**，机制层不解释内容：
+注册表中每个条目的**机制可见部分为顶层字段** `id` / `description`（六字段）/ `load_entry` / `verified`，机制层不解释 description 内容：
 
 ```json
 {
@@ -74,7 +74,8 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
     "data_scope": "覆盖/不覆盖的范围说明（防误配对）",
     "owner_cases": ["CASE-xxx", "..."]
   },
-  "load_entry": "test/data/TD-xxx/load.sh"
+  "load_entry": "test/data/TD-xxx/load.sh",
+  "verified": { "command": "加载命令", "result": "pass | fail", "at": "" }
 }
 ```
 
@@ -83,7 +84,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 | 字段 | 必填 | 说明 |
 |------|------|------|
 | `purpose` | ✅ | 语义锚点，配对评审的依据 |
-| `suitable_for` | ✅ | **配对推荐依据**——case-running 生成执行计划时按此匹配用例类型 |
+| `suitable_for` | ✅ | **配对推荐依据**——`case-instantiate` 生成执行实例时按此匹配用例类型 |
 | `preconditions` | ✅ | 执行前检查项，避免脏跑 |
 | `data_scope` | 共享时必填 | 明确"不覆盖什么"，防止误配对 |
 | `owner_cases` | ✅ 数组 | 引用本单元的**全部**用例；一份数据可服务多个用例（不同用例产生不同结果，预期在执行计划中落定） |
@@ -116,7 +117,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 **不该用**：
 - 设计用例 → `case-design`；执行 → `case-running`
-- 决定"本次跑哪些配对" → 执行计划（case-running 生成、test-manager 审定）
+- 决定"本次跑哪些配对" → 实例化（`case-instantiate` 生成、test-manager 审定）
 - 单测造数（开发者自己的 fixture）→ 开发职责，不经本技能
 
 ## 常见错误

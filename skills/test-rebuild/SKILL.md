@@ -17,8 +17,8 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 
 | 方 | 来源 | 角色 |
 |----|------|------|
-| 需求 | `docs/requirements/trace/req-$MOD.json`（分片） | 功能点全集 |
-| 用例 | `test/trace/case-$MOD.json`（分片） | 覆盖关系（function_refs / dataset_refs） |
+| 需求 | `docs/requirements/trace/req-$MOD.json`（分片） | 功能点全集 + **acceptance 验证条件条列**（测试点级分母） |
+| 用例 | `test/trace/case-$MOD.json`（分片） | 覆盖关系（function_refs / **acceptance_refs** / dataset_refs） |
 | 数据 | `test/data/trace/TD-REGISTRY-$MOD.json`（**分片**，合并读取；SQLite 轨=td_registry 表） | 数据单元（黑盒：id + description + load_entry） |
 | 执行 | `test/runs/RUN-xxx.json` + `RUN-xxx/EXEC-PLAN-$MOD.json` + `EXEC-$MOD.jsonl`（**按模块分片**） | 计划配对 + 执行明细 |
 | 缺陷 | `test/bugs/BUG-xxx.json` | 缺陷状态机 |
@@ -45,12 +45,15 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 | 2 | **覆盖完整性** | 每个功能点 ≥1 条 active 用例；每条 active 用例 ≥1 个 TD | 缺口显式列出（**禁止标"通过"**） |
 | 3 | **源同步** | `spec-$MOD.md` hash == `req-$MOD.json.source_hash`；req hash == `case-$MOD.json.req_source_hash` | 不同步 = 提示对应技能重跑，指标标 `stale` |
 | 4 | **状态合法** | 枚举校验；BUG 状态机合法迁移；TD 的 owner_cases 与用例侧 `dataset_refs` 双向一致 | 违规 = P1 |
+| 5 | **验证条件引用完整性** | 每个 `acceptance_refs` 项必须存在于对应功能点的 `acceptance[].key`；引用闭合（前缀 fr-id ∈ 本用例 function_refs） | 悬空引用 = **告警**（列「遗留风险」，不阻塞） |
 
 ## 度量指标（公式 + 出处）
 
 | 指标 | 公式 | 出处 |
 |------|------|------|
 | 需求覆盖率 | 有 ≥1 active 用例的功能点 ÷ 全部 active 功能点 | req × case |
+| **测试点级覆盖率**（度量，非门禁） | 被 ≥1 active 用例 `acceptance_refs` 引用的验证条件数 ÷ 全部 active 功能点的 acceptance 条件总数 | req.acceptance × case.acceptance_refs |
+| **路径覆盖度**（度量，按 kind 分组） | 各 kind（normal/boundary/negative）已覆盖条件数 ÷ 该 kind 条件总数 | req.acceptance.kind |
 | 用例执行率 | 已执行 PLAN 行 ÷ 计划 PLAN 行 | PLAN vs EXEC |
 | 通过率 | pass EXEC ÷ 已执行 EXEC（**按轮**；可按模块/优先级/suitable_for 切片） | EXEC-$MOD.jsonl 分片 |
 | 缺陷密度 | bug 数 ÷ 执行数（或 ÷ 功能点数） | EXEC × BUG |
@@ -59,15 +62,17 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 | 回归通过率 | trigger=regression 轮的 pass ÷ executed | RUN.trigger 过滤 |
 | 自动化率 | automatable 用例 ÷ 全部用例 | CASE.automation |
 
+> **测试点级覆盖率与路径覆盖度仅作度量**——写入报告供 test-manager 诊断；**是否阻塞由 test-manager 判断，不自动门禁**。缺口报告列出未覆盖的 `{fr-id}:{key}` 及其 kind。
+
 > 度量**只汇总不创造**：任何数字必须能从原始记录复算；公式与出处写在报告内。
 
 ## 流程
 
 1. 校验五方数据存在性与合法性（缺任一方 → BLOCKED，报告缺口）。
-2. 跑四项一致性校验，记录结论。
-3. 生成 `coverage-matrix.md`（功能点 → 用例 → 数据 → 最近执行结果 → 关联缺陷）。
+2. 跑五项一致性校验，记录结论。
+3. 生成 `coverage-matrix.md`（功能点 → **验证条件** → 用例 → 数据 → 最近执行结果 → 关联缺陷）。
 4. 生成 `index.json`（模块/用例/TD 摘要统计）。
-5. 生成 `test-metrics-$RUN.md`（指标表 + 切片分析 + 遗留风险）。
+5. 生成 `test-metrics-$RUN.md`（指标表 + **测试点级覆盖率与路径覆盖度** + 缺口清单 + 切片分析 + 遗留风险）。
 6. 交 `test-manager` 评估（准出判定用）。
 
 ## 触发与边界
@@ -77,11 +82,12 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 **不该用**：
 - 修改任何原始记录（五方数据对它是只读的）
 - 判定"测试是否通过" → `test-manager`
-- 生成执行计划 → `case-running`
+- 生成执行实例 → `case-instantiate`
 
 ## 常见错误
 
 - 手工编辑派生文件（下次 rebuild 会被覆盖——原始记录才是真相）。
 - 覆盖率只算"有用例"不算"有数据"（无 TD 的用例无法执行，是假覆盖）。
+- **覆盖率只算到功能点级**，不展开 acceptance 条件（漏掉功能点内部未覆盖的条件；应输出测试点级覆盖率与缺口）。
 - 忽略 `stale` 标记继续出报告（需求已变，指标失真）。
 - 修复率分母用错（应为"已提交修复的 bug"，不是全部 bug）。

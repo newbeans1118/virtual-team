@@ -1,6 +1,7 @@
 -- ============================================================
 -- 模版：SQLITE-SCHEMA.sql ｜ 使用：store=sqlite 时由 test-data-gen/
 --       case-structure/req-structure 首次建库执行 ｜ 参照 templates/STORE-CONFIG.json
+-- 契约版本: acceptance-v1（acceptance 条列 + cases.acceptance_refs；JSON 与 SQL 双轨同序列化）
 -- 原则：
 --   1. 机制七表字段与 JSON 契约一一对应（templates/ 各模板）
 --   2. execs 只追加（触发器禁 UPDATE/DELETE，对应"EXEC 只追加不改写"红线）
@@ -19,7 +20,8 @@ CREATE TABLE IF NOT EXISTS req_functions (
   name        TEXT NOT NULL,
   biz_refs    TEXT,                      -- JSON 数组 ["biz-xxx"]
   actor       TEXT,
-  acceptance  TEXT,
+  acceptance  TEXT,                      -- JSON 数组 [{"key":"c1","text":"…","kind":"normal"}]（条列=验证条件/测试点）
+                                         -- 旧数据为纯文本时按单条目读取（key=c1）；空数组 = '[]' 而非 NULL
   constraints TEXT,                      -- JSON 数组
   status      TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','deprecated')),
   source_hash TEXT NOT NULL,
@@ -35,6 +37,8 @@ CREATE TABLE IF NOT EXISTS cases (
   module            TEXT NOT NULL,
   title             TEXT NOT NULL,
   function_refs     TEXT NOT NULL,       -- JSON 数组 ["fr-$MOD-xxx"]
+  acceptance_refs   TEXT,                -- JSON 数组 ["fr-$MOD-xxx:c1"]（本用例覆盖的验证条件；空 = '[]' 而非 NULL）
+                                         -- 引用闭合：每项前缀 fr-id 必须在 function_refs 中
   dataset_refs      TEXT,                -- JSON 数组 ["TD-xxx"]（与 td_registry.owner_cases 双向一致）
   type              TEXT CHECK (type IN ('functional','performance','security','compatibility')),
   priority          TEXT CHECK (priority IN ('P0','P1','P2')),
@@ -46,6 +50,9 @@ CREATE TABLE IF NOT EXISTS cases (
   updated_at        TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_cases_module ON cases(module);
+
+-- 旧库升级（v0 → acceptance-v1）：已建库且 cases 无本列时执行
+-- ALTER TABLE cases ADD COLUMN acceptance_refs TEXT;
 
 -- ---------- 数据单元注册表 ----------
 -- 来自 TD-REGISTRY-$MOD.json 分片（SQLite 轨为本表）；黑盒：机制层只认这些列
@@ -69,25 +76,27 @@ CREATE TABLE IF NOT EXISTS runs (
   trigger     TEXT NOT NULL CHECK (trigger IN ('full','regression','smoke','defect-verify')),
   defect_refs TEXT,                      -- JSON 数组（defect-verify 时必填）
   scope       TEXT,                      -- JSON {modules,case_ids,tags}
-  env         TEXT,                      -- JSON {name,build,commit}
+  envs        TEXT,                      -- JSON 数组 [{name,build,commit}]（环境池，执行期独占租用）
   started_at  TEXT,
   finished_at TEXT,
   summary     TEXT                       -- JSON {total,pass,fail,blocked}
 );
 
--- ---------- 执行计划（审定后生效） ----------
+-- ---------- 执行计划（实例化产物，审定后生效） ----------
 CREATE TABLE IF NOT EXISTS exec_plans (
   plan_id    TEXT NOT NULL,              -- P-xxx
+  module     TEXT NOT NULL,              -- $MOD（分片键，与 req_functions/cases/td_registry 对齐）
   run_id     TEXT NOT NULL REFERENCES runs(run_id),
   case_id    TEXT NOT NULL REFERENCES cases(case_id),
   td_id      TEXT NOT NULL REFERENCES td_registry(id),
-  expected   TEXT NOT NULL,              -- 本次配对的预期（文本）
-  source     TEXT CHECK (source IN ('td-description','case-template','manual')),
+  expected   TEXT NOT NULL,              -- 本实例的预期（文本）
+  source     TEXT CHECK (source IN ('case-expected','expected-hints','acceptance','manual')),
   approved   INTEGER NOT NULL DEFAULT 0, -- test-manager 审定标记
   approved_by TEXT,                      -- 审定人（对应 EXEC-PLAN.json 的 approved_by）
   approved_at TEXT,
   PRIMARY KEY (plan_id, run_id)
 );
+CREATE INDEX IF NOT EXISTS idx_exec_plans_module ON exec_plans(module);
 
 -- ---------- 执行明细（INSERT-only） ----------
 CREATE TABLE IF NOT EXISTS execs (
@@ -96,6 +105,7 @@ CREATE TABLE IF NOT EXISTS execs (
   run_id      TEXT NOT NULL REFERENCES runs(run_id),
   case_id     TEXT NOT NULL REFERENCES cases(case_id),
   td_id       TEXT NOT NULL REFERENCES td_registry(id),
+  env         TEXT,                      -- 本实例执行时租用的环境名（归因依据）
   result      TEXT NOT NULL CHECK (result IN ('pass','fail','blocked')),
   defect_ref  TEXT,                      -- BUG-xxx（失败时）
   started_at  TEXT,
@@ -166,6 +176,24 @@ CREATE INDEX IF NOT EXISTS idx_bugs_status ON bugs(status);
 --   SELECT COUNT(DISTINCT j.value) AS covered,
 --          (SELECT COUNT(*) FROM req_functions WHERE status='active') AS total
 --   FROM cases c, json_each(c.function_refs) j WHERE c.status='active';
+-- 测试点级覆盖率（度量非门禁：被 ≥1 active 用例引用的验证条件 ÷ 全部 active 功能点的条件总数）：
+--   WITH items AS (
+--     SELECT rf.id AS fr_id, json_extract(a.value,'$.key') AS ckey
+--     FROM req_functions rf, json_each(rf.acceptance) a WHERE rf.status='active'
+--   ), covered AS (
+--     SELECT DISTINCT i.fr_id, i.ckey FROM items i
+--     WHERE EXISTS (SELECT 1 FROM cases c, json_each(c.acceptance_refs) ar
+--                   WHERE c.status='active' AND ar.value = i.fr_id || ':' || i.ckey)
+--   )
+--   SELECT (SELECT COUNT(*) FROM covered) AS covered, (SELECT COUNT(*) FROM items) AS total;
+-- 未覆盖的验证条件清单（缺口报告）：
+--   WITH items AS (
+--     SELECT rf.id AS fr_id, json_extract(a.value,'$.key') AS ckey, json_extract(a.value,'$.kind') AS kind
+--     FROM req_functions rf, json_each(rf.acceptance) a WHERE rf.status='active'
+--   )
+--   SELECT fr_id, ckey, kind FROM items i
+--   WHERE NOT EXISTS (SELECT 1 FROM cases c, json_each(c.acceptance_refs) ar
+--                     WHERE c.status='active' AND ar.value = i.fr_id || ':' || i.ckey);
 -- 无数据用例（假覆盖检测）：
 --   SELECT case_id FROM cases WHERE status='active'
 --     AND (dataset_refs IS NULL OR json_array_length(dataset_refs)=0);

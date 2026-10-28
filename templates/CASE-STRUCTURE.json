@@ -1,5 +1,5 @@
 {
-  "_comment": "模版：CASE-STRUCTURE.json（用例侧结构化分片）｜ 产出角色：test-engineer（case-structure）｜ 每模块一片：test/trace/case-$MOD.json。双轨：JSON 轨=本文件；SQLite 轨=cases 表（module 列承载分片键）。用例是五方追踪的中枢：function_refs→需求，dataset_refs→数据，latest_result_ref→执行（指针不存值）。执行结果不入本文件（属 EXEC，追加式）。",
+  "_comment": "模版：CASE-STRUCTURE.json（用例侧结构化分片）｜ 产出角色：test-engineer（case-structure）｜ 每模块一片：test/trace/case-$MOD.json。双轨：JSON 轨=本文件；SQLite 轨=cases 表（module 列承载分片键）。用例是五方追踪的中枢：function_refs→需求，acceptance_refs→验证条件（测试点，只存标识不复制文本），dataset_refs→数据，latest_result_ref→执行（指针不存值）。执行结果不入本文件（属 EXEC，追加式）。",
   "project": "$PROJECT_NAME",
   "module": "$MOD",
   "updated_at": "",
@@ -9,6 +9,7 @@
       "id": "CASE-xxx",
       "title": "用例标题",
       "function_refs": ["fr-$MOD-xxx"],
+      "acceptance_refs": ["fr-$MOD-xxx:c1"],
       "dataset_refs": ["TD-xxx"],
       "type": "functional",
       "priority": "P1",

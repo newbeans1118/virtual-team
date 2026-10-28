@@ -1,5 +1,5 @@
 {
-  "_comment": "模版：REQ-STRUCTURE.json（需求侧结构化分片）｜ 产出角色：product-manager（req-structure）｜ 每模块一片：docs/requirements/trace/req-$MOD.json。双轨：JSON 轨=本文件；SQLite 轨=req_functions 表（module 列承载分片键）。biz_refs 语义=本功能点【所属】的业务（业务由多个功能点组成，此为归属关联）。change_log 已移除——变更审计走 git diff（spec 内容级）+ source_hash 链（结构级）。",
+  "_comment": "模版：REQ-STRUCTURE.json（需求侧结构化分片）｜ 产出角色：product-manager（req-structure）｜ 每模块一片：docs/requirements/trace/req-$MOD.json。双轨：JSON 轨=本文件；SQLite 轨=req_functions 表（module 列承载分片键）。biz_refs 语义=本功能点【所属】的业务（业务由多个功能点组成，此为归属关联）。change_log 已移除——变更审计走 git diff（spec 内容级）+ source_hash 链（结构级）。acceptance 为【条列】——每项 = 一个验证条件（测试点），提供覆盖率分母；key 只追加不重排不重用。",
   "project": "$PROJECT_NAME",
   "module": "$MOD",
   "version": 1,
@@ -12,7 +12,10 @@
       "name": "功能名称",
       "biz_refs": ["biz-001"],
       "actor": "操作角色",
-      "acceptance": "验证标准（可判定的验收条件）",
+      "acceptance": [
+        { "key": "c1", "text": "验证条件一（可判定，如：输入合法时为 200 且落库）", "kind": "normal" },
+        { "key": "c2", "text": "验证条件二（如：非法输入时拒绝且不落库）", "kind": "negative" }
+      ],
       "constraints": ["约束条件"],
       "status": "active"
     }

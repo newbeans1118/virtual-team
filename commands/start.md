@@ -43,7 +43,7 @@ $ARGUMENTS
 | 架构设计 | architect | architecting, data-modelling, general-design |
 | 编码 | backend-developer / ui-developer | - |
 | 代码评审 | code-reviewer | code-review |
-| 测试 | test-manager / test-engineer | case-design, case-running, case-structure |
+| 测试 | test-manager / test-engineer | case-design, case-instantiate, case-running, case-structure |
 | 验收/发布 | project-reviewer / release-engineer | accepting, releasing, doc-writing |
 
 ## 纪律

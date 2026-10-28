@@ -1,11 +1,12 @@
 {
-  "_comment": "模版：RUN.json（执行轮）｜ 产出角色：test-engineer（case-running）｜ 存放：test/runs/RUN-xxx.json。执行轮是度量的分母单位。envs 声明可用被测环境——执行分片（模块×env）从中分配，同 env 同刻仅一个分片。",
+  "_comment": "模版：RUN.json（执行轮）｜ 产出角色：case-instantiate（建头：id/trigger/scope/envs）→ case-running（回填 summary/finished_at）｜ 存放：test/runs/RUN-xxx.json。执行轮是度量的分母单位。分片=模块；envs 是执行期独占租用的环境池（每个含 build/commit 证据）——同时活跃分片数 ≤ envs 数，同 env 同刻仅一个分片占用。",
   "id": "RUN-xxx",
   "trigger": "full | regression | smoke | defect-verify",
   "defect_refs": [],
   "scope": { "modules": [], "case_ids": null, "tags": null },
-  "envs": [],
-  "env": { "name": "", "build": "", "commit": "" },
+  "envs": [
+    { "name": "env-a", "build": "", "commit": "" }
+  ],
   "started_at": "",
   "finished_at": "",
   "summary": { "total": 0, "pass": 0, "fail": 0, "blocked": 0 }

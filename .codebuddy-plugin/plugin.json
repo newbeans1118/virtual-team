@@ -30,6 +30,7 @@
     "./skills/design-review",
     "./skills/datamodel-review",
     "./skills/case-design",
+    "./skills/case-instantiate",
     "./skills/case-running",
     "./skills/code-review",
     "./skills/diagramming",
