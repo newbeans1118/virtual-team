@@ -19,7 +19,7 @@
   },
   "approval": { "by": "user", "decision": "approved | rejected", "note": "", "at": "" },
   "implementation": {
-    "steps": ["实施步骤（含 req-structure 重跑、case/TD 对齐等下游同步）"],
+    "steps": ["实施步骤（含 prd-structure 重跑、case/TD 对齐等下游同步）"],
     "commit": "",
     "by": "",
     "at": ""

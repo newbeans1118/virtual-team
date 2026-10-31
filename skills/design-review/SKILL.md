@@ -15,7 +15,7 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 
 ## 输入
 
-- `docs/requirements/`
+- `docs/prd/`
 - `design/ARCH.md`、`DATABASE.md`、`FUNC.md`、`DATASTRUCT-ALGORITHM.md`、`INTERFACE.md`、`LOGGER.md`
 
 ## 输出
@@ -68,7 +68,7 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 
 **不该用**：
 - 只评审数据库设计 → 用 `datamodel-review`
-- 评审需求 → 用 `requirement-review`
+- 评审需求 → 用 `prd-review`
 - 评审代码 → 用 `code-review`
 
 ## 常见错误

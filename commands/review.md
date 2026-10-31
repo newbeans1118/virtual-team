@@ -1,6 +1,6 @@
 ---
-description: 通用评审入口：需求评审 / 设计评审 / 数据模型评审，产出评审报告并驱动闭环
-argument-hint: "评审类型与对象，例如：需求评审 docs/requirements/ 或 设计评审 design/DATABASE.md"
+description: 通用评审入口：PRD 评审 / 设计评审 / 数据模型评审，产出评审报告并驱动闭环
+argument-hint: "评审类型与对象，例如：PRD 评审 docs/prd/ 或 设计评审 design/DATABASE.md"
 ---
 
 <user_input>
@@ -13,7 +13,7 @@ $ARGUMENTS
 
 | 评审类型 | 委派角色 | 技能 | 输出 |
 |---------|---------|------|------|
-| 需求评审 | requirement-reviewer | requirement-review | `review/requirement/RV-REQ-xxx.md` |
+| 需求评审 | prd-reviewer | prd-review | `review/prd/RV-PRD-xxx.md` |
 | 设计评审 | design-reviewer | design-review | `review/design/RV-DESIGN-xxx.md` |
 | 数据模型评审 | design-reviewer | datamodel-review | `review/design/RV-DM-xxx.md` |
 

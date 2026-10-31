@@ -1,6 +1,6 @@
 # 业务分析概览：$PROJECT_NAME
 
-> 模版：BIZ-OVERVIEW.md ｜ 产出角色：product-manager ｜ 存放：docs/requirements/overview.md
+> 模版：BIZ-OVERVIEW.md ｜ 产出角色：product-manager ｜ 存放：docs/prd/overview.md
 
 ## 1. 系统定位
 

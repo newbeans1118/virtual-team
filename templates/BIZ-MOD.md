@@ -1,6 +1,6 @@
 # 业务分析说明书：$COMPONENT / $MODULE
 
-> 模版：BIZ-MOD.md ｜ 产出角色：product-manager ｜ 存放：docs/requirements/$COMPONENT/$MODULE/biz.md（组件不细分模块时省略 $MODULE/）
+> 模版：BIZ-MOD.md ｜ 产出角色：product-manager ｜ 存放：docs/prd/$COMPONENT/$MODULE/biz.md（组件不细分模块时省略 $MODULE/）
 
 ## 1. 模块说明
 

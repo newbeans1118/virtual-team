@@ -20,8 +20,8 @@ description: 从业务与用户角度建模系统、定义业务与实体、划�
 
 ## 输出
 
-- `docs/requirements/overview.md`（模版 `templates/BIZ-OVERVIEW.md`）
-- `docs/requirements/$COMPONENT/$MODULE/biz.md`（模版 `templates/BIZ-MOD.md`）
+- `docs/prd/overview.md`（模版 `templates/BIZ-OVERVIEW.md`）
+- `docs/prd/$COMPONENT/$MODULE/biz.md`（模版 `templates/BIZ-MOD.md`）
 
 ## 流程
 
@@ -57,7 +57,7 @@ description: 从业务与用户角度建模系统、定义业务与实体、划�
 **该用**：把用户需求转成业务语言——角色、业务、实体、模块边界。
 
 **不该用**：
-- 要定义功能点 `fr-` 与规格 → 用 `requirement`
+- 要定义功能点 `fr-` 与规格 → 用 `prd`
 - 要设计技术架构 → 用 `architecting`
 - 要有界面原型 → 用 `prototype`
 

@@ -16,7 +16,7 @@ description: 评审代码是否匹配规格与设计、并评估质量与安全�
 ## 输入
 
 - `src/` 下代码
-- 各组件/模块 `spec.md`、`docs/requirements/$COMPONENT/$MODULE/trace/req.json`（功能编号来源）
+- 各组件/模块 `prd.md`、`docs/prd/$COMPONENT/$MODULE/trace/prd.json`（功能编号来源）
 - `design/`（FUNC / INTERFACE / DATABASE / LOGGER）
 
 ## 输出

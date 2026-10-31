@@ -1,26 +1,26 @@
 ---
-name: requirement-review
-description: 独立评审业务分析与需求规格交付物质量时使用。触发场景：需求分析完成待评审、需要检查业务流程合理性/功能完备性/数据字典完整性/需求一致性/模块划分/非功能需求、需要产出需求评审报告并驱动闭环、提到需求评审、需求评审意见、需求质量检查。
+name: prd-review
+description: 独立评审业务分析与 PRD 交付物质量时使用。触发场景：需求分析完成待评审、需要检查业务流程合理性/功能完备性/数据字典完整性/需求一致性/模块划分/非功能需求、需要产出需求评审报告并驱动闭环、提到需求评审、需求评审意见、需求质量检查。
 ---
 
-# 需求评审（requirement-review）
+# PRD 评审（prd-review）
 
 ## 目的
 
-评审业务分析说明书、需求规格说明书的质量，确保需求完备、准确、一致、可追溯。
+评审业务分析说明书与 PRD 的质量，确保需求完备、准确、一致、可追溯。
 
 ## 执行者
 
-`requirement-reviewer`（评审人另含**用户**）
+`prd-reviewer`（评审人另含**用户**）
 
 ## 输入
 
 - `docs/PROJ_$PROJECT_NAME.md`
-- `docs/requirements/overview.md`、各组件/模块 `biz.md`/`spec.md`、`spec-nonfunc.md`、`dict.md`
+- `docs/prd/overview.md`、各组件/模块 `biz.md`/`prd.md`、`prd-nonfunc.md`、`dict.md`
 
 ## 输出
 
-- `review/requirement/RV-REQ-xxx.md`
+- `review/prd/RV-PRD-xxx.md`
 
 ## 评审角度（10 项，逐项给结论）
 
@@ -39,7 +39,7 @@ description: 独立评审业务分析与需求规格交付物质量时使用。�
 
 | 字段 | 说明 |
 |------|------|
-| 问题编号 | `RV-REQ-xxx-NN` |
+| 问题编号 | `RV-PRD-xxx-NN` |
 | 级别 | P0 / P1 / P2 |
 | 评审角度 | 1–10 |
 | 位置 | 文件 + 章节（biz-xxx / fr-xxx / 实体） |

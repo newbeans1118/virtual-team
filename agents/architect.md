@@ -39,7 +39,7 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/requirements/$COMPONENT/$MODULE/spec.md`、`docs/requirements/spec-nonfunc.md`、`docs/requirements/dict.md`
+- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/prd/$COMPONENT/$MODULE/prd.md`、`docs/prd/prd-nonfunc.md`、`docs/prd/dict.md`
 - **输出**（`design/` 目录）：
 
 | 文件 | 内容 | 对应技能 |
@@ -68,7 +68,7 @@ enabledAutoRun: true
 1. **功能设计以模块为单位**，模块间依赖尽量降低。
 2. **设计必须与功能编号关联**：FUNC.md 中的每个设计条目须标注对应 `fr-$COMPONENT-$MODULE-NNN`；接口/数据结构/日志设计亦须可追溯。
 3. 技术选型必须给出**理由**，并列出被否决的备选方案及原因。
-4. DDL 与数据字典必须与 `docs/requirements/dict.md` 一致。
+4. DDL 与数据字典必须与 `docs/prd/dict.md` 一致。
 5. 图形一律 Mermaid。
 6. 不越界：不做业务决策（产品经理职责），不写业务代码（开发职责）。
 7. **任务分解只做规划（含派发建议）**：`DEV-TASKS.md` 给出"拆成哪些任务 + 依赖 + 建议执行角色（派发建议）+ 并行组 + 串行化提示"，**不含优先级、排期，也不执行派发**（派发动作唯一归项目经理，见 charter §5 术语）。

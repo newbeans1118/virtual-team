@@ -37,7 +37,7 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/requirements/`、`design/`、`review/`、`test/report/`、`release/`。
+- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/prd/`、`design/`、`review/`、`test/report/`、`release/`。
 - **输出**：
   - 立项评审报告 `review/project/RV-PROJ-KICKOFF.md`
   - 项目验收评审报告 `review/project/RV-PROJ-ACCEPT.md`

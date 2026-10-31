@@ -8,7 +8,7 @@
 |----|------|
 | 用例编号 | CASE-$COMPONENT-NNN |
 | 关联功能点 | fr-$COMPONENT-$MODULE-NNN（可多个，可跨组件/模块） |
-| 覆盖验证条件 | fr-$COMPONENT-$MODULE-NNN:c1, ...:c2（引用 req 侧 acceptance 的 key；只引标识，不复制文本） |
+| 覆盖验证条件 | fr-$COMPONENT-$MODULE-NNN:c1, ...:c2（引用 PRD 侧 acceptance 的 key；只引标识，不复制文本） |
 | 用例类型 | 功能 / 性能 / 安全 / 兼容 |
 | 优先级 | P0 / P1 / P2 |
 | 前置条件 | |

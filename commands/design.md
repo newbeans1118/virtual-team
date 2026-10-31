@@ -13,11 +13,11 @@ $ARGUMENTS
 
 ## 前置
 
-- 需求评审已通过（`docs/requirements/` 完备）。
+- PRD 评审已通过（`docs/prd/` 完备）。
 
 ## 要求
 
-1. 读取 `rules/team-charter.md`、`docs/requirements/`。
+1. 读取 `rules/team-charter.md`、`docs/prd/`。
 2. 依次使用技能：
    - `architecting` → `design/ARCH.md`
    - `data-modelling` → `design/DATABASE.md`

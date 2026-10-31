@@ -25,7 +25,7 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 - `test/plan.md`（测试方案，含范围与环境要求）
 - 本分片 `test/trace/$COMPONENT/case-$MODULE.json`（用例分片，含 `function_refs`/`acceptance_refs`/`dataset_refs`）
 - 本分片注册表 `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`（SQLite 轨：查库）
-- `docs/requirements/$COMPONENT/$MODULE/trace/req.json`（acceptance 文本，expected 来源之一）
+- `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（acceptance 文本，expected 来源之一）
 
 ## 输出（按存储轨道 × 分片）
 
@@ -59,9 +59,9 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 
 ### 2. 配对生成实例（按模块分片，**逐验证条件**）
 
-配对单位是「**用例 × 验证条件 × TD**」——kind 从需求侧派生，不加新字段：
+配对单位是「**用例 × 验证条件 × TD**」——kind 从PRD 侧派生，不加新字段：
 
-- **kind 派生**：用例的 kind 需求 = 其 `acceptance_refs` 所引验证条件在 req 侧 `acceptance[].kind`（单一事实源在 req，派生不双写）。
+- **kind 派生**：用例的 kind 需求 = 其 `acceptance_refs` 所引验证条件在 PRD 侧 `acceptance[].kind`（单一事实源在 req，派生不双写）。
 - **逐条件配对**：对本分片每个 active 用例引用的每个验证条件（kind=k），从其 `dataset_refs` ∩ TD 注册表中 `suitable_for` 含 k 的数据单元里选定配对，生成一行 `{plan_id, case, condition, td, expected, source}`：
   - **`condition`**：`{fr-id}:{key}`（该实例验证的条件标识，如 `fr-workbench-task_list-001:c2`）——EXEC 与 BUG 回指的锚点。
   - **`expected`** 是实例属性——**优先取该条件 GWT 的 `then`**（source=acceptance）；也可从用例预期语义 / TD 单元 `expected_hints` 提炼，或项目补充；**同一 TD 配不同条件预期不同**。

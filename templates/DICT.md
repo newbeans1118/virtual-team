@@ -1,6 +1,6 @@
 # 数据字典：$PROJECT_NAME
 
-> 模版：DICT.md ｜ 产出角色：product-manager ｜ 存放：docs/requirements/dict.md
+> 模版：DICT.md ｜ 产出角色：product-manager ｜ 存放：docs/prd/dict.md
 
 ## 1. 说明
 

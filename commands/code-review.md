@@ -13,7 +13,7 @@ $ARGUMENTS
 
 ## 要求
 
-1. 读取 `rules/team-charter.md`、`rules/engineering-discipline.md`、`docs/requirements/`、`design/`、`src/`。
+1. 读取 `rules/team-charter.md`、`rules/engineering-discipline.md`、`docs/prd/`、`design/`、`src/`。
 2. 使用 `code-review` 技能，**先做阶段一规格符合性**（功能编号是否全实现、有无多做/漏做），**再做阶段二代码质量**（正确性/质量/安全/性能/可维护）。
 3. 产出报告 `review/code/CR-CODE-xxx.md`，每个问题须标注**文件 + 模块 + 功能编号**，并分级 P0/P1/P2；给出两阶段各自的结论。
 4. 发送问题给责任工程师；工程师修复后回复；评审员验证并关闭，形成闭环。

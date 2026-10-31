@@ -1,6 +1,6 @@
 # 存储轨道规则（Storage Track）
 
-本文件是 virtual-team 插件**测试数据双轨存储（json / sqlite）的唯一规则源**。所有测试类技能（req-structure / case-structure / test-data-gen / case-instantiate / case-running / test-rebuild）**开工第一步读本文件**——按 `test/STORE-CONFIG.json` 选定的轨道，**只读对应一节的规则**（另一节不加载）。
+本文件是 virtual-team 插件**测试数据双轨存储（json / sqlite）的唯一规则源**。所有测试类技能（prd-structure / case-structure / test-data-gen / case-instantiate / case-running / test-rebuild）**开工第一步读本文件**——按 `test/STORE-CONFIG.json` 选定的轨道，**只读对应一节的规则**（另一节不加载）。
 
 ## 0. 选轨与迁移（唯一开关）
 
@@ -16,7 +16,7 @@
 
 | 数据 | 文件 | 生产者 |
 |------|------|--------|
-| 需求侧 | `docs/requirements/$COMPONENT/$MODULE/trace/req.json` | req-structure |
+| PRD 侧 | `docs/prd/$COMPONENT/$MODULE/trace/prd.json` | prd-structure |
 | 用例侧 | `test/trace/$COMPONENT/case-$MODULE.json` | case-structure |
 | TD 注册表 | `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json` | test-data-gen |
 | RUN 头 | `test/runs/RUN-xxx.json` | test-manager |
@@ -24,7 +24,7 @@
 | 执行明细 | `test/runs/RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl`（追加式） | case-running |
 | 缺陷 | `test/bugs/BUG-$COMPONENT-NNN.json` | case-running |
 
-- **stale 判定**：git 提交对比（json 提交早于 spec 提交 = 未同步）——结构文件不写 source_hash 副本到下游（req 分片写 `source_hash` 声明基线，case 分片写 `req_source_hash`）。
+- **stale 判定**：git 提交对比（json 提交早于 spec 提交 = 未同步）——结构文件不写 source_hash 副本到下游（PRD 分片写 `source_hash` 声明基线，case 分片写 `prd_source_hash`）。
 - 累计 EXEC > 1 万行时，test-rebuild 先做聚合索引再计算。
 
 ## 2. SQLite 轨（store=sqlite）
@@ -33,8 +33,8 @@
 
 | 数据 | 表 | 说明 |
 |------|-----|------|
-| 需求侧 | `req_functions` | component+module 双列承载分片语义；**source_hash 行内自证**（.db 不可 git diff） |
-| 用例侧 | `cases` | module 列承载分片语义；req_source_hash 同上 |
+| PRD 侧 | `prd_functions` | component+module 双列承载分片语义；**source_hash 行内自证**（.db 不可 git diff） |
+| 用例侧 | `cases` | module 列承载分片语义；prd_source_hash 同上 |
 | TD 注册表 | `td_registry` | 字段与 JSON 轨一一对应 |
 | TD 业务数据 | `td_biz_*`（业务表） | **必含 `td_id` 外键关联 `td_registry(id)`**——无关联行 = 孤儿（P0）；删除 TD 级联清理业务行 |
 | RUN 头 | `runs` | envs 列为 JSON 数组（build/commit 引用测试版构建产物） |
@@ -42,7 +42,7 @@
 | 执行明细 | `execs` | **只追加**（库级触发器禁 UPDATE/DELETE） |
 | 缺陷 | `bugs` | 状态机同 JSON 轨 |
 
-- **建库**：DDL 见 `templates/SQLITE-SCHEMA.sql`（含触发器与八项指标 SQL）；首次建库由 req-structure/case-structure/test-data-gen 执行。
+- **建库**：DDL 见 `templates/SQLITE-SCHEMA.sql`（含触发器与八项指标 SQL）；首次建库由 prd-structure/case-structure/test-data-gen 执行。
 - **加载脚本不入库**：`test/data/$COMPONENT/scripts/TD-xxx-load.*` 仍单独存文件（职责：从业务表 SELECT → 装入被测系统；幂等 + 可清理）；`load_entry` 登记脚本路径。
 - **审定动作** = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
 - **两轨混用 = 违规**：建了业务表仍把数据写文件、或 JSON 轨项目写 metrics.db，均为红线。

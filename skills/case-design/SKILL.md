@@ -15,7 +15,7 @@ description: 制定测试方案、设计测试用例时使用。触发场景：�
 
 ## 输入
 
-- `docs/requirements/`（功能点清单，按组件/模块分层）
+- `docs/prd/`（功能点清单，按组件/模块分层）
 - `design/`
 - `test/plan.md`（若已存在则增量补充）
 - `test/trace/$COMPONENT/case-$MODULE.json`（结构化分片，如已存在）
@@ -43,7 +43,7 @@ description: 制定测试方案、设计测试用例时使用。触发场景：�
 ```
 CASE-workbench-001
 关联功能点: fr-workbench-task_list-001
-覆盖验证条件: fr-workbench-task_list-001:c1, fr-workbench-task_list-001:c2（引用 req 侧 acceptance 的 key，只引标识不复制文本）
+覆盖验证条件: fr-workbench-task_list-001:c1, fr-workbench-task_list-001:c2（引用 PRD 侧 acceptance 的 key，只引标识不复制文本）
 关联数据单元: TD-workbench-003（设计意图，最终以 case-structure 的 dataset_refs 为准）
 类型: 功能 | 优先级: P1
 前置条件: ...

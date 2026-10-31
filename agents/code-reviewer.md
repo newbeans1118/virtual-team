@@ -44,7 +44,7 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`src/` 下软件代码；`docs/requirements/` 需求文档；`design/` 设计文档。
+- **输入**：`src/` 下软件代码；`docs/prd/` 需求文档；`design/` 设计文档。
 - **输出**：代码评审报告 `review/code/CR-CODE-xxx.md`（含文件 + 模块 + 功能编号定位）。
 
 ## 3. 评审维度（逐项打分）

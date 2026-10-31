@@ -32,7 +32,7 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：软件代码、需求文档（`docs/requirements/`）、设计文档（`design/`）、测试版构建产物（`release/artifact/` + `release/manual-install.md`，envs 证据来源）、各分片实例计划（`test/runs/RUN-xxx/EXEC-PLAN-<组件>-<模块>.json`）、TD 注册表分片（`test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`）、度量报告（`test/report/metrics-*.md`）。
+- **输入**：软件代码、需求文档（`docs/prd/`）、设计文档（`design/`）、测试版构建产物（`release/artifact/` + `release/manual-install.md`，envs 证据来源）、各分片实例计划（`test/runs/RUN-xxx/EXEC-PLAN-<组件>-<模块>.json`）、TD 注册表分片（`test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`）、度量报告（`test/report/metrics-*.md`）。
 - **输出**：
   - 测试方案 `test/plan.md`
   - 测试基线数据 `test/baseline/`

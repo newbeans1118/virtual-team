@@ -18,7 +18,7 @@ $ARGUMENTS
 3. 从**立项**阶段开始，按阶段推进：
 
 ```
-立项 → [立项评审] → 需求分析 → [需求评审] → 架构设计 → [设计评审]
+立项 → [立项评审] → 需求分析 → [PRD 评审] → 架构设计 → [设计评审]
      → 编码（前后端）→ 代码评审（两阶段）→ 测试 → 项目验收评审 → 发布
 ```
 
@@ -39,7 +39,7 @@ $ARGUMENTS
 | 阶段 | 主责角色 | 使用技能 |
 |------|---------|---------|
 | 立项 | project-manager | planning |
-| 需求分析 | product-manager | business-analysis, requirement, prototype, req-structure, diagramming |
+| 需求分析 | product-manager | business-analysis, prd, prototype, prd-structure, diagramming |
 | 架构设计 | architect | architecting, data-modelling, general-design |
 | 编码 | backend-developer / ui-developer | - |
 | 代码评审 | code-reviewer | code-review |

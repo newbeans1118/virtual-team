@@ -16,7 +16,7 @@ description: 设计系统架构、组件划分与交互、做技术栈选型时�
 ## 输入
 
 - `docs/PROJ_$PROJECT_NAME.md`
-- `docs/requirements/$COMPONENT/$MODULE/spec.md`、`spec-nonfunc.md`
+- `docs/prd/$COMPONENT/$MODULE/prd.md`、`prd-nonfunc.md`
 
 ## 输出
 

@@ -15,9 +15,9 @@ description: 设计数据库、画 ER 图、写 DDL 与索引时使用。触发�
 
 ## 输入
 
-- `docs/requirements/dict.md`（数据字典）
-- `docs/requirements/$COMPONENT/$MODULE/spec.md`
-- `docs/requirements/spec-nonfunc.md`（性能指标影响索引设计）
+- `docs/prd/dict.md`（数据字典）
+- `docs/prd/$COMPONENT/$MODULE/prd.md`
+- `docs/prd/prd-nonfunc.md`（性能指标影响索引设计）
 
 ## 输出
 
@@ -53,7 +53,7 @@ description: 设计数据库、画 ER 图、写 DDL 与索引时使用。触发�
 **该用**：需要落地数据存储结构时。
 
 **不该用**：
-- 定义业务实体语义 → 用 `requirement`（数据字典）
+- 定义业务实体语义 → 用 `prd`（数据字典）
 - 设计整体架构 → 用 `architecting`
 - 专项评审数据模型 → 用 `datamodel-review`
 

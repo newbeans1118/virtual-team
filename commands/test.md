@@ -18,7 +18,7 @@ $ARGUMENTS
 
 ## 要求
 
-1. 读取 `rules/team-charter.md`、`docs/requirements/`、`design/`、`src/`。
+1. 读取 `rules/team-charter.md`、`docs/prd/`、`design/`、`src/`。
 2. `test-manager`：
    - 用 `case-design` 产出 `test/plan.md`（范围/功能/非功能策略 + **环境基线定义**）
    - 定义环境基线并产出 `test/baseline/`（初始化脚本、种子数据、恢复方式；执行由 test-engineer 搭环境时进行）

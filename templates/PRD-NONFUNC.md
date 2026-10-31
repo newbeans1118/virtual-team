@@ -1,6 +1,6 @@
 # 非功能需求说明书：$PROJECT_NAME
 
-> 模版：SPEC-NONFUNC.md ｜ 产出角色：product-manager ｜ 存放：docs/requirements/spec-nonfunc.md
+> 模版：PRD-NONFUNC.md ｜ 产出角色：product-manager ｜ 存放：docs/prd/prd-nonfunc.md
 
 ## 1. 说明
 

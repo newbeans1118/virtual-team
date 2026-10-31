@@ -15,7 +15,7 @@ description: 设计模块功能、内外部接口、关键算法与数据结构�
 
 ## 输入
 
-- `docs/requirements/$COMPONENT/$MODULE/spec.md`
+- `docs/prd/$COMPONENT/$MODULE/prd.md`
 - `design/ARCH.md`、`design/DATABASE.md`
 
 ## 输出

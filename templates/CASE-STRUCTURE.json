@@ -4,7 +4,7 @@
   "component": "$COMPONENT",
   "module": "$MODULE",
   "updated_at": "",
-  "req_source_hash": "sha1:…（仅 SQLite 轨写入 cases.req_source_hash；JSON 轨留空，stale 由 git 提交对比判定）",
+  "prd_source_hash": "sha1:…（仅 SQLite 轨写入 cases.prd_source_hash；JSON 轨留空，stale 由 git 提交对比判定）",
   "cases": [
     {
       "id": "CASE-$COMPONENT-NNN",

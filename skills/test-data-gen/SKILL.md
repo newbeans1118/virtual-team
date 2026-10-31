@@ -15,7 +15,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 ## 输入
 
-- `docs/requirements/$COMPONENT/$MODULE/trace/req.json`（功能验收标准）
+- `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（功能验收标准）
 - `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`、`test/trace/$COMPONENT/case-$MODULE.json`（用例意图）
 - `test/plan.md`（测试范围与环境约束）
 - `design/INTERFACE.md`、`design/DATABASE.md`（加载方法的依据，只读）
@@ -26,7 +26,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 - **JSON 轨**（默认）：
   - `test/data/$COMPONENT/TD-$COMPONENT-NNN/`（数据文件+加载脚本）
-  - `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`——**注册表分片**（每组件/模块一片，与 case/req 分片对称；全局视图由 test-rebuild 合并，禁止实例间互相改写对方分片）
+  - `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`——**注册表分片**（每组件/模块一片，与 case/PRD 分片对称；全局视图由 test-rebuild 合并，禁止实例间互相改写对方分片）
 - **SQLite 轨**（STORE-CONFIG.store=sqlite）：
   - 机制数据 → `test/trace/metrics.db` 的 `td_registry` 表（字段同上，双向一致约束同；行级 INSERT 无并行冲突）
   - **数据本体 → 业务表 `td_biz_*`**（本技能设计并建表，INSERT 数据行；**必须含 `td_id` 列外键关联 `td_registry(id)`**，见 `templates/SQLITE-SCHEMA.sql` 样例）
@@ -51,7 +51,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 ## 前置（硬门禁，缺任一 → BLOCKED 报 PM）
 
-1. 需求定稿且已结构化（本分片 `req.json` 存在）。
+1. 需求定稿且已结构化（本分片 `prd.json` 存在）。
 2. 用例已设计并结构化（本分片 `case-$MODULE.json` 存在，owner 用例明确）。
 3. 测试方案已经用户确认（`test/plan.md`）。
 4. 设计文档可读（加载方法依据）。
@@ -66,7 +66,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
   "id": "TD-$COMPONENT-NNN",
   "description": {
     "purpose": "这组数据验证什么场景（一句话）",
-    "suitable_for": ["normal | boundary | negative 中的若干（与需求侧 acceptance.kind 同枚举）"],
+    "suitable_for": ["normal | boundary | negative 中的若干（与PRD 侧 acceptance.kind 同枚举）"],
     "preconditions": ["对环境/前置的要求"],
     "data_scope": "覆盖/不覆盖的范围说明（防误配对）",
     "owner_cases": ["CASE-$COMPONENT-NNN", "..."]
@@ -81,7 +81,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 | 字段 | 必填 | 说明 |
 |------|------|------|
 | `purpose` | ✅ | 语义锚点，配对评审的依据 |
-| `suitable_for` | ✅ | **配对匹配键**——值域 `normal/boundary/negative`，与需求侧 `acceptance.kind` **同枚举**；`case-instantiate` 按「用例引用的验证条件 kind」逐条件匹配。**混合场景底座用数组多值表达**（如 `["normal","negative"]` 即组合底座），不设独立 combination 值 |
+| `suitable_for` | ✅ | **配对匹配键**——值域 `normal/boundary/negative`，与PRD 侧 `acceptance.kind` **同枚举**；`case-instantiate` 按「用例引用的验证条件 kind」逐条件匹配。**混合场景底座用数组多值表达**（如 `["normal","negative"]` 即组合底座），不设独立 combination 值 |
 | `preconditions` | ✅ | 执行前检查项，避免脏跑 |
 | `data_scope` | 共享时必填 | 明确"不覆盖什么"，防止误配对 |
 | `owner_cases` | ✅ 数组 | 引用本单元的**全部**用例（可跨组件/模块）；一份数据可服务多个用例（不同用例产生不同结果，预期在执行计划中落定） |

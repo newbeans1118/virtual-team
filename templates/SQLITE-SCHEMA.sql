@@ -1,7 +1,7 @@
 -- ============================================================
 -- 模版：SQLITE-SCHEMA.sql ｜ 使用：store=sqlite 时由 test-data-gen/
---       case-structure/req-structure 首次建库执行 ｜ 参照 templates/STORE-CONFIG.json
--- 契约版本: acceptance-v2（acceptance 条列 + GWT{given,when,then,kind} + cases.acceptance_refs；JSON 与 SQL 双轨同序列化）
+--       case-structure/prd-structure 首次建库执行 ｜ 参照 templates/STORE-CONFIG.json
+-- 契约版本: acceptance-v3（acceptance 条列 + GWT{given,when,then,kind} + cases.acceptance_refs；req_* → prd_* 契约重命名；JSON 与 SQL 双轨同序列化）
 -- 原则：
 --   1. 机制七表字段与 JSON 契约一一对应（templates/ 各模板）
 --   2. execs 只追加（触发器禁 UPDATE/DELETE，对应"EXEC 只追加不改写"红线）
@@ -12,9 +12,9 @@
 
 PRAGMA foreign_keys = ON;
 
--- ---------- 需求侧 ----------
--- 来自 docs/requirements/$COMPONENT/$MODULE/trace/req.json 分片；component+module 双列承载分片语义
-CREATE TABLE IF NOT EXISTS req_functions (
+-- ---------- PRD 侧 ----------
+-- 来自 docs/prd/$COMPONENT/$MODULE/trace/prd.json 分片；component+module 双列承载分片语义
+CREATE TABLE IF NOT EXISTS prd_functions (
   id          TEXT PRIMARY KEY,          -- fr-$COMPONENT-$MODULE-NNN
   component   TEXT NOT NULL,             -- $COMPONENT（一级分片键）
   module      TEXT NOT NULL,             -- $MODULE（二级分片键；组件不细分模块时 = 'all'）
@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS req_functions (
   version     INTEGER NOT NULL DEFAULT 1,
   updated_at  TEXT
 );
-CREATE INDEX IF NOT EXISTS idx_req_component ON req_functions(component);
-CREATE INDEX IF NOT EXISTS idx_req_module ON req_functions(component, module);
+CREATE INDEX IF NOT EXISTS idx_req_component ON prd_functions(component);
+CREATE INDEX IF NOT EXISTS idx_req_module ON prd_functions(component, module);
 
 -- ---------- 用例侧 ----------
 -- 来自 test/trace/$COMPONENT/case-*.json 分片；用例有主组件（component 列），可跨组件引用功能点
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS cases (
   preconditions     TEXT,                -- JSON 数组
   automation        TEXT,                -- JSON {automatable, script_ref, last_verified_run}
   latest_result_ref TEXT,                -- 指针文本（如 "runs/RUN-007/EXEC-<组件>-<模块>.jsonl#L3"）
-  req_source_hash   TEXT NOT NULL,
+  prd_source_hash   TEXT NOT NULL,
   updated_at        TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_cases_component ON cases(component);
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS td_registry (
   component     TEXT NOT NULL,           -- 主归属组件（一级分片键）
   module        TEXT NOT NULL,           -- 主归属模块（二级分片键；组件不细分模块时 = 'all'）
   purpose       TEXT NOT NULL,
-  suitable_for  TEXT NOT NULL,           -- JSON 数组，值域 normal/boundary/negative（与 req 侧 acceptance.kind 同枚举；混合底座多值，不设 combination）
+  suitable_for  TEXT NOT NULL,           -- JSON 数组，值域 normal/boundary/negative（与 PRD 侧 acceptance.kind 同枚举；混合底座多值，不设 combination）
   preconditions TEXT,                    -- JSON 数组
   data_scope    TEXT,
   owner_cases   TEXT NOT NULL,           -- JSON 数组 ["CASE-$COMPONENT-NNN"]（与 cases.dataset_refs 双向一致）
@@ -90,11 +90,11 @@ CREATE TABLE IF NOT EXISTS runs (
 -- plan_id 全局唯一（跨 RUN）：TM 审定时全局查重（含历史 RUN）——保证 exec_id 复合格式 {plan_ref}-{seq} 全局无撞号
 CREATE TABLE IF NOT EXISTS exec_plans (
   plan_id    TEXT PRIMARY KEY,           -- P-xxx（全局唯一，跨 RUN 查重）
-  component  TEXT NOT NULL,              -- $COMPONENT（分片键，与 req_functions/cases/td_registry 对齐）
+  component  TEXT NOT NULL,              -- $COMPONENT（分片键，与 prd_functions/cases/td_registry 对齐）
   module     TEXT NOT NULL,              -- $MODULE（分片键；组件不细分模块时 = 'all'）
   run_id     TEXT NOT NULL REFERENCES runs(run_id),
   case_id    TEXT NOT NULL REFERENCES cases(case_id),
-  condition  TEXT,                       -- 所验证条件标识 "fr-$COMPONENT-$MODULE-NNN:c1"（kind 从 req 侧 acceptance 派生，配对须 ∈ td_registry.suitable_for；功能点级 fallback 时 NULL）
+  condition  TEXT,                       -- 所验证条件标识 "fr-$COMPONENT-$MODULE-NNN:c1"（kind 从 PRD 侧 acceptance 派生，配对须 ∈ td_registry.suitable_for；功能点级 fallback 时 NULL）
   td_id      TEXT NOT NULL REFERENCES td_registry(id),
   expected   TEXT NOT NULL,              -- 本实例的预期（文本；优先取条件 GWT 的 then）
   source     TEXT CHECK (source IN ('acceptance','case-expected','expected-hints','manual')),
@@ -181,12 +181,12 @@ CREATE INDEX IF NOT EXISTS idx_bugs_status ON bugs(status);
 --   SELECT result, COUNT(*) FROM execs WHERE run_id='RUN-xxx' GROUP BY result;
 -- 需求覆盖率：
 --   SELECT COUNT(DISTINCT j.value) AS covered,
---          (SELECT COUNT(*) FROM req_functions WHERE status='active') AS total
+--          (SELECT COUNT(*) FROM prd_functions WHERE status='active') AS total
 --   FROM cases c, json_each(c.function_refs) j WHERE c.status='active';
 -- 测试点级覆盖率（度量非门禁：被 ≥1 active 用例引用的验证条件 ÷ 全部 active 功能点的条件总数）：
 --   WITH items AS (
 --     SELECT rf.id AS fr_id, json_extract(a.value,'$.key') AS ckey
---     FROM req_functions rf, json_each(rf.acceptance) a WHERE rf.status='active'
+--     FROM prd_functions rf, json_each(rf.acceptance) a WHERE rf.status='active'
 --   ), covered AS (
 --     SELECT DISTINCT i.fr_id, i.ckey FROM items i
 --     WHERE EXISTS (SELECT 1 FROM cases c, json_each(c.acceptance_refs) ar
@@ -196,7 +196,7 @@ CREATE INDEX IF NOT EXISTS idx_bugs_status ON bugs(status);
 -- 未覆盖的验证条件清单（缺口报告）：
 --   WITH items AS (
 --     SELECT rf.id AS fr_id, json_extract(a.value,'$.key') AS ckey, json_extract(a.value,'$.kind') AS kind
---     FROM req_functions rf, json_each(rf.acceptance) a WHERE rf.status='active'
+--     FROM prd_functions rf, json_each(rf.acceptance) a WHERE rf.status='active'
 --   )
 --   SELECT fr_id, ckey, kind FROM items i
 --   WHERE NOT EXISTS (SELECT 1 FROM cases c, json_each(c.acceptance_refs) ar

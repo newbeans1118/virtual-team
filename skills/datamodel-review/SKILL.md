@@ -15,9 +15,9 @@ description: 专项评审数据库设计时使用。触发场景：需要检查�
 
 ## 输入
 
-- `docs/requirements/dict.md`
+- `docs/prd/dict.md`
 - `design/DATABASE.md`
-- `docs/requirements/spec-nonfunc.md`
+- `docs/prd/prd-nonfunc.md`
 
 ## 输出
 
@@ -55,7 +55,7 @@ description: 专项评审数据库设计时使用。触发场景：需要检查�
 
 **该用**：数据库设计需要专项深化评审时（设计评审的数据层子集）。
 
-**不该用**：整体设计评审 → 用 `design-review`；变更走 `requirement-review`/`code-review`。
+**不该用**：整体设计评审 → 用 `design-review`；变更走 `prd-review`/`code-review`。
 
 ## 常见错误
 

@@ -1,7 +1,7 @@
-# 软件规格说明书：$COMPONENT / $MODULE
+# 软件PRD：$COMPONENT / $MODULE
 
-> 模版：SPEC-MOD.md ｜ 产出角色：product-manager ｜ 存放：docs/requirements/$COMPONENT/$MODULE/spec.md（组件不细分模块时省略 $MODULE/）
-> 前后台拆分时：`spec-ui.md`（前台，只约束 UI 行为）/ `spec-svc.md`（后台服务，约束业务规则与接口）
+> 模版：PRD-MOD.md ｜ 产出角色：product-manager ｜ 存放：docs/prd/$COMPONENT/$MODULE/prd.md（组件不细分模块时省略 $MODULE/）
+> 前后台拆分时：`prd-ui.md`（前台，只约束 UI 行为）/ `prd-svc.md`（后台服务，约束业务规则与接口）
 
 ## 0. 文档定位
 
@@ -24,7 +24,7 @@
 
 ## 3. 功能点详述
 
-> 每个功能点复制以下小节。功能点必须可独立验收，**粒度经「五条检验」**（见 `requirement` 技能）。
+> 每个功能点复制以下小节。功能点必须可独立验收，**粒度经「五条检验」**（见 `prd` 技能）。
 
 ### fr-$COMPONENT-$MODULE-NNN （功能名称）
 

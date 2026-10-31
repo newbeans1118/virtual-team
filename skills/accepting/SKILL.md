@@ -16,7 +16,7 @@ description: 做立项评审或交付前项目总体验收时使用。触发场�
 ## 输入
 
 - `docs/PROJ_$PROJECT_NAME.md`
-- `docs/requirements/`
+- `docs/prd/`
 - `design/`
 - `review/`（各阶段评审报告）
 - `test/report/`

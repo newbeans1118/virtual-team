@@ -20,12 +20,12 @@ virtual-team-plugin/
 │   ├── project-manager.md     product-manager.md   architect.md
 │   ├── backend-developer.md   ui-developer.md      code-reviewer.md
 │   ├── test-manager.md        test-engineer.md     release-engineer.md
-│   └── requirement-reviewer.md design-reviewer.md  project-reviewer.md
+│   └── prd-reviewer.md design-reviewer.md  project-reviewer.md
 ├── skills/                            # 23 个技能
-│   ├── planning / business-analysis / requirement / requirement-review
+│   ├── planning / business-analysis / prd / prd-review
 │   ├── architecting / data-modelling / general-design / task-breakdown / design-review / datamodel-review
 │   ├── code-review
-│   ├── case-design / case-instantiate / case-running / case-structure / req-structure
+│   ├── case-design / case-instantiate / case-running / case-structure / prd-structure
 │   ├── test-data-gen / test-rebuild
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 11 个工作流入口
@@ -42,7 +42,7 @@ virtual-team-plugin/
 flowchart TD
   PM[project-manager<br/>立项] --> PRJ{立项评审}
   PRJ -->|通过| PROD[product-manager<br/>需求分析]
-  PROD --> RR{需求评审}
+  PROD --> RR{PRD 评审}
   RR -->|通过| ARCH[architect<br/>架构设计]
   ARCH --> DR{设计评审}
   DR -->|通过| TASK[architect<br/>分解 DEV-TASKS]
@@ -60,7 +60,7 @@ flowchart TD
 | 阶段 | 角色 | 技能 |
 |------|------|------|
 | 立项 | project-manager | planning |
-| 需求分析 | product-manager | business-analysis, requirement, prototype, req-structure, diagramming |
+| 需求分析 | product-manager | business-analysis, prd, prototype, prd-structure, diagramming |
 | 架构设计 | architect | architecting, data-modelling, general-design |
 | 任务分解 | architect | task-breakdown |
 | 编码 | backend-developer / ui-developer | — |
@@ -75,7 +75,7 @@ flowchart TD
 |------|------|
 | `/start` | 启动团队，从立项推进完整流程 |
 | `/kickoff` | 立项，产出立项报告 |
-| `/requirements` | 需求分析 |
+| `/prd` | 需求分析（产出 PRD） |
 | `/design` | 架构设计 |
 | `/coding` | 编码（按模块） |
 | `/code-review` | 代码评审（两阶段） |
@@ -93,10 +93,10 @@ flowchart TD
 |--------------|------|---------|
 | 新项目立项、项目定位、范围/约束/里程碑 | `planning` | project-manager |
 | 业务建模、角色权限、业务流程、实体状态机、模块划分 | `business-analysis` | product-manager |
-| 功能点定义、规格说明书、非功能需求、数据字典、需求追溯 | `requirement` | product-manager |
-| 需求评审、需求质量检查 | `requirement-review` | requirement-reviewer |
+| 功能点定义、PRD、非功能需求、数据字典、需求追溯 | `prd` | product-manager |
+| PRD 评审、需求质量检查 | `prd-review` | prd-reviewer |
 | 界面原型、线框图、交互草图 | `prototype` | product-manager |
-| 功能点结构化、需求追踪清单 | `req-structure` | product-manager |
+| 功能点结构化、需求追踪清单 | `prd-structure` | product-manager |
 | 架构设计、技术选型、组件划分、部署视图 | `architecting` | architect |
 | 数据库设计、ER 图、DDL、索引 | `data-modelling` | architect |
 | 模块/功能设计、接口契约、算法设计、日志设计 | `general-design` | architect |
@@ -185,3 +185,4 @@ codebuddy --plugin-dir <本目录绝对路径>
 | 7 | "变更流程：缺陷修复流程："（原文截断） | CR 变更五步闭环（charter §5.1）+ BUG 状态机闭环 | 原文缺失，最小闭环补齐 |
 | 8 | 开发者完成任务后无明确汇报要求 | TASK-DONE 标准报告（含 commit hash + 状态自评），PM 核对回写看板 | 完成闭环 + 看板单一写者 |
 | 9 | 发布"从 git 拉取分支" | 全新 worktree 从**主干**构建（测试版/生产版两阶段，tag 打在主干） | 单主干版本控制纪律（discipline §13） |
+| 10 | 产物称"需求说明书/规格说明书"，结构化称 req | 统一标准化为 **PRD**：技能 `requirement→prd`、`req-structure→prd-structure`、`requirement-review→prd-review`；文件 `spec*.md→prd*.md`、`req.json→prd.json`；目录 `docs/requirements/→docs/prd/`；SQL 契约 `req_*→prd_*`（acceptance-v3）；命令 `/requirements→/prd` | 术语标准化（消除 req/spec/PRD 三套用语分裂） |

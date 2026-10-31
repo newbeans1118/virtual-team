@@ -10,7 +10,7 @@
     "db_path": "test/trace/metrics.db",
     "schema_template": "templates/SQLITE-SCHEMA.sql",
     "biz_table_prefix": "td_biz_",
-    "note": "SQLite 轨下本库为唯一权威存储：机制七表(req_functions/cases/td_registry/runs/exec_plans/execs/bugs)+业务表(td_biz_*)；execs 禁 UPDATE/DELETE；业务表经 td_id 外键关联 td_registry；加载脚本仍单独存文件（test/data/scripts/）"
+    "note": "SQLite 轨下本库为唯一权威存储：机制七表(prd_functions/cases/td_registry/runs/exec_plans/execs/bugs)+业务表(td_biz_*)；execs 禁 UPDATE/DELETE；业务表经 td_id 外键关联 td_registry；加载脚本仍单独存文件（test/data/scripts/）"
   },
   "migrated_from": null
 }

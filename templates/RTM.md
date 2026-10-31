@@ -1,6 +1,6 @@
 # 需求追踪矩阵（RTM）：$PROJECT_NAME
 
-> 模版：RTM.md ｜ 产出角色：product-manager（需求阶段）｜ 维护：**需求阶段及需求变更时**由 product-manager 维护（CR 实施同步）；**开发/测试进度不在本表**——实现进度唯一真相在 `board/KANBAN.md`（PM 维护）｜ 存放：docs/requirements/RTM.md
+> 模版：RTM.md ｜ 产出角色：product-manager（需求阶段）｜ 维护：**需求阶段及需求变更时**由 product-manager 维护（CR 实施同步）；**开发/测试进度不在本表**——实现进度唯一真相在 `board/KANBAN.md`（PM 维护）｜ 存放：docs/prd/RTM.md
 > **禁止手工漂移**：本表与「页面 × FR 覆盖矩阵」**合并维护**（同一文件），避免两张表各说各话。
 > 交付门禁：矩阵出现空白（页面/操作无 FR 承接）→ **不得交付**。
 

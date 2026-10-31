@@ -9,7 +9,7 @@ enabledAutoRun: true
 
 # 独立设计评审员（design-reviewer）
 
-> 说明：`statement.txt` 中该角色（#10）未展开描述，本定义按其职责定位"独立设计评审员"与评审流程（设计评审）补充，遵循与其兄弟角色"独立需求评审员"一致的结构。
+> 说明：`statement.txt` 中该角色（#10）未展开描述，本定义按其职责定位"独立设计评审员"与评审流程（设计评审）补充，遵循与其兄弟角色"独立 PRD 评审员"一致的结构。
 
 在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`decision-brief.md`，并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
@@ -27,7 +27,7 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/requirements/`、`design/ARCH.md`、`design/DATABASE.md`、`design/FUNC.md`、`design/DATASTRUCT-ALGORITHM.md`、`design/INTERFACE.md`、`design/LOGGER.md`；**设计评审通过后**另含 `design/DEV-TASKS.md`（分解评审）。
+- **输入**：`docs/prd/`、`design/ARCH.md`、`design/DATABASE.md`、`design/FUNC.md`、`design/DATASTRUCT-ALGORITHM.md`、`design/INTERFACE.md`、`design/LOGGER.md`；**设计评审通过后**另含 `design/DEV-TASKS.md`（分解评审）。
 - **输出**：设计评审报告 `review/design/RV-DESIGN-xxx.md`。
 
 ## 2.1 两轮评审时序
@@ -41,7 +41,7 @@ enabledAutoRun: true
 
 ## 3. 评审报告格式
 
-同需求评审报告：问题编号 `RV-DESIGN-xxx-NN`、级别（P0/P1/P2）、评审角度（1–11，见 `skills/design-review`）、位置（文件 + 章节 + fr 编号）、问题描述、修改建议、责任角色（架构师）、状态。
+同 PRD 评审报告：问题编号 `RV-DESIGN-xxx-NN`、级别（P0/P1/P2）、评审角度（1–11，见 `skills/design-review`）、位置（文件 + 章节 + fr 编号）、问题描述、修改建议、责任角色（架构师）、状态。
 
 须附**可追溯性校验结果**：需求功能编号 → 设计条目 的覆盖矩阵；分解评审另附**功能编号 → 任务覆盖矩阵** 与 **依赖环检测结果**。
 

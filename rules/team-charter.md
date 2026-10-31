@@ -11,7 +11,7 @@
 | `rules/team-charter.md`（本文件） | **做什么、边界在哪**：角色纪律、编号规范、目录结构、评审闭环 | 所有角色 |
 | `rules/engineering-discipline.md` | **怎么做才可信**：证据先于结论、两阶段评审、完成状态协议、用户主权、版本控制 | 所有角色 |
 | `rules/decision-brief.md` | **怎么向用户提问**：决策简报格式（含轻量档） | 与用户交互的角色（PM / 产品经理 / 架构师） |
-| `rules/storage-track.md` | **测试数据怎么存**：json/sqlite 双轨规则（按 STORE-CONFIG 只加载所选轨道一节） | 测试类技能的执行角色（test-engineer / test-manager / product-manager 的 req-structure） |
+| `rules/storage-track.md` | **测试数据怎么存**：json/sqlite 双轨规则（按 STORE-CONFIG 只加载所选轨道一节） | 测试类技能的执行角色（test-engineer / test-manager / product-manager 的 prd-structure） |
 
 ## 1. 角色纪律
 
@@ -40,7 +40,7 @@
 
 **层级模型**：`组件（component）` ⊃ `模块（module）`。**组件是划分与存放的主层级**；组件较小时可不细分模块（模块位用 `all` 占位，**保证编号恒为固定段数、可机械解析**）。
 
-> **`all` 占位时的文件命名（硬性）**：模块位为 `all` 时，结构化文件名**仍带 `all`**——如 `test/trace/workbench/case-all.json`、`test/trace/workbench/TD-REGISTRY-all.json`、`docs/requirements/workbench/all/trace/req.json`（组件不细分模块时**目录省略模块层**，文件名保留 `all`）——保证文件名与编号的机械对应，不产生特例分支。
+> **`all` 占位时的文件命名（硬性）**：模块位为 `all` 时，结构化文件名**仍带 `all`**——如 `test/trace/workbench/case-all.json`、`test/trace/workbench/TD-REGISTRY-all.json`、`docs/prd/workbench/all/trace/prd.json`（组件不细分模块时**目录省略模块层**，文件名保留 `all`）——保证文件名与编号的机械对应，不产生特例分支。
 
 | 对象 | 规则 | 示例 |
 |------|------|------|
@@ -70,16 +70,16 @@ $PROJECT_ROOT/
 ├── docs/                       # 立项与需求阶段交付物（PM / 产品经理）
 │   ├── PROJ_$PROJECT_NAME.md   # 立项报告
 │   ├── changes/                # 变更单 CR-$COMPONENT-NNN.json（变更管理，见 §5.1）
-│   └── requirements/
+│   └── prd/
 │       ├── overview.md         # 业务分析概览
 │       ├── dict.md             # 数据字典（全局）
-│       ├── spec-nonfunc.md     # 非功能需求说明书
+│       ├── prd-nonfunc.md     # 非功能需求说明书
 │       ├── RTM.md              # 需求追踪矩阵（含「页面/原型」列，与页面×FR覆盖矩阵合并维护）
 │       └── $COMPONENT/         # ★ 按组件分层
 │           └── $MODULE/        #   （组件不细分模块时可省略此层，文件直接放组件目录）
 │               ├── biz.md      # 业务分析说明书
-│               ├── spec.md     # 软件规格说明书（前后台拆分：spec-ui.md / spec-svc.md）
-│               └── trace/req.json  # 结构化需求分片
+│               ├── prd.md     # 软件PRD（前后台拆分：prd-ui.md / prd-svc.md）
+│               └── trace/prd.json  # 结构化需求分片
 ├── design/                     # 设计阶段交付物（架构师）
 │   ├── ARCH.md
 │   ├── DATABASE.md
@@ -92,7 +92,7 @@ $PROJECT_ROOT/
 │   └── $COMPONENT/             # 与组件对齐
 │       └── code + tests/       # tests/ = 单元测试
 ├── review/                     # 评审报告（评审员）
-│   ├── requirement/
+│   ├── prd/
 │   ├── design/
 │   ├── code/
 │   └── project/
@@ -136,7 +136,7 @@ $PROJECT_ROOT/
 ## 5. 阶段与门禁
 
 ```
-立项 → [立项评审] → 需求分析 → [需求评审] → 架构设计
+立项 → [立项评审] → 需求分析 → [PRD 评审] → 架构设计
      → [设计评审] → 架构师分解(DEV-TASKS) → [分解评审] → PM指派
      → PM派发(spawn开发者) → 开发完成 → 开发者向PM报告(含状态自评,PM回写看板)
      → [代码评审] → [测试版构建] → 测试准备(用例+数据单元，可与编码并行；TM建RUN头)
@@ -186,7 +186,7 @@ $PROJECT_ROOT/
 | ① 提出登记 | 任何角色发现需变更时**报项目经理并停手**（不直接改文档）；PM 建 CR 单登记（draft） | 提出角色 → PM |
 | ② 影响评估 | PM 按涉及面派发对应角色列影响清单（受影响 fr/biz/case/TD/文档章节 + 范围/工作量/风险评估），回填 CR（assessing） | 产品经理（需求）/ 架构师（设计）/ 开发（代码）/ 测试（资产） |
 | ③ 用户批准 | PM 汇总评估结论，**用户批准后**才进入实施（用户主权；拒绝 → rejected 归档） | 用户 |
-| ④ 实施与同步 | 责任角色修订产物（spec/设计/代码），**下游同步**：需求变更 → `req-structure` 重跑（acceptance 只追加 key）→ case/TD 对齐；设计/代码变更走既有评审门禁（implementing） | 责任角色 |
+| ④ 实施与同步 | 责任角色修订产物（spec/设计/代码），**下游同步**：需求变更 → `prd-structure` 重跑（acceptance 只追加 key）→ case/TD 对齐；设计/代码变更走既有评审门禁（implementing） | 责任角色 |
 | ⑤ 校验关闭 | PM 核对：`test-rebuild` 源同步无 stale、评审门禁通过 → closed | PM |
 
 ## 6. 缺陷分级
@@ -201,7 +201,7 @@ $PROJECT_ROOT/
 
 > 本节只留红线结论；生成清单、检验细则、字段规范等机制细节以对应技能为单一事实源。
 
-- **需求**：功能点必须可独立验收，验证标准**条列化 + GWT 化**并按生成清单逐类对照（细则见 `skills/requirement`）；FR 粒度经五条检验；L4 交互细节禁入 FR；前后台边界清晰（前台规则用占位符引用）；**跨产物对账**——凡同时交付 PRD 与原型，页面 × FR 覆盖矩阵无空白方可交付（并入 RTM，见 `templates/RTM.md`）。
+- **需求**：功能点必须可独立验收，验证标准**条列化 + GWT 化**并按生成清单逐类对照（细则见 `skills/prd`）；FR 粒度经五条检验；L4 交互细节禁入 FR；前后台边界清晰（前台规则用占位符引用）；**跨产物对账**——凡同时交付 PRD 与原型，页面 × FR 覆盖矩阵无空白方可交付（并入 RTM，见 `templates/RTM.md`）。
 - **设计**：设计条目必须能与**功能编号**关联。
 - **任务分解**：任务可独立开发与验收，依赖**无环**，功能编号**全覆盖**（细则见 `skills/task-breakdown`）。
 - **代码**：遵循**最简代码原则**，用最简单的代码实现功能。
@@ -210,7 +210,7 @@ $PROJECT_ROOT/
 - **TD 黑盒与配对**：TD 对机制层只暴露 `{id, description, load_entry}`，禁写 expected 与业务字段值；`suitable_for` 值域 = normal/boundary/negative（与 acceptance.kind 同枚举），是逐条件配对的匹配键（细则见 `skills/test-data-gen`/`case-instantiate`）；关联双向一致（owner_cases ↔ dataset_refs）。
 - **测试执行分片**：测试任务按**组件**分片可并行；执行分片 = 组件（一组件一分片一文件）；**env 由 TM 审定时静态分配**（一 env 一分片，活跃分片数 ≤ RUN.envs 数）；实例只写本分片产物（细则见 `skills/case-running`）。
 - **组件/模块层级（主归属）**：功能点严格属「组件 × 模块」（`fr-$COMPONENT-$MODULE-NNN` 固定 4 段，无模块用 `all`）；用例与数据单元**有主组件**，跨组件复用经 `function_refs`/`dataset_refs`/`owner_cases` 表达；组件/模块名一律 snake_case（连字符只作层级分隔），保证编号可机械解析；目录按组件/模块分层存放。
-- **存储轨道纪律**：双轨（json/sqlite）立项时一次性选定（`test/STORE-CONFIG.json` 唯一开关），禁止混写/默认选轨，仅允许一次 json→sqlite 单向迁移；SQLite 轨 `metrics.db` 为唯一权威存储，业务表必含 `td_id` 外键（孤儿 = P0），`execs` 只追加——**两轨规则详见 `rules/storage-track.md`（唯一规则源，按所选轨道只读对应一节）**；该库属跨阶段集中存储的约定例外，product-manager 的 req-structure 亦可写 `test/trace/`。
+- **存储轨道纪律**：双轨（json/sqlite）立项时一次性选定（`test/STORE-CONFIG.json` 唯一开关），禁止混写/默认选轨，仅允许一次 json→sqlite 单向迁移；SQLite 轨 `metrics.db` 为唯一权威存储，业务表必含 `td_id` 外键（孤儿 = P0），`execs` 只追加——**两轨规则详见 `rules/storage-track.md`（唯一规则源，按所选轨道只读对应一节）**；该库属跨阶段集中存储的约定例外，product-manager 的 prd-structure 亦可写 `test/trace/`。
 
 ## 8. 发布状态
 

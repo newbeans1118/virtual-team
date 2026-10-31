@@ -1,13 +1,13 @@
 ---
-name: requirement
-description: 把业务分析落地为可验收的功能需求、编写软件规格说明书时使用。触发场景：需要定义功能点编号 fr-组件-模块-xxx、建立业务与功能的关联矩阵、写组件/模块规格说明书、定义非功能需求（性能/安全）、产出数据字典 dict.md、提到需求规格、功能点定义、需求追溯、组件划分。
+name: prd
+description: 把业务分析落地为可验收的功能需求、编写 PRD（产品需求文档）时使用。触发场景：需要定义功能点编号 fr-组件-模块-xxx、建立业务与功能的关联矩阵、写组件/模块PRD、定义非功能需求（性能/安全）、产出数据字典 dict.md、提到需求规格、功能点定义、需求追溯、组件划分。
 ---
 
-# 需求分析（requirement）
+# PRD 编写（prd）
 
 ## 目的
 
-生成需求规格说明书，使业务分析落地为可实现、可验收的功能需求。
+生成需求PRD，使业务分析落地为可实现、可验收的功能需求。
 
 ## 执行者
 
@@ -15,20 +15,20 @@ description: 把业务分析落地为可验收的功能需求、编写软件规�
 
 ## 输入
 
-- `docs/requirements/overview.md`、`docs/requirements/$COMPONENT/$MODULE/biz.md`（组件不细分模块时 `docs/requirements/$COMPONENT/biz.md`）
+- `docs/prd/overview.md`、`docs/prd/$COMPONENT/$MODULE/biz.md`（组件不细分模块时 `docs/prd/$COMPONENT/biz.md`）
 - `docs/PROJ_$PROJECT_NAME.md`
 
 ## 输出
 
-- `docs/requirements/$COMPONENT/$MODULE/spec.md`（模版 `templates/SPEC-MOD.md`；组件不细分模块时省略 `$MODULE/`）
-- `docs/requirements/spec-nonfunc.md`（模版 `templates/SPEC-NONFUNC.md`）
-- `docs/requirements/dict.md`（模版 `templates/DICT.md`）
-- `docs/requirements/$COMPONENT/$MODULE/trace/req.json`（结构化分片，经 `req-structure`）
-- `docs/requirements/RTM.md`（模版 `templates/RTM.md`）
+- `docs/prd/$COMPONENT/$MODULE/prd.md`（模版 `templates/PRD-MOD.md`；组件不细分模块时省略 `$MODULE/`）
+- `docs/prd/prd-nonfunc.md`（模版 `templates/PRD-NONFUNC.md`）
+- `docs/prd/dict.md`（模版 `templates/DICT.md`）
+- `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（结构化分片，经 `prd-structure`）
+- `docs/prd/RTM.md`（模版 `templates/RTM.md`）
 
 ## 流程
 
-1. **功能点定义**：为每个功能点定义 —— 编号 `fr-$COMPONENT-$MODULE-NNN`（固定 4 段；组件不细分模块时模块位用 `all`）、功能名称、操作的用户、输入、输出、处理逻辑、约束条件、**验证标准**（可独立验收）。验证标准必须**条列化且 GWT 化**——每条为一个 `{key, given, when, then, kind}` 结构（见 `req-structure` 的 acceptance 结构）。**整段文本、或只有 `then` 无 `given/when` 的验收标准不合格**——无法逐条核对覆盖。
+1. **功能点定义**：为每个功能点定义 —— 编号 `fr-$COMPONENT-$MODULE-NNN`（固定 4 段；组件不细分模块时模块位用 `all`）、功能名称、操作的用户、输入、输出、处理逻辑、约束条件、**验证标准**（可独立验收）。验证标准必须**条列化且 GWT 化**——每条为一个 `{key, given, when, then, kind}` 结构（见 `prd-structure` 的 acceptance 结构）。**整段文本、或只有 `then` 无 `given/when` 的验收标准不合格**——无法逐条核对覆盖。
    - 生成条件时**对照下方「acceptance 条件生成清单」**，按适用性取舍（不适用的类别可省略，但**省略应有理由**）。
    - 定义完成后**按下方「FR 粒度五条检验」自查**，不通过则拆分或降层。
 2. **业务-功能关联**：为每个 `biz-xxx` 说明由哪些功能点、如何实现，产出一张关联矩阵。
@@ -73,7 +73,7 @@ description: 把业务分析落地为可验收的功能需求、编写软件规�
 | 5 | **输入校验** | 必填缺失、格式错误、超长、类型不符 | `negative`（非法）/ `boundary`（临界） |
 | 6 | **状态约束** | 非法状态迁移应被拒（如未审核不可发布） | `negative` |
 
-> **取舍原则**：只写"该功能点自己该验的行为"。系统级的安全/性能约束（加密算法、防注入机制、审计日志格式）**不写在此处**——它们属 `spec-nonfunc.md` 的 `NF-S-xxx`/`NF-P-xxx`。
+> **取舍原则**：只写"该功能点自己该验的行为"。系统级的安全/性能约束（加密算法、防注入机制、审计日志格式）**不写在此处**——它们属 `prd-nonfunc.md` 的 `NF-S-xxx`/`NF-P-xxx`。
 >
 > **示例**（用户注册功能点）：
 > ```
@@ -88,10 +88,10 @@ description: 把业务分析落地为可验收的功能需求、编写软件规�
 
 **组件级 PRD 为主**（组件 = `$COMPONENT`）；组件过大时按**逻辑边界**进一步拆为模块级 PRD（拆分依据是业务逻辑内聚，不是数量）。
 
-**前后台拆分判据（硬性）**：**存在 UI 交付，且业务规则由独立服务承载**（前后端分离架构 / 后端独立部署）→ **必须拆** `spec-ui.md` / `spec-svc.md`；纯后端（无 UI）或纯静态前端（无独立业务服务）→ 用单份 `spec.md`，不拆。
+**前后台拆分判据（硬性）**：**存在 UI 交付，且业务规则由独立服务承载**（前后端分离架构 / 后端独立部署）→ **必须拆** `prd-ui.md` / `prd-svc.md`；纯后端（无 UI）或纯静态前端（无独立业务服务）→ 用单份 `prd.md`，不拆。
 
-- **前台 PRD**（`spec-ui.md`）：FR 只约束 **UI 行为与前端校验**；涉及业务规则一律以 `【占位：待<服务名>PRD 补充·<规则名>】` 引用，**不自定义规则**。
-- **后台服务 PRD**（`spec-svc.md`）：FR 约束**业务规则、数据模型与接口契约**，不写 UI。
+- **前台 PRD**（`prd-ui.md`）：FR 只约束 **UI 行为与前端校验**；涉及业务规则一律以 `【占位：待<服务名>PRD 补充·<规则名>】` 引用，**不自定义规则**。
+- **后台服务 PRD**（`prd-svc.md`）：FR 约束**业务规则、数据模型与接口契约**，不写 UI。
 - 同一页面在前后台两份 PRD 中**各自沿自己的轴切分**，内容不重叠、编号不重复（用模块位 `ui` / `svc` 区分，如 `fr-workbench-ui-001` / `fr-workbench-svc-001`）。
 
 ## 数量与拆分原则
@@ -122,9 +122,9 @@ description: 把业务分析落地为可验收的功能需求、编写软件规�
 
 ## PRD 文件命名与存放
 
-- **存放目录**：`docs/requirements/$COMPONENT/$MODULE/`（组件不细分模块时省 `$MODULE/`）——底稿与正式 PRD 同目录。
+- **存放目录**：`docs/prd/$COMPONENT/$MODULE/`（组件不细分模块时省 `$MODULE/`）——底稿与正式 PRD 同目录。
 - **命名**（沿用现有体系，按层级取用）：
-  - 组件级：`spec.md`（如 `docs/requirements/workbench/spec.md`）；前后台拆分时 `spec-ui.md` / `spec-svc.md`；
+  - 组件级：`prd.md`（如 `docs/prd/workbench/prd.md`）；前后台拆分时 `prd-ui.md` / `prd-svc.md`；
   - 模块级（组件过大时按逻辑拆）：放该组件下的模块子目录。
 - **组件名/模块名一律 snake_case 英文**（小写字母/数字/下划线，**禁含连字符**——连字符是层级分隔符），优先取 docker-compose 服务名与已有底稿中的英文名；**未定义时先询问用户，不得自行杜撰**。
 - **文件名一经确定不轻易改名**；确需改名必须同步更新项目记忆、RTM、原型及全部引用路径。
@@ -147,8 +147,8 @@ description: 把业务分析落地为可验收的功能需求、编写软件规�
 
 **不该用**：
 - 业务还没建模 → 先用 `business-analysis`
-- 要评审需求 → 用 `requirement-review`
-- 要结构化存储功能点供追踪 → 用 `req-structure`
+- 要评审需求 → 用 `prd-review`
+- 要结构化存储功能点供追踪 → 用 `prd-structure`
 
 ## 常见错误
 
