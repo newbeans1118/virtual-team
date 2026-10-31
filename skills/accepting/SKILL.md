@@ -15,12 +15,9 @@ description: 做立项评审或交付前项目总体验收时使用。触发场�
 
 ## 输入
 
-- `docs/PROJ_$PROJECT_NAME.md`
-- `docs/prd/`
-- `design/`
-- `review/`（各阶段评审报告）
-- `test/report/`
-- `release/`
+- **必读**：`docs/PROJ_$PROJECT_NAME.md`（验收基线）；`docs/prd/overview.md`、`prd-nonfunc.md`、`RTM.md`；`design/ARCH.md` + `design/ARCH-NFR.md`；`review/` 全部评审结论；`test/report/`；`release/RELEASE-PLAN-*.md` 与制品校验文件。
+- **按需**：抽查功能落地 → 相关组件 `func.md`/`interface.md`；核对数据 → 该组件 `database.md`；NFR 报告 → `test/nfr/report/`；回滚预案 → RELEASE-PLAN 的回滚节 + 演练记录。
+- **禁读**：`src/` 实现（不评代码级）；全量 `test/runs/`；组件设计正文（用索引与抽查定位）。
 
 ## 输出
 
@@ -39,10 +36,11 @@ description: 做立项评审或交付前项目总体验收时使用。触发场�
 1. 目标达成度：biz-xxx / fr-xxx 的实现与验收情况回溯
 2. 评审闭环：需求/设计/代码/测试各阶段结论是否通过
 3. 缺陷清零：P0/P1 是否清零
-4. 非功能达成：性能/安全指标是否达标
+4. 非功能设计落地：`prd-nonfunc.md` 的 NF-* 是否在 `ARCH-NFR.md` 有对应架构措施（**指标是否达标见第 8 点 NFR 报告，仅参考、不构成门禁**）
 5. 发布物：是否符合生产版条件（四方联合确认）
-6. 遗留风险与未交付项
-7. **NFR 报告（参考）**：核心 NFR 未达标须列为风险；**不改变通过判定**（独立轨、仅报告）
+6. **可运维性**：回滚预案已演练、发布后验证阈值明确（`ARCH-NFR.md` §4）、监控与告警已配置
+7. 遗留风险与未交付项
+8. **NFR 报告（参考）**：核心 NFR 未达标须列为风险；**不改变通过判定**（独立轨、仅报告）
 
 ## 结论
 
@@ -53,6 +51,7 @@ description: 做立项评审或交付前项目总体验收时使用。触发场�
 - [ ] 目标达成度逐条回溯
 - [ ] 各阶段评审结论已核对
 - [ ] P0/P1 清零（含修复评审：`BUG.fix.review.result=pass`）
+- [ ] 可运维性已核对（回滚演练记录 / 验证阈值 / 监控告警）
 - [ ] NFR 报告已核对（核心未达标列为风险；不阻塞判定）
 - [ ] 明确通过/不通过结论
 

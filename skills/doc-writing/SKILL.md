@@ -15,9 +15,9 @@ description: 编写面向使用与运维的文档时使用。触发场景：需�
 
 ## 输入
 
-- `design/`
-- `release/artifact/`
-- `pages/prototype/$COMPONENT/`
+- **必读**：`release/artifact/`（产物清单与校验和）；`design/ARCH.md` §1/§5（技术栈与构建方式、部署视图与环境配置）；`release/RELEASE-PLAN-<version>.md`（部署策略/迁移顺序/回滚/验证阈值）。
+- **按需**：数据库迁移步骤 → `design/DATABASE.md` §4 + 各组件 `database.md` §8；发布后验证阈值 → `design/ARCH-NFR.md` §4；用户手册配图 → `pages/prototype/$COMPONENT/`。
+- **禁读**：`src/`、`test/`（手册面向使用与运维，不写实现细节）；组件设计正文。
 
 ## 输出
 

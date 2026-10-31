@@ -18,6 +18,7 @@ description: 独立评估非功能需求（性能/安全/可用性/兼容性）�
 ## 输入
 
 - `docs/prd/prd-nonfunc.md`（NF-P / NF-S / NF-A 清单与目标）
+- **`design/ARCH-NFR.md`**：§2 容量与负载基线（`load_model` 须与架构估算一致，不得拍脑袋）、§3 威胁清单（渗透/扫描用例来源）、§4 SLI/SLO（指标口径与目标值来源）
 - 测试版构建产物（`/build-test`：artifact + build/commit）
 - 环境规格与可用工具
 
@@ -25,7 +26,7 @@ description: 独立评估非功能需求（性能/安全/可用性/兼容性）�
 
 - `test/nfr/plan-nfr.md`（NFR 方案，模版 `templates/NFR-PLAN.md`）
 - `test/nfr/cases/NFR-CASE-$COMPONENT-NNN.md` + `test/nfr/trace/nfr-case-$MODULE.json`（模版 `templates/NFR-CASE.json`）
-- `test/nfr/data/NFR-TD-$COMPONENT-NNN/`（可选；沿用 TD 六字段结构，仅编号前缀不同；也可 `reuse:TD-*` 只读复用 FR 数据）
+- `test/nfr/data/NFR-TD-$COMPONENT-NNN/`（可选；沿用 TD 六字段结构，但 **`owner_cases` 指向 `NFR-CASE-*` 而非 FR CASE**，`suitable_for` 可留空——NFR 不按 kind 配对；也可 `reuse:TD-*` 只读复用 FR 数据）
 - `test/nfr/runs/NFR-RUN-NNN.json`（模版 `templates/NFR-RUN.json`）
 - `test/nfr/report/NFR-RPT-<NFR-RUN>.md`（模版 `templates/NFR-REPORT.md`）
 

@@ -109,6 +109,17 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 - `suitable_for` 与所支撑验证条件的 kind 一致（边界数据不能标 normal）——它是 `case-instantiate` 逐条件配对的**匹配键**。
 - 数据文件**不含真实用户凭证/PII**（测试专用数据或环境变量）。
 
+## 检查清单
+
+- [ ] 已按所选轨道执行（json 写文件 / sqlite 入库），无两轨混写
+- [ ] 每个 TD 六字段齐全（purpose / suitable_for / preconditions / owner_cases / load_entry / data_scope）
+- [ ] `owner_cases` 与用例侧 `dataset_refs` **双向一致**
+- [ ] `suitable_for` 与所支撑验证条件的 kind 一致
+- [ ] 加载脚本**实测通过**，`verified` 记录（command/result/at）已写入注册表
+- [ ] 加载幂等、可清理（二次执行无残留）
+- [ ] 数据不含真实用户凭证/PII
+- [ ] 未写入 `expected`（黑盒红线）
+
 ## 触发与边界
 
 **该用**：用例定稿后、执行计划生成前，批量产出数据单元。
