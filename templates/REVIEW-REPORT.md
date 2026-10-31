@@ -2,7 +2,7 @@
 
 > 模版：REVIEW-REPORT.md
 > 适用：PRD 评审 / 设计评审 / 数据模型评审 / 代码评审 / 缺陷修复评审 / 项目评审
-> 存放：review/<类型>/RV-<类型>-xxx.md
+> 存放：`review/<类型>/RV-<类型>-xxx.md`；PRD/设计/数据模型评审按组件：`RV-PRD-$COMPONENT-xxx.md` / `RV-DESIGN-$COMPONENT-xxx.md` / `RV-DM-$COMPONENT-xxx.md`
 
 ## 1. 评审信息
 

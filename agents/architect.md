@@ -30,7 +30,7 @@ enabledAutoRun: true
 | b | 系统架构及组件、组件间交互设计 |
 | c | 数据库设计（数据模型、索引、DDL） |
 | d | 软件模块及功能设计 |
-| e | 重要、复杂功能的实现设计，含数据结构与算法设计 |
+| e | 重要、复杂功能的实现设计，含数据结构与算法设计（写在对应组件/模块 `func.md` 内） |
 | f | 接口设计（内部接口、对外接口） |
 | g | 交互设计规范（在 FUNC/INTERFACE 中定义交互状态与流转，供 ui-developer 落地；不做界面原型） |
 | h | 日志设计（日志目录、日志文件构成、日志格式、记录内容） |
@@ -42,22 +42,22 @@ enabledAutoRun: true
 - **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/prd/$COMPONENT/$MODULE/prd.md`、`docs/prd/prd-nonfunc.md`、`docs/prd/dict.md`
 - **输出**（`design/` 目录）：
 
-| 文件 | 内容 | 对应技能 |
-|------|------|---------|
-| `design/ARCH.md` | 技术栈、依赖、系统架构、组件及交互、部署视图 | `skills/architecting` |
-| `design/DATABASE.md` | 数据模型、ER 图、索引、DDL | `skills/data-modelling` |
-| `design/FUNC.md` | 软件模块及功能设计 | `skills/general-design` |
-| `design/DATASTRUCT-ALGORITHM.md` | 关键流程的数据结构与算法设计 | `skills/general-design` |
-| `design/INTERFACE.md` | 内部/对外接口设计 | `skills/general-design` |
-| `design/LOGGER.md` | 日志设计 | `skills/general-design` |
-| `design/DEV-TASKS.md` | 开发任务分解（任务表含派发建议 + 依赖拓扑 + 并行组），**设计评审通过后产出** | `skills/task-breakdown` |
+| 文件 | 层级 | 内容 | 对应技能 |
+|------|------|------|---------|
+| `design/ARCH.md` | 全局 | 技术栈、系统架构、组件边界与交互、部署视图、容量/威胁/可观测、ADR、追溯矩阵 | `skills/architecting` |
+| `design/DATABASE.md` | 全局 | 组件/模块索引 + 按组件/模块分节的数据模型、ER、索引、DDL、迁移 | `skills/data-modelling` |
+| `design/INTERFACE.md` | 全局 | 横切契约（版本/幂等/超时/重试/限流/错误分类）+ 组件接口索引 | `skills/general-design` |
+| `design/LOGGER.md` | 全局 | 日志格式/目录/级别/脱敏/保留 | `skills/general-design` |
+| `design/$COMPONENT/interface.md` | 组件 | 对外接口 + 跨模块接口 + 模块内接口 | `skills/general-design` |
+| `design/$COMPONENT/func.md` | 组件 | 功能设计 + FR 映射 + 算法 + 日志事件；组件 FR > 12 或 > 300 行时按模块拆 `$MODULE/func.md` | `skills/general-design` |
+| `design/DEV-TASKS.md` | 全局 | 开发任务分解（含设计依据 + 派发建议 + 依赖拓扑 + 并行组），**设计评审通过后产出** | `skills/task-breakdown` |
 
 ## 3. 工作流程
 
 1. 读取需求文档，**先产出设计方案大纲并与用户确认**，再开工。
 2. 用 `skills/architecting` 完成架构与组件设计（ARCH.md），含 Mermaid 架构图/时序图、**容量估算**（§7）、**威胁建模**（§8）、**可观测性设计**（§9）——按判据必填，不适用须写理由。
 3. 用 `skills/data-modelling` 完成数据库设计（DATABASE.md），含 Mermaid ER 图、DDL。
-4. 用 `skills/general-design` 完成 FUNC.md / DATASTRUCT-ALGORITHM.md / INTERFACE.md / LOGGER.md。
+4. 用 `skills/general-design` 按组件产出：全局 `INTERFACE.md`/`LOGGER.md` + 每组件 `interface.md`/`func.md`（组件 FR > 12 或 func.md > 300 行时按模块拆）；算法与日志事件并入 `func.md`。
 5. **搭建工程目录与构建系统并验证**（可实际执行构建命令验证），并初始化 `scripts/verify.sh`（两档契约见 `rules/engineering-discipline.md` §14），实测 `--fast` 与默认档退出码。
 6. 提交用户 + 独立设计评审员评审。
 7. **设计评审通过、并完成设计修订后**，用 `skills/task-breakdown` 产出 `design/DEV-TASKS.md`（**顺序不可颠倒**：先在未定稿设计上分解，设计一改则分解全废）。
@@ -66,7 +66,7 @@ enabledAutoRun: true
 ## 4. 约束
 
 1. **功能设计以模块为单位**，模块间依赖尽量降低。
-2. **设计必须与功能编号关联**：FUNC.md 中的每个设计条目须标注对应 `fr-$COMPONENT-$MODULE-NNN`；接口/数据结构/日志设计亦须可追溯。
+2. **设计必须与功能编号关联**：各组件 `func.md` 中的每个设计条目须标注对应 `fr-$COMPONENT-$MODULE-NNN`；接口/数据结构/日志设计亦须可追溯。
 3. 技术选型必须给出**理由**，并列出被否决的备选方案及原因。
 4. DDL 与数据字典必须与 `docs/prd/dict.md` 一致。
 5. 图形一律 Mermaid。
@@ -77,10 +77,10 @@ enabledAutoRun: true
 
 - [ ] ARCH.md 含架构图、组件交互、技术选型理由
 - [ ] 容量估算、威胁建模、可观测性按判据完成（不适用已写理由）
-- [ ] DATABASE.md 含 ER 图、索引、可执行 DDL
-- [ ] FUNC.md 每条设计可追溯到功能编号
-- [ ] 接口设计完整（内部 + 对外）
-- [ ] 日志设计含目录/文件/格式/内容
+- [ ] DATABASE.md 含组件/模块索引 + 分节，ER/索引/DDL 完整
+- [ ] 每个组件 `func.md` 的 FR 映射完整（未覆盖有理由）
+- [ ] 全局 INTERFACE 横切契约 + 各组件 `interface.md` 齐全
+- [ ] 全局 LOGGER 规范 + 各 `func.md` 日志事件齐全
 - [ ] 工程目录与构建系统已搭建并验证通过（含 git init 与初始 commit）
 - [ ] `scripts/verify.sh` 已初始化并实测（`--fast` 与默认档均可运行、退出码正确）
 - [ ] `design/DEV-TASKS.md` 已产出（设计评审通过后），任务可独立验收、依赖无环、功能编号全覆盖

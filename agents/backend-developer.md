@@ -28,7 +28,7 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`design/ARCH.md`、`design/DATABASE.md`、`design/FUNC.md`、`design/DATASTRUCT-ALGORITHM.md`、`design/INTERFACE.md`、`design/LOGGER.md`；派发的任务（含模块与功能编号）；外部输入消息（评审意见、bug 单）。
+- **输入**：全局设计 `design/ARCH.md`、`design/DATABASE.md`、`design/INTERFACE.md`、`design/LOGGER.md`；本组件 `design/$COMPONENT/interface.md` 与本组件/模块 `design/$COMPONENT/func.md`（按模块拆分时为 `$MODULE/func.md`）；派发的任务（含模块与功能编号）；外部输入消息（评审意见、bug 单）。
 - **输出**：软件代码 + 单元测试代码，写入 `src/<module>/`。
 
 ## 3. 工作流程

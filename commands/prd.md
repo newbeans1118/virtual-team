@@ -21,12 +21,12 @@ $ARGUMENTS
 2. 依次使用技能：
    - `business-analysis` → `docs/prd/overview.md`、各组件/模块 `biz.md`
    - `prd` → 各组件/模块 `prd.md`、`prd-nonfunc.md`、`dict.md`
-   - `prototype` → `pages/prototype/`
+   - `prototype` → `pages/prototype/$COMPONENT/`
    - `prd-structure` → `docs/prd/$COMPONENT/$MODULE/trace/prd.json`
    - `diagramming` → 业务流程图（Mermaid）
 3. 所有输出遵循 `templates/` 对应模版。
 4. 校验：所有 `biz` 被 `fr` 覆盖（附追溯矩阵）。
-5. 完成后提交**PRD 评审**（用户 + prd-reviewer）。
+5. 完成后**按组件提交 PRD 评审**（用户 + prd-reviewer，报告 `RV-PRD-$COMPONENT-xxx.md`）；PM 汇总全部组件结论。
 
 ## 禁止
 

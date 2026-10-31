@@ -45,9 +45,9 @@ enabledAutoRun: true
   - 业务分析说明书 → `docs/prd/$COMPONENT/$MODULE/biz.md`（模版 `templates/BIZ-MOD.md`）
   - PRD → `docs/prd/$COMPONENT/$MODULE/prd.md`（前后台拆分时 `prd-ui.md` / `prd-svc.md`；模版 `templates/PRD-MOD.md`）
   - 非功能需求说明 → `docs/prd/prd-nonfunc.md`（模版 `templates/PRD-NONFUNC.md`）
-  - 项目整体数据字典 → `docs/prd/dict.md`（模版 `templates/DICT.md`）
+  - 项目整体数据字典 → `docs/prd/dict.md`（模版 `templates/DICT.md`，实体标注所属组件/模块）
   - PRD 追踪矩阵 → `docs/prd/RTM.md`（模版 `templates/RTM.md`，含页面×FR覆盖矩阵）
-  - 界面原型 → `pages/prototype/`
+  - 界面原型 → `pages/prototype/$COMPONENT/`（含组件页面索引）
 
 ## 3. 工作流程
 

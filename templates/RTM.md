@@ -10,7 +10,7 @@
 
 | 需求编号 | 需求描述 | PRD 章节 | 页面/原型 | 设计/接口 | 测试用例 | 状态 |
 |---------|---------|---------|----------|----------|---------|------|
-| fr-$COMPONENT-$MODULE-001 | | 3.1 | `pages/prototype/xxx.html` | design/INTERFACE.md#xxx | CASE-$COMPONENT-001 | active |
+| fr-$COMPONENT-$MODULE-001 | | 3.1 | `pages/prototype/$COMPONENT/xxx.html` | `design/$COMPONENT/func.md#3.1` | CASE-$COMPONENT-001 | active |
 
 > **状态取值（需求生命周期态）**：`active`（有效）/ `deprecated`（已废弃，保留编号与追溯）/ `待补充`（占位符引用待落定）。**实现进度（开发中/已验证等）不在本表**——查 KANBAN。
 

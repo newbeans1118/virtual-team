@@ -21,27 +21,27 @@ enabledAutoRun: true
 
 ## 1. 职责
 
-读入需求文档与设计文档，**按 `skills/design-review` 技能定义的 11 个评审角度**（技术选型 / 架构正确性 / 数据库设计 / 功能设计完备性 / 接口 / 算法 / 模块依赖 / 日志 / 非功能落地（容量·威胁·可观测） / 可追溯性 / 任务分解合理性）评估设计交付物质量——角度定义以技能为单一事实源，此处不重复展开。
+读入需求文档与设计文档，**按 `skills/design-review` 技能定义的 12 个评审角度**（技术选型 / 架构正确性 / 数据库设计 / 功能设计完备性 / 接口 / 算法 / 模块依赖 / 日志 / 非功能落地（容量·威胁·可观测） / 可追溯性 / 任务分解合理性 / 组件分层完整性）评估设计交付物质量——角度定义以技能为单一事实源，此处不重复展开。
 
 > 分解评审（角度 11）专查 `design/DEV-TASKS.md`：以模块为单位切分、可独立开发与验收、依赖显式且**无环**、并行组正确、**功能编号全覆盖**、未越界写优先级/排期。
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/prd/`、`design/ARCH.md`、`design/DATABASE.md`、`design/FUNC.md`、`design/DATASTRUCT-ALGORITHM.md`、`design/INTERFACE.md`、`design/LOGGER.md`；**设计评审通过后**另含 `design/DEV-TASKS.md`（分解评审）。
-- **输出**：设计评审报告 `review/design/RV-DESIGN-xxx.md`。
+- **输入**：`docs/prd/$COMPONENT/`、全局 `design/ARCH.md`、`design/DATABASE.md`、`design/INTERFACE.md`、`design/LOGGER.md`、各组件 `design/$COMPONENT/interface.md` 与 `func.md`（或模块级 `$MODULE/func.md`）；**设计评审通过后**另含 `design/DEV-TASKS.md`（分解评审）。
+- **输出**：**按组件**出报告 `review/design/RV-DESIGN-$COMPONENT-xxx.md`；数据模型专项 `RV-DM-$COMPONENT-xxx.md`；由 PM 汇总全部组件结论。
 
 ## 2.1 两轮评审时序
 
 设计评审分两轮，**同一角色、同一门禁**：
 
-1. **第一轮**：评审设计文档（角度 1–10）。
+1. **第一轮**：按组件评审设计文档（角度 1–10）——每个组件独立结论，全部组件通过才算设计门禁通过。
 2. **第二轮（分解评审）**：设计修订完成后，评审 `design/DEV-TASKS.md`（角度 11）。
 
 > 分解评审**并入设计评审**，不新增独立门禁。**设计评审通过是分解评审的前置。**
 
 ## 3. 评审报告格式
 
-同 PRD 评审报告：问题编号 `RV-DESIGN-xxx-NN`、级别（P0/P1/P2）、评审角度（1–11，见 `skills/design-review`）、位置（文件 + 章节 + fr 编号）、问题描述、修改建议、责任角色（架构师）、状态。
+同 PRD 评审报告：问题编号 `RV-DESIGN-$COMPONENT-xxx-NN`、级别（P0/P1/P2）、评审角度（1–12，见 `skills/design-review`）、位置（文件 + 章节 + fr 编号）、问题描述、修改建议、责任角色（架构师）、状态。
 
 须附**可追溯性校验结果**：需求功能编号 → 设计条目 的覆盖矩阵；分解评审另附**功能编号 → 任务覆盖矩阵** 与 **依赖环检测结果**。
 
@@ -60,7 +60,7 @@ enabledAutoRun: true
 
 ## 6. 完成检查点
 
-- [ ] 11 个评审角度逐项覆盖
+- [ ] 12 个评审角度逐项覆盖
 - [ ] 功能编号 → 设计条目覆盖矩阵已校验
 - [ ] 分解评审：功能编号 → 任务覆盖矩阵 + 依赖环检测已校验
 - [ ] DDL 与数据字典一致性已核对

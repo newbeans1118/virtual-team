@@ -16,11 +16,12 @@ description: 独立评审业务分析与 PRD 交付物质量时使用。触发�
 ## 输入
 
 - `docs/PROJ_$PROJECT_NAME.md`
-- `docs/prd/overview.md`、各组件/模块 `biz.md`/`prd.md`、`prd-nonfunc.md`、`dict.md`
+- 全局：`docs/prd/overview.md`、`prd-nonfunc.md`、`dict.md`
+- 本组件：`docs/prd/$COMPONENT/**/biz.md`、`prd.md`（含 `prd-ui.md`/`prd-svc.md`）
 
 ## 输出
 
-- `review/prd/RV-PRD-xxx.md`
+- **按组件**：`review/prd/RV-PRD-$COMPONENT-xxx.md`（由 PM 汇总全部组件结论）
 
 ## 评审角度（10 项，逐项给结论）
 
@@ -39,7 +40,7 @@ description: 独立评审业务分析与 PRD 交付物质量时使用。触发�
 
 | 字段 | 说明 |
 |------|------|
-| 问题编号 | `RV-PRD-xxx-NN` |
+| 问题编号 | `RV-PRD-$COMPONENT-xxx-NN` |
 | 级别 | P0 / P1 / P2 |
 | 评审角度 | 1–10 |
 | 位置 | 文件 + 章节（biz-xxx / fr-xxx / 实体） |

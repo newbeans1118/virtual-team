@@ -30,9 +30,12 @@ virtual-team-plugin/
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 13 个工作流入口
 ├── templates/                         # 36 个交付物模版
-├── pages/prototype/                   # 界面原型存放（运行时产出）
+├── design/                            # 设计交付（全局 + 组件）
+│   ├── ARCH.md / DATABASE.md / INTERFACE.md / LOGGER.md / DEV-TASKS.md
+│   └── $COMPONENT/  interface.md / func.md（过大按 $MODULE/func.md 拆）
+├── pages/prototype/$COMPONENT/        # 组件界面原型 + 页面索引（运行时产出）
 ├── board/                             # 进度看板存放（运行时产出）
-├── docs/ design/ src/ review/ test/ release/   # 各阶段交付目录约定
+├── docs/ src/ review/ test/ release/   # 各阶段交付目录约定（design 见上）
 └── build/                             # 临时/中间文件（禁止污染交付目录）
 ```
 
@@ -101,7 +104,7 @@ flowchart TD
 | 功能点结构化、PRD 追踪清单 | `prd-structure` | product-manager |
 | 架构设计、技术选型、组件划分、部署视图 | `architecting` | architect |
 | 数据库设计、ER 图、DDL、索引 | `data-modelling` | architect |
-| 模块/功能设计、接口契约、算法设计、日志设计 | `general-design` | architect |
+| 组件功能/接口设计（含算法与日志事件）、全局接口契约与日志规范 | `general-design` | architect |
 | 开发任务分解、按模块切分任务、依赖与并行组 | `task-breakdown` | architect |
 | 设计评审、架构评审、任务分解评审 | `design-review` | design-reviewer |
 | 数据模型专项评审、表结构/DDL 评审 | `datamodel-review` | design-reviewer |
@@ -173,6 +176,7 @@ codebuddy --plugin-dir <本目录绝对路径>
 - `rules/engineering-discipline.md` 与 `skills/code-review` 为工程实践增强，来源：Anthropic Skill 编写最佳实践、superpowers 系列技能（TDD/两阶段评审/验证先于完成）。可按需调整。
 - **测试版构建**（两阶段发布之阶段一）为对原文发布流程的增强：代码评审闭环后即构建，作为测试环境来源——解决"测试需要安装手册但手册在发布阶段才产出"的时序倒挂。
 - **测试执行协调**：RUN 头由 test-manager 创建（消除多分片并发建头竞态）；exec_id 采用复合格式 `{plan_ref}-{seq}`（plan_ref 全局唯一 → 并行分片零撞号）；轮次汇总由 `test-rebuild` 从 EXEC 派生（RUN 头为纯计划态，不回写）。
+- **设计分层**：ARCH/DATABASE/INTERFACE/LOGGER 为全局单件但须内部索引/分节；功能设计按组件 `func.md`（FR > 12 或 > 300 行按模块拆），接口按组件 `interface.md`；算法与日志事件并入 FUNC；设计与 PRD 评审按组件出报告。
 - **工程技术增强**：ARCH 增容量估算/威胁建模/可观测性；INTERFACE 增横切契约（版本/幂等/超时/重试等）；DATABASE 增 expand-contract 迁移；发布增 `RELEASE-PLAN`/SHA256/SBOM/回滚演练/发布后验证；DEV-TASKS 增 `ENABLER` 类型与相对规模。
 
 ### statement → 实现差异对照表
@@ -192,6 +196,7 @@ codebuddy --plugin-dir <本目录绝对路径>
 | 9 | 发布"从 git 拉取分支" | 全新 worktree 从**主干**构建（测试版/生产版两阶段，tag 打在主干） | 单主干版本控制纪律（discipline §13） |
 | 10 | 产物称"需求说明书/规格说明书"，结构化称 req | 统一标准化为 **PRD**：技能 `requirement→prd`、`req-structure→prd-structure`、`requirement-review→prd-review`；文件 `spec*.md→prd*.md`、`req.json→prd.json`；目录 `docs/requirements/→docs/prd/`；SQL 契约 `req_*→prd_*`（acceptance-v3）；命令 `/requirements→/prd` | 术语标准化（消除 req/spec/PRD 三套用语分裂） |
 | 11 | 原文无独立 NFR 测试 | 新增 **NFR 独立轨**：`test/nfr/`（NFR-CASE / NFR-TD / NFR-RUN / NFR-RPT），`/nfr-test` 入口；仅参考报告，不阻塞 FR 流程与发布 | 技术评审（用户裁决：独立轨、仅报告） |
+| 12 | 设计文档为单文件（FUNC/INTERFACE 等） | 设计按组件/模块分层：全局 ARCH/DATABASE/INTERFACE/LOGGER + 组件 `func.md`/`interface.md`；FUNC 超阈值按模块拆；算法与日志事件并入 FUNC；设计与 PRD 评审按组件出报告 | 技术评审（设计分层） |
 
 ## 校验
 

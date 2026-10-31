@@ -22,7 +22,7 @@ description: 把业务分析落地为可验收的功能需求、编写 PRD（产
 
 - `docs/prd/$COMPONENT/$MODULE/prd.md`（模版 `templates/PRD-MOD.md`；组件不细分模块时省略 `$MODULE/`）
 - `docs/prd/prd-nonfunc.md`（模版 `templates/PRD-NONFUNC.md`）
-- `docs/prd/dict.md`（模版 `templates/DICT.md`）
+- `docs/prd/dict.md`（模版 `templates/DICT.md`；实体标注所属组件/模块）
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（结构化分片，经 `prd-structure`）
 - `docs/prd/RTM.md`（模版 `templates/RTM.md`）
 

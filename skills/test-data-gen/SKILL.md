@@ -18,7 +18,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（功能验收标准）
 - `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`、`test/trace/$COMPONENT/case-$MODULE.json`（用例意图）
 - `test/plan.md`（测试范围与环境约束）
-- `design/INTERFACE.md`、`design/DATABASE.md`（加载方法的依据，只读）
+- `design/INTERFACE.md`、`design/DATABASE.md`、`design/$COMPONENT/func.md`（或 `$MODULE/func.md`；加载方法的依据，只读）
 
 ## 输出（按存储轨道 × 分片）
 

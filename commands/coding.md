@@ -16,7 +16,7 @@ $ARGUMENTS
 
 ## 流程
 
-1. **project-manager**（持 `Agent` 工具）：按 `design/DEV-TASKS.md` 的并行组并发派发开发者子代理；prompt 自包含（任务编号/模块/功能编号/设计文档路径/验收标准/输出位置/报告要求）。
+1. **project-manager**（持 `Agent` 工具）：按 `design/DEV-TASKS.md` 的并行组并发派发开发者子代理；prompt 自包含（任务编号/模块/功能编号/全局+本组件设计路径/验收标准/输出位置/报告要求）。
 2. **backend-developer / ui-developer**：按派发任务编码 + 单测；完成后先跑 **`scripts/verify.sh --fast`**（日志留档），再 **commit 到主干**（message `[T-xxx] (fr-...)`）并**向 PM 报告**（`TASK-DONE` 含 verify 结果 + commit hash + 状态自评 / `TASK-BLOCKED`，格式见各自 agent 定义 §3.1；**不直接写看板**——PM 唯一回写）。
 3. **project-manager**：核对报告（越界检查 + **verify 日志四项** + 单测证据 + **commit 验证（git log/show）**）→ **回写看板**（置 `待评审`）→ 组织代码评审（code-reviewer）。
 

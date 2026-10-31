@@ -16,11 +16,12 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 ## 输入
 
 - `docs/prd/`
-- `design/ARCH.md`、`DATABASE.md`、`FUNC.md`、`DATASTRUCT-ALGORITHM.md`、`INTERFACE.md`、`LOGGER.md`
+- 全局：`design/ARCH.md`、`DATABASE.md`、`INTERFACE.md`、`LOGGER.md`
+- 按组件：`design/$COMPONENT/interface.md`、`design/$COMPONENT/func.md`（或 `$MODULE/func.md`）
 
 ## 输出
 
-- `review/design/RV-DESIGN-xxx.md`
+- **按组件**：`review/design/RV-DESIGN-$COMPONENT-xxx.md`（由 PM 汇总全部组件结论）
 
 ## 评审角度
 
@@ -35,16 +36,17 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 9. **非功能设计落地**：容量估算（QPS/存储/资源与依据）、威胁建模（信任边界/STRIDE/密钥/供应链）、可观测性（SLI/SLO/指标/追踪/健康检查/告警）、性能/安全/可扩展措施——四项缺一即 P1
 10. 可追溯性（设计条目 ↔ 功能编号）
 11. **任务分解合理性**（评审 `design/DEV-TASKS.md`，在设计修订完成后进行）：以模块为单位切分、可独立开发与验收、依赖显式且**无环**、并行组划分正确、**功能编号全覆盖**、未越界写优先级/排期；**任务类型（FR/ENABLER）与相对规模已标注**，ENABLER 有独立 DoD
+12. **组件分层完整性**：每个组件有 `interface.md` 与 `func.md`；FUNC 超过阈值（FR > 12 或 > 300 行）已按模块拆；组件设计引用与全局 `ARCH/DATABASE/INTERFACE/LOGGER` 一致，无重复或冲突
 
 ## 报告格式
 
-问题编号 `RV-DESIGN-xxx-NN`、级别（P0/P1/P2）、评审角度、位置（文件 + 章节 + fr 编号）、问题描述、修改建议、责任角色（architect）、状态。
+问题编号 `RV-DESIGN-$COMPONENT-xxx-NN`、级别（P0/P1/P2）、评审角度、位置（文件 + 章节 + fr 编号）、问题描述、修改建议、责任角色（architect）、状态。
 
 须附**可追溯性校验结果**（功能编号 → 设计条目覆盖矩阵）；分解评审另附**功能编号 → 任务覆盖矩阵**与**依赖环检测结果**。
 
 ## 两轮时序
 
-1. **第一轮**：评审设计文档（角度 1–10）。
+1. **第一轮**：评审设计文档（角度 1–10、12；组件分层完整性随首轮评）。
 2. **第二轮（分解评审）**：设计修订完成后，评审 `design/DEV-TASKS.md`（角度 11）。
 
 分解评审**并入设计评审同一门禁**，不新增独立门禁；设计评审通过是分解评审的前置。
@@ -55,9 +57,10 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 
 ## 检查清单
 
-- [ ] 11 个角度逐项覆盖
+- [ ] 12 个角度逐项覆盖
 - [ ] 追溯矩阵无遗漏
 - [ ] 分解评审：功能编号 → 任务覆盖矩阵 + 依赖环检测完成
+- [ ] 组件 interface/func 分层完整，FUNC 拆分阈值合规
 - [ ] DDL 与数据字典一致
 - [ ] 容量/威胁建模/可观测性按判据评审（不适用须有理由）
 - [ ] 结论明确

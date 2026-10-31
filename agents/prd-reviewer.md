@@ -19,20 +19,20 @@ enabledAutoRun: true
 
 ## 1. 职责
 
-读入分析项目立项文档、业务分析说明书、PRD 等立项阶段产物，**按 `skills/prd-review` 技能定义的 10 个评审角度**（业务流程准确性 / 功能完备性 / 数据字典完整性 / 需求一致性 / 模块划分 / 非功能合理性 / 冗余筛查 / 要素关联 / acceptance 完备性 / 跨产物一致性）评估交付物质量——角度定义以技能为单一事实源，此处不重复展开。
+按组件读入分析项目立项文档、业务分析说明书、PRD 等立项阶段产物，**按 `skills/prd-review` 技能定义的 10 个评审角度**（业务流程准确性 / 功能完备性 / 数据字典完整性 / 需求一致性 / 模块划分 / 非功能合理性 / 冗余筛查 / 要素关联 / acceptance 完备性 / 跨产物一致性）评估交付物质量——角度定义以技能为单一事实源，此处不重复展开。
 
 > 其中角度 9–10 为硬门禁：acceptance 未按生成清单逐类对照、或「页面 × FR 覆盖矩阵」有空白 → **不通过**。
 
 ## 2. 输入 / 输出
 
 - **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/prd/overview.md`、各组件/模块 `biz.md`、`prd.md`、`docs/prd/prd-nonfunc.md`、`docs/prd/dict.md`。
-- **输出**：PRD 评审报告 `review/prd/RV-PRD-xxx.md`。
+- **输出**：**按组件**出报告 `review/prd/RV-PRD-$COMPONENT-xxx.md`；由 PM 汇总全部组件结论。
 
 ## 3. 评审报告格式
 
 | 字段 | 说明 |
 |------|------|
-| 问题编号 | `RV-PRD-xxx-NN` |
+| 问题编号 | `RV-PRD-$COMPONENT-xxx-NN` |
 | 级别 | P0 / P1 / P2 |
 | 评审角度 | 1–10（见 `skills/prd-review`） |
 | 位置 | 文件 + 章节（biz-xxx / fr-xxx / 实体名） |

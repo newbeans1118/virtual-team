@@ -11,15 +11,16 @@
 
 ## 2. 任务清单
 
-| 任务编号 | 类型 | 规模 | 所属模块 | 覆盖功能编号 | 前置依赖 | 派发建议（建议执行角色） | 并行组 | 串行化提示 | 验收标准（DoD） |
-|---------|------|------|---------|-------------|---------|----------------------|-------|-----------|-----------------|
-| T-001 | FR | M | $COMPONENT/$MODULE | fr-$COMPONENT-$MODULE-001, ...-002 | — | backend-developer | G1 | 写 `src/common/` 公共库 | |
-| T-002 | FR | S | $COMPONENT2/$MODULE2 | fr-$COMPONENT2-$MODULE2-001 | T-001 | ui-developer | G2 | — | |
-| T-003 | ENABLER | S | infra | —（技术使能，无 FR） | — | backend-developer | G1 | `scripts/verify.sh` | `verify --fast` 全绿、可在空环境跑通 |
+| 任务编号 | 类型 | 规模 | 所属模块 | 覆盖功能编号 | 设计依据 | 前置依赖 | 派发建议（建议执行角色） | 并行组 | 串行化提示 | 验收标准（DoD） |
+|---------|------|------|---------|-------------|----------|---------|----------------------|-------|-----------|-----------------|
+| T-001 | FR | M | $COMPONENT/$MODULE | fr-$COMPONENT-$MODULE-001, ...-002 | `design/$COMPONENT/func.md#3.1` | — | backend-developer | G1 | 写 `src/common/` 公共库 | |
+| T-002 | FR | S | $COMPONENT2/$MODULE2 | fr-$COMPONENT2-$MODULE2-001 | `design/$COMPONENT2/func.md#3.2` | T-001 | ui-developer | G2 | — | |
+| T-003 | ENABLER | S | infra | —（技术使能，无 FR） | — | — | backend-developer | G1 | `scripts/verify.sh` | `verify --fast` 全绿、可在空环境跑通 |
 
 > 字段说明：
 > - **类型**：`FR`（覆盖功能编号，按功能验收）/ `ENABLER`（技术使能项：verify/CI、DB 迁移脚本、可观测性接入、构建优化、脚手架——不挂 FR，但必须有独立 DoD）。
 > - **规模**：`S / M / L` 相对规模（规划输入，**不是排期**）；由工作量与不确定性综合判断。
+> - **设计依据**：该任务实现所依据的设计文件与章节（组件 `func.md` / `interface.md` / 全局 `DATABASE.md`）；ENABLER 填 `—`。
 > - **前置依赖**：必须先完成的任务编号；无则填 `—`。
 > - **派发建议（建议执行角色）**：由任务性质推导（后端逻辑 → backend-developer；界面交互 → ui-developer）。**这是给项目经理的派发建议（决策输入），非最终指派**——派发动作唯一归项目经理。
 > - **并行组**：由依赖拓扑推导，**同组任务无相互依赖，可并行**。
@@ -56,6 +57,7 @@ flowchart LR
 | 是否存在依赖环 | |
 | 每个任务是否可独立验收 | |
 | 每个任务是否标注类型与规模 | |
+| 每个 FR 任务是否有设计依据 | |
 
 ## 6. 待确认项
 

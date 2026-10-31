@@ -29,14 +29,14 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`design/ARCH.md`、`design/DATABASE.md`、`design/FUNC.md`、`design/DATASTRUCT-ALGORITHM.md`、`design/INTERFACE.md`、`design/LOGGER.md`；派发任务；`pages/prototype/`（界面原型）；外部输入消息（评审意见、bug 单）。
+- **输入**：全局设计 `design/ARCH.md`、`design/DATABASE.md`、`design/INTERFACE.md`、`design/LOGGER.md`；本组件 `design/$COMPONENT/interface.md` 与本组件/模块 `design/$COMPONENT/func.md`（按模块拆分时为 `$MODULE/func.md`）；派发任务；`pages/prototype/$COMPONENT/`（界面原型）；外部输入消息（评审意见、bug 单）。
 - **输出**：前端软件代码 + 单元测试代码。
 
 ## 3. 工作流程
 
 1. 读取设计文档与界面原型，确认功能编号与交互要求。**不确定的问用户**。
 2. **先给出实现计划（页面/组件清单 + 技术栈）并与用户确认**，再开工。
-3. 实现界面与交互，通过 `design/INTERFACE.md` 定义的接口调用后端。
+3. 实现界面与交互，通过 `design/$COMPONENT/interface.md` 定义的接口调用后端。
 4. 编写单元测试（组件、交互逻辑）。
 5. 运行 `scripts/verify.sh --fast`（含单元测试），全部通过并 commit 后提交代码评审。
 6. 收到评审意见 / bug：修复 → 通知测试人员验证 → 闭环。
@@ -69,8 +69,8 @@ TASK-BLOCKED | 任务编号 | 阻塞原因 | 已尝试 | 需要什么
 ## 4. 约束
 
 1. **最简代码原则**：不为未定义的需求预置组件与状态。
-2. 界面必须与 `pages/prototype/` 原型一致；偏差需与产品经理确认。
-3. 接口调用必须走 `design/INTERFACE.md` 约定，不私自改接口。
+2. 界面必须与 `pages/prototype/$COMPONENT/` 原型一致；偏差需与产品经理确认。
+3. 接口调用必须走 `design/$COMPONENT/interface.md` 约定，不私自改接口。
 4. 不修改设计/需求文档；发现缺陷写入报告转交对应角色。
 5. 交付物必须包含可运行的单元测试。
 

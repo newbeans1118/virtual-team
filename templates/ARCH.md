@@ -37,6 +37,12 @@ flowchart TD
 |------|------|------|------|------|
 | | | | | |
 
+### 3.1 设计文件索引
+
+| 组件 | 接口设计 | 功能设计 | 数据库章节 |
+|------|----------|----------|-----------|
+| $COMPONENT | `design/$COMPONENT/interface.md` | `design/$COMPONENT/func.md`（按模块拆时 `$MODULE/func.md`） | `design/DATABASE.md#…` |
+
 ## 4. 关键交互时序
 
 ```mermaid
@@ -141,6 +147,6 @@ flowchart LR
 
 ## 11. 可追溯性
 
-| 模块 | 关联功能编号 | 架构组件 |
-|------|-------------|---------|
-| $COMPONENT / $MODULE | fr-$COMPONENT-$MODULE-NNN | |
+| 组件/模块 | 关联功能编号 | 设计文件 | 章节 |
+|-----------|-------------|----------|------|
+| $COMPONENT / $MODULE | fr-$COMPONENT-$MODULE-NNN | `design/$COMPONENT/func.md` | §3.1 |

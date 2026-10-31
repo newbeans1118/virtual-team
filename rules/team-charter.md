@@ -60,6 +60,10 @@
 | 实例计划行 | `P-xxx`，**全局唯一（跨 RUN，TM 审定时查重）**，EXEC 回指锚点 | `P-003` |
 | 变更单 | `CR-$COMPONENT-NNN` | `CR-order-005` |
 | 缺陷 | `BUG-$COMPONENT-NNN`，状态机闭环，回指 exec | `BUG-order-007` |
+| 组件功能设计 | `design/$COMPONENT/func.md`（组件 FR > 12 或 > 300 行时按模块拆 `$MODULE/func.md`） | `design/order/func.md` |
+| 组件接口设计 | `design/$COMPONENT/interface.md` | `design/order/interface.md` |
+| 设计评审报告 | `review/design/RV-DESIGN-$COMPONENT-xxx.md` | `RV-DESIGN-order-001.md` |
+| PRD 评审报告 | `review/prd/RV-PRD-$COMPONENT-xxx.md` | `RV-PRD-order-001.md` |
 
 > **编号不可解析的写法**：`fr-task-svc-all-001` —— 组件是 `task` 还是 `task-svc` 无法判定。故组件/模块名**必须用下划线**（`task_svc`），连字符**只作层级分隔**。
 > **主归属原则**：功能点严格属于「组件×模块」；用例与数据单元**有主组件**（编号体现），跨组件复用通过 `function_refs` / `dataset_refs` / `owner_cases` 数组表达。
@@ -85,13 +89,14 @@ $PROJECT_ROOT/
 │               ├── prd.md     # PRD（前后台拆分：prd-ui.md / prd-svc.md）
 │               └── trace/prd.json  # 结构化需求分片
 ├── design/                     # 设计阶段交付物（架构师）
-│   ├── ARCH.md
-│   ├── DATABASE.md
-│   ├── FUNC.md
-│   ├── DATASTRUCT-ALGORITHM.md
-│   ├── INTERFACE.md
-│   ├── LOGGER.md
-│   └── DEV-TASKS.md            # 开发任务分解（规划物，设计评审通过后产出）
+│   ├── ARCH.md                 # 全局架构（组件边界/部署/NFR/安全/可观测/ADR/追溯）
+│   ├── DATABASE.md             # 全局：组件/模块索引 + 分节（ER/表/DDL/迁移）
+│   ├── INTERFACE.md            # 全局：横切契约 + 组件接口索引
+│   ├── LOGGER.md               # 全局：日志规范（格式/目录/级别/脱敏/保留）
+│   ├── DEV-TASKS.md            # 全局：任务分解（规划物，设计评审通过后产出）
+│   └── $COMPONENT/
+│       ├── interface.md        # 组件接口（对外 + 跨模块 + 模块内）
+│       └── func.md             # 组件功能设计（含算法/日志事件）；组件 FR > 12 或 > 300 行时按模块拆 $MODULE/func.md
 ├── src/                        # 源代码（开发工程师）
 │   └── $COMPONENT/             # 与组件对齐
 │       └── code + tests/       # tests/ = 单元测试
@@ -168,7 +173,7 @@ $PROJECT_ROOT/
 - **测试执行门禁**：TD 注册表与**实例计划 EXEC-PLAN** 未经 test-manager 审定不得执行；EXEC 只追加不改写；缺陷关闭须 verify_pass 证据。
 - **缺陷修复门禁**：P0/P1 修复 commit 后须过**单阶段修复评审**（`skills/code-review` 修复评审模式，5 项检查）；评审未过不得重建测试版、不得进入回归；P2 豁免。
 - **NFR 独立轨**：`/nfr-test` 可与任意阶段并行，产出参考报告；**不进入主流程门禁**（不阻塞验收与发布）。
-- **"复杂"判据（统一口径）**：功能涉及 **≥2 次状态迁移或跨模块/跨组件调用** → 功能流程图必填；影响多组件或含并发/事务一致性 → 进 DATASTRUCT-ALGORITHM；任务数 >20 或并行组 >3 → 看板用甘特图。不满足判据的图形为可选（建议项）。
+- **"复杂"判据（统一口径）**：功能涉及 **≥2 次状态迁移或跨模块/跨组件调用** → 功能流程图必填；影响多组件或含并发/事务一致性 → 在对应 `func.md` 内做数据结构与算法设计；任务数 >20 或并行组 >3 → 看板用甘特图。不满足判据的图形为可选（建议项）。
 - **工程骨架归属**：architect 搭建的工程目录与构建系统属**代码产物**——入 `src/`（或工程根的标准位置），**同样过代码评审**，不因出自架构师而豁免。
 - **测试准备并行边界**：用例设计与 TD 设计**只依赖需求+设计文档，可与编码并行**；**TM 建 RUN 头不属并行范围**（envs 需引用测试版构建的 build/commit，须待构建完成）；TD 加载脚本实测与用例执行**须待测试版构建完成**（环境来自构建产物）。
 
@@ -218,6 +223,7 @@ $PROJECT_ROOT/
 
 - **需求**：功能点必须可独立验收，验证标准**条列化 + GWT 化**并按生成清单逐类对照（细则见 `skills/prd`）；FR 粒度经五条检验；L4 交互细节禁入 FR；前后台边界清晰（前台规则用占位符引用）；**跨产物对账**——凡同时交付 PRD 与原型，页面 × FR 覆盖矩阵无空白方可交付（并入 RTM，见 `templates/RTM.md`）。
 - **设计**：设计条目必须能与**功能编号**关联；对外暴露/敏感数据/高并发项目须含**容量估算、威胁建模、可观测性设计**（判据与模板见 `templates/ARCH.md` §7–§9），不适用须写理由。
+- **设计分层**：ARCH/DATABASE/INTERFACE/LOGGER 为全局单件但须内部分节/索引；功能设计按组件 `func.md`（FR > 12 或 > 300 行按模块拆），接口按组件 `interface.md`；**设计/PRD 评审按组件出报告**，PM 汇总全部组件通过才放行。
 - **任务分解**：任务可独立开发与验收，依赖**无环**，功能编号**全覆盖**；任务分 **FR / ENABLER** 两类（ENABLER 不挂 FR 但须有独立 DoD），每任务标注相对规模 S/M/L（细则见 `skills/task-breakdown`）。
 - **数据演进**：涉及存量数据或跨版本表结构变更时，须在 `DATABASE.md` 给出 expand-contract 迁移与回滚方案（含发布顺序、回填、验证；见 `templates/DATABASE.md` §8）。
 - **代码**：遵循**最简代码原则**，用最简单的代码实现功能。

@@ -16,12 +16,12 @@ description: 专项评审数据库设计时使用。触发场景：需要检查�
 ## 输入
 
 - `docs/prd/dict.md`
-- `design/DATABASE.md`
+- `design/DATABASE.md`（按组件/模块分节；本技能按组件评审对应章节）
 - `docs/prd/prd-nonfunc.md`
 
 ## 输出
 
-- `review/design/RV-DM-xxx.md`
+- **按组件**：`review/design/RV-DM-$COMPONENT-xxx.md`
 
 ## 评审角度
 
@@ -38,7 +38,7 @@ description: 专项评审数据库设计时使用。触发场景：需要检查�
 
 ## 报告格式
 
-问题编号 `RV-DM-xxx-NN`、级别、位置（表/字段/索引 + DDL 行）、问题描述、修改建议、状态。附总体结论。
+问题编号 `RV-DM-$COMPONENT-xxx-NN`、级别、位置（表/字段/索引 + DDL 行）、问题描述、修改建议、状态。附总体结论。
 
 ## 闭环
 
@@ -48,6 +48,7 @@ description: 专项评审数据库设计时使用。触发场景：需要检查�
 
 - [ ] 8 个检查点逐项覆盖
 - [ ] DDL 与字典一致性核对
+- [ ] 组件/模块章节与索引一致
 - [ ] 索引逐条有依据
 - [ ] 结论明确、问题闭环
 

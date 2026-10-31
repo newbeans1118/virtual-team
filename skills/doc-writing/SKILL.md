@@ -17,7 +17,7 @@ description: 编写面向使用与运维的文档时使用。触发场景：需�
 
 - `design/`
 - `release/artifact/`
-- `pages/prototype/`
+- `pages/prototype/$COMPONENT/`
 
 ## 输出
 
