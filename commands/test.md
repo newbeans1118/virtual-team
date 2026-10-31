@@ -13,7 +13,7 @@ $ARGUMENTS
 
 ## 前置
 
-- **测试版构建已完成**（`release/artifact/` + `release/manual-install.md`，代码评审闭环后由 release-engineer 产出）——测试环境来源；未完成 → 先走测试版构建。
+- **测试版构建已完成**（`release/artifact/` + `release/manual-install.md`，代码评审闭环后由 release-engineer 产出）——测试环境来源；未完成 → 先执行 `/build-test`。
 - 用例/TD 设计无此前置（可与编码并行，只依赖需求+设计文档）。
 
 ## 要求

@@ -1,5 +1,5 @@
 {
-  "_comment": "模版：PRD-STRUCTURE.json（PRD 侧结构化分片）｜ 产出角色：product-manager（prd-structure）｜ 每组件/模块一片：docs/prd/$COMPONENT/$MODULE/trace/prd.json。双轨：JSON 轨=本文件；SQLite 轨=prd_functions 表（component+module 双列承载分片键）。biz_refs 语义=本功能点【所属】的业务（业务由多个功能点组成，此为归属关联）。change_log 已移除——变更审计走 git diff（spec 内容级）+ source_hash 链（结构级）。acceptance 为【条列 + GWT】——每条 = 一个验证条件（测试点），提供覆盖率分母；key 只追加不重排不重用。",
+  "_comment": "模版：PRD-STRUCTURE.json（PRD 侧结构化分片）｜ 产出角色：product-manager（prd-structure）｜ 每组件/模块一片：docs/prd/$COMPONENT/$MODULE/trace/prd.json。双轨：JSON 轨=本文件；SQLite 轨=prd_functions 表（component+module 双列承载分片键）。biz_refs 语义=本功能点【所属】的业务（业务由多个功能点组成，此为归属关联）。change_log 已移除——变更审计走 git diff（PRD 内容级）+ source_hash 链（结构级）。acceptance 为【条列 + GWT】——每条 = 一个验证条件（测试点），提供覆盖率分母；key 只追加不重排不重用。",
   "project": "$PROJECT_NAME",
   "component": "$COMPONENT",
   "module": "$MODULE",

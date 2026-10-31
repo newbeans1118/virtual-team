@@ -40,7 +40,7 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 |---|------|------|---------|
 | 1 | **ID 完整性** | 每个 `function_refs` 必须存在于 PRD 分片；每条 EXEC 的 case/td 必须存在于 CASE/REGISTRY | 孤立项 = P0，报告 PM |
 | 2 | **覆盖完整性** | 每个功能点 ≥1 条 active 用例；每条 active 用例 ≥1 个 TD | 缺口显式列出（**禁止标"通过"**） |
-| 3 | **源同步** | `prd.md` hash == `prd.json.source_hash`；req hash == `case-<模块>.json.prd_source_hash` | 不同步 = 提示对应技能重跑，指标标 `stale` |
+| 3 | **源同步** | `prd.md` hash == `prd.json.source_hash`；`prd.json` hash == `case-<模块>.json.prd_source_hash` | 不同步 = 提示对应技能重跑，指标标 `stale` |
 | 4 | **状态合法** | 枚举校验；BUG 状态机合法迁移；TD 的 owner_cases 与用例侧 `dataset_refs` 双向一致 | 违规 = P1 |
 | 5 | **验证条件引用完整性** | 每个 `acceptance_refs` 项必须存在于对应功能点的 `acceptance[].key`；引用闭合（前缀 fr-id ∈ 本用例 function_refs） | 悬空引用 = **告警**（列「遗留风险」，不阻塞） |
 
@@ -49,9 +49,9 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 | 指标 | 公式 | 出处 |
 |------|------|------|
 | **轮次汇总** | 按 RUN 聚合 EXEC：`{total, pass, fail, blocked}`（**RUN 头不承载 summary——本表为唯一汇总口径**） | EXEC.run_id |
-| 需求覆盖率 | 有 ≥1 active 用例的功能点 ÷ 全部 active 功能点 | req × case |
-| **测试点级覆盖率**（度量，非门禁） | 被 ≥1 active 用例 `acceptance_refs` 引用的验证条件数 ÷ 全部 active 功能点的 acceptance 条件总数 | req.acceptance × case.acceptance_refs |
-| **路径覆盖度**（度量，按 kind 分组） | 各 kind（normal/boundary/negative）已覆盖条件数 ÷ 该 kind 条件总数 | req.acceptance.kind |
+| 需求覆盖率 | 有 ≥1 active 用例的功能点 ÷ 全部 active 功能点 | prd × case |
+| **测试点级覆盖率**（度量，非门禁） | 被 ≥1 active 用例 `acceptance_refs` 引用的验证条件数 ÷ 全部 active 功能点的 acceptance 条件总数 | prd.acceptance × case.acceptance_refs |
+| **路径覆盖度**（度量，按 kind 分组） | 各 kind（normal/boundary/negative）已覆盖条件数 ÷ 该 kind 条件总数 | prd.acceptance.kind |
 | 用例执行率 | 已执行 PLAN 行 ÷ 计划 PLAN 行 | PLAN vs EXEC |
 | 通过率 | pass EXEC ÷ 已执行 EXEC（**按轮**；可按组件/模块/优先级/suitable_for 切片） | EXEC-<组件>-<模块>.jsonl 分片 |
 | 缺陷密度 | bug 数 ÷ 执行数（或 ÷ 功能点数） | EXEC × BUG |

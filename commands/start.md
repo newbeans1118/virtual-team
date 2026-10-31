@@ -19,13 +19,13 @@ $ARGUMENTS
 
 ```
 立项 → [立项评审] → 需求分析 → [PRD 评审] → 架构设计 → [设计评审]
-     → 编码（前后端）→ 代码评审（两阶段）→ 测试 → 项目验收评审 → 发布
+     → 编码（前后端）→ 代码评审（两阶段）→ 测试版构建 → 测试 → 项目验收评审 → 生产版发布
 ```
 
 4. 每个阶段：
    - 委派对应角色 agent 完成该阶段交付物（写入 `rules/team-charter.md` 规定的目录）。
    - 组织对应评审员评审；未通过则打回责任角色修订后重审。
-   - 通过后更新 `board/KANBAN.md`，再进入下一阶段。
+   - 通过后由 **project-manager 回写** `board/KANBAN.md`（charter §1.8 单一写者），再进入下一阶段。
 
 ## 工程纪律（贯穿全程）
 
@@ -43,6 +43,7 @@ $ARGUMENTS
 | 架构设计 | architect | architecting, data-modelling, general-design |
 | 编码 | backend-developer / ui-developer | - |
 | 代码评审 | code-reviewer | code-review |
+| 测试版构建 | release-engineer | releasing, doc-writing |
 | 测试 | test-manager / test-engineer | case-design, case-instantiate, case-running, case-structure |
 | 验收/发布 | project-reviewer / release-engineer | accepting, releasing, doc-writing |
 

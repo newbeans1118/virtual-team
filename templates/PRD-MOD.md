@@ -1,4 +1,4 @@
-# 软件PRD：$COMPONENT / $MODULE
+# PRD：$COMPONENT / $MODULE
 
 > 模版：PRD-MOD.md ｜ 产出角色：product-manager ｜ 存放：docs/prd/$COMPONENT/$MODULE/prd.md（组件不细分模块时省略 $MODULE/）
 > 前后台拆分时：`prd-ui.md`（前台，只约束 UI 行为）/ `prd-svc.md`（后台服务，约束业务规则与接口）

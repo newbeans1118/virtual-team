@@ -1,1 +1,4 @@
 **/memory/*
+build/
+__pycache__/
+*.pyc

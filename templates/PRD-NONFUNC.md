@@ -1,4 +1,4 @@
-# 非功能需求说明书：$PROJECT_NAME
+# 非功能需求说明：$PROJECT_NAME
 
 > 模版：PRD-NONFUNC.md ｜ 产出角色：product-manager ｜ 存放：docs/prd/prd-nonfunc.md
 

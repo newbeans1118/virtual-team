@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS prd_functions (
   version     INTEGER NOT NULL DEFAULT 1,
   updated_at  TEXT
 );
-CREATE INDEX IF NOT EXISTS idx_req_component ON prd_functions(component);
-CREATE INDEX IF NOT EXISTS idx_req_module ON prd_functions(component, module);
+CREATE INDEX IF NOT EXISTS idx_prd_component ON prd_functions(component);
+CREATE INDEX IF NOT EXISTS idx_prd_module ON prd_functions(component, module);
 
 -- ---------- 用例侧 ----------
 -- 来自 test/trace/$COMPONENT/case-*.json 分片；用例有主组件（component 列），可跨组件引用功能点

@@ -9,7 +9,7 @@
 |--------|------|------|
 | ID 完整性 | | 孤立用例/孤立数据/悬空引用 |
 | 覆盖完整性 | | 无用例功能点 / 无数据用例 |
-| 源同步 | | spec ↔ req ↔ case hash 是否一致（stale 标记） |
+| 源同步 | | `prd.md` hash == `prd.json.source_hash`；`prd.json` hash == `case-*.prd_source_hash`（stale 标记） |
 | 状态合法 | | 枚举/状态机/双向关联 |
 | 验证条件引用完整性 | | acceptance_refs 悬空 / 引用闭合违规（告警级） |
 
@@ -26,9 +26,9 @@
 
 | 指标 | 公式 | 值 | 出处 |
 |------|------|-----|------|
-| 需求覆盖率 | 有≥1 active 用例的功能点 ÷ 全部 active 功能点 | | req×case |
-| **测试点级覆盖率**（度量，非门禁） | 被 ≥1 active 用例引用的验证条件数 ÷ 全部验证条件总数 | | req.acceptance×case.acceptance_refs |
-| **路径覆盖度**（度量，按 kind） | 各 kind 已覆盖 ÷ 该 kind 总数（normal/boundary/negative） | | req.acceptance.kind |
+| 需求覆盖率 | 有≥1 active 用例的功能点 ÷ 全部 active 功能点 | | prd×case |
+| **测试点级覆盖率**（度量，非门禁） | 被 ≥1 active 用例引用的验证条件数 ÷ 全部验证条件总数 | | prd.acceptance×case.acceptance_refs |
+| **路径覆盖度**（度量，按 kind） | 各 kind 已覆盖 ÷ 该 kind 总数（normal/boundary/negative） | | prd.acceptance.kind |
 | 用例执行率 | 已执行 PLAN 行 ÷ 计划 PLAN 行 | | PLAN vs EXEC |
 | 通过率 | pass ÷ executed | | EXEC |
 | 缺陷密度 | bug ÷ executed | | EXEC×BUG |

@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 23 个技能 skill + 11 个工作流命令 + 31 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 23 个技能 skill + 12 个工作流命令 + 31 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -28,7 +28,7 @@ virtual-team-plugin/
 │   ├── case-design / case-instantiate / case-running / case-structure / prd-structure
 │   ├── test-data-gen / test-rebuild
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
-├── commands/                          # 11 个工作流入口
+├── commands/                          # 12 个工作流入口
 ├── templates/                         # 31 个交付物模版
 ├── pages/prototype/                   # 界面原型存放（运行时产出）
 ├── board/                             # 进度看板存放（运行时产出）
@@ -55,7 +55,7 @@ flowchart TD
   ACC -->|通过| REL[release-engineer<br/>生产版发布<br/>四方确认+tag]
 ```
 
-> 分解评审**并入设计评审**（同一门禁）；设计评审通过后由架构师产出 `design/DEV-TASKS.md`，再行分解评审。**测试版构建是测试准入条件**：代码评审闭环后由 release-engineer 产出（构建产物+安装手册+冒烟验证），测试环境与 RUN.envs 证据一律来自该构建。用例/TD 设计可与编码并行。
+> 分解评审**并入设计评审**（同一门禁）；设计评审通过后由架构师产出 `design/DEV-TASKS.md`，再行分解评审。**测试版构建是测试准入条件**：代码评审闭环后由 release-engineer 产出（构建产物+安装手册+冒烟验证），测试环境与 RUN.envs 证据一律来自该构建。用例/TD 设计可与编码并行；**TM 建 RUN 头须待构建完成**（envs 引用 build/commit）。
 
 | 阶段 | 角色 | 技能 |
 |------|------|------|
@@ -79,11 +79,12 @@ flowchart TD
 | `/design` | 架构设计 |
 | `/coding` | 编码（按模块） |
 | `/code-review` | 代码评审（两阶段） |
-| `/test` | 测试（前置：测试版构建） |
+| `/build-test` | 测试版构建（测试准入：worktree 构建 + 手册 + 冒烟） |
+| `/test` | 测试（前置：`/build-test` 已完成） |
 | `/release` | 生产版发布（验收通过后：四方确认 + tag） |
 | `/accept` | 项目验收 |
 | `/status` | 更新并展示进度看板 |
-| `/review` | 通用评审入口（需求/设计/数据模型） |
+| `/review` | 通用评审入口（PRD/设计/数据模型） |
 
 ## 技能触发索引
 
@@ -96,7 +97,7 @@ flowchart TD
 | 功能点定义、PRD、非功能需求、数据字典、需求追溯 | `prd` | product-manager |
 | PRD 评审、需求质量检查 | `prd-review` | prd-reviewer |
 | 界面原型、线框图、交互草图 | `prototype` | product-manager |
-| 功能点结构化、需求追踪清单 | `prd-structure` | product-manager |
+| 功能点结构化、PRD 追踪清单 | `prd-structure` | product-manager |
 | 架构设计、技术选型、组件划分、部署视图 | `architecting` | architect |
 | 数据库设计、ER 图、DDL、索引 | `data-modelling` | architect |
 | 模块/功能设计、接口契约、算法设计、日志设计 | `general-design` | architect |
@@ -186,3 +187,17 @@ codebuddy --plugin-dir <本目录绝对路径>
 | 8 | 开发者完成任务后无明确汇报要求 | TASK-DONE 标准报告（含 commit hash + 状态自评），PM 核对回写看板 | 完成闭环 + 看板单一写者 |
 | 9 | 发布"从 git 拉取分支" | 全新 worktree 从**主干**构建（测试版/生产版两阶段，tag 打在主干） | 单主干版本控制纪律（discipline §13） |
 | 10 | 产物称"需求说明书/规格说明书"，结构化称 req | 统一标准化为 **PRD**：技能 `requirement→prd`、`req-structure→prd-structure`、`requirement-review→prd-review`；文件 `spec*.md→prd*.md`、`req.json→prd.json`；目录 `docs/requirements/→docs/prd/`；SQL 契约 `req_*→prd_*`（acceptance-v3）；命令 `/requirements→/prd` | 术语标准化（消除 req/spec/PRD 三套用语分裂） |
+
+## 校验
+
+提交前运行结构校验（无需第三方依赖）：
+
+```bash
+python scripts/verify_plugin.py
+```
+
+校验项：JSON 合法性、技能/角色 frontmatter 与目录一致、plugin.json 路径存在、术语黑名单（legacy `spec`/`req` 用语）、版本三处一致、README 计数与实际一致、模板引用存在。失败退出码 1，输出 `规则 | 位置 | 明细`。
+
+## 许可证
+
+MIT，见 [LICENSE](LICENSE)。

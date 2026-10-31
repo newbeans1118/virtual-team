@@ -13,7 +13,7 @@ $ARGUMENTS
 
 | 评审类型 | 委派角色 | 技能 | 输出 |
 |---------|---------|------|------|
-| 需求评审 | prd-reviewer | prd-review | `review/prd/RV-PRD-xxx.md` |
+| PRD 评审 | prd-reviewer | prd-review | `review/prd/RV-PRD-xxx.md` |
 | 设计评审 | design-reviewer | design-review | `review/design/RV-DESIGN-xxx.md` |
 | 数据模型评审 | design-reviewer | datamodel-review | `review/design/RV-DM-xxx.md` |
 

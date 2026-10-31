@@ -24,7 +24,7 @@
 | 执行明细 | `test/runs/RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl`（追加式） | case-running |
 | 缺陷 | `test/bugs/BUG-$COMPONENT-NNN.json` | case-running |
 
-- **stale 判定**：git 提交对比（json 提交早于 spec 提交 = 未同步）——结构文件不写 source_hash 副本到下游（PRD 分片写 `source_hash` 声明基线，case 分片写 `prd_source_hash`）。
+- **stale 判定**：git 提交对比（`prd.json` 提交早于 `prd.md` 提交 = 未同步）——结构文件不写 source_hash 副本到下游（PRD 分片写 `source_hash` 声明基线，case 分片写 `prd_source_hash`）。
 - 累计 EXEC > 1 万行时，test-rebuild 先做聚合索引再计算。
 
 ## 2. SQLite 轨（store=sqlite）
@@ -51,7 +51,7 @@
 
 由 PM 派发 test-engineer 执行（迁移动作本身属测试资产变更，走 CR 或测试方案变更）：
 1. 建库（SQLITE-SCHEMA.sql）。
-2. 全量分片文件入库（req/case/TD/RUN/EXEC-PLAN/EXEC/BUG 七类，行级 INSERT）。
+2. 全量分片文件入库（PRD/case/TD/RUN/EXEC-PLAN/EXEC/BUG 七类，行级 INSERT）。
 3. TD 数据本体从文件迁入业务表 `td_biz_*`（含 td_id 外键）。
 4. 校验：test-rebuild 跑五项一致性校验，数字与迁移前 JSON 侧一致。
 5. 更新 STORE-CONFIG（store=sqlite + migrated_from 留痕）——此后 JSON 分片文件冻结为历史归档，不再更新。

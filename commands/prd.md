@@ -26,7 +26,7 @@ $ARGUMENTS
    - `diagramming` → 业务流程图（Mermaid）
 3. 所有输出遵循 `templates/` 对应模版。
 4. 校验：所有 `biz` 被 `fr` 覆盖（附追溯矩阵）。
-5. 完成后提交**需求评审**（用户 + prd-reviewer）。
+5. 完成后提交**PRD 评审**（用户 + prd-reviewer）。
 
 ## 禁止
 
