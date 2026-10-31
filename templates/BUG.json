@@ -1,9 +1,8 @@
 {
-  "_comment": "模版：BUG.json（缺陷单）｜ 提交：case-running（失败 EXEC）｜ 修复：开发者 ｜ 验证：回归轮 ｜ 存放：test/bugs/BUG-$COMPONENT-NNN.json。状态机：open → in_fix → fixed → verify_pass → closed；verify_fail → 重开回 open（记 reopen_count）。acceptance_refs 可选：精确回指失败的验证条件（有则便于定位）。",
+  "_comment": "模版：BUG.json（缺陷单）｜ 提交：case-running（失败 EXEC）｜ 修复：开发者 ｜ 验证：回归轮 ｜ 存放：test/bugs/BUG-$COMPONENT-NNN.json。状态机：open → in_fix → fixed → verify_pass → closed；verify_fail → 重开回 open（记 reopen_count）。acceptance_refs 可选：精确回指失败的验证条件（有则便于定位）。severity 为唯一分级字段（priority 与其语义重复，已移除）。",
   "id": "BUG-$COMPONENT-NNN",
   "title": "",
   "severity": "P0 | P1 | P2",
-  "priority": "P0 | P1 | P2",
   "source": { "exec": "P-xxx-1（exec_id 复合格式 {plan_ref}-{seq}）", "run": "RUN-xxx", "case": "CASE-$COMPONENT-NNN", "td": "TD-$COMPONENT-NNN" },
   "function_refs": ["fr-$COMPONENT-$MODULE-NNN"],
   "acceptance_refs": ["fr-$COMPONENT-$MODULE-NNN:c1"],

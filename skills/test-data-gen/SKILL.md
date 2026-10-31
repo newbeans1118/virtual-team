@@ -35,10 +35,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 ## 存储选择（开工第一步）
 
-读 `test/STORE-CONFIG.json`——**项目立项时已一次性选定，全程跟随；仅允许一次 json→sqlite 单向迁移**（迁移后不可逆）。
-- `store=json` → 按本技能主体流程写文件（TD 目录 + 注册表分片 `TD-REGISTRY-$MODULE.json`）。
-- `store=sqlite` → 机制数据写 `td_registry` 表；数据本体写业务表 `td_biz_*`（必含 td_id 外键）；加载脚本仍单独存文件（见「SQLite 轨附加流程」）。
-- 配置缺失 → **BLOCKED 报项目经理**（立项时未完成存储决策，不得代为默认选轨）。**数据契约（实体/字段/关联）两轨完全一致，仅读写方式不同。**
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写文件（TD 目录 + 注册表分片）；`store=sqlite` → 机制数据写 `td_registry` 表 + 数据本体写业务表 `td_biz_*`（必含 td_id 外键，见「SQLite 轨附加流程」）。配置缺失 → BLOCKED 报 PM。
 
 ### SQLite 轨附加流程
 

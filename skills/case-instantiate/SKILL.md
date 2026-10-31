@@ -39,10 +39,7 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 
 ## 存储选择（开工第一步）
 
-读 `test/STORE-CONFIG.json`——**项目立项时已一次性选定，全程跟随；仅允许一次 json→sqlite 单向迁移**（迁移后不可逆）。
-- `store=json` → 写文件（RUN 头 + EXEC-PLAN-$COMPONENT-$MODULE.json）。
-- `store=sqlite` → 入库（`runs` + `exec_plans`）。
-- 配置缺失 → **BLOCKED 报项目经理**（立项时未完成存储决策，不得代为默认选轨）。**数据契约（实体/字段/关联）两轨完全一致，仅读写方式不同。**
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写 `EXEC-PLAN-$COMPONENT-$MODULE.json`；`store=sqlite` → 写 `exec_plans` 行。配置缺失 → BLOCKED 报 PM。（RUN 头由 test-manager 创建，本技能不建头。）
 
 ## 执行轮类型（trigger）
 

@@ -13,8 +13,9 @@ virtual-team-plugin/
 │   └── marketplace.json               # 单插件自市场（可作为本地 marketplace 安装）
 ├── rules/
 │   ├── team-charter.md                # 团队公约：角色纪律、编号规范、目录结构、评审闭环
-│   ├── engineering-discipline.md      # 工程纪律：证据先于结论、两阶段评审、完成状态协议、YAGNI、反合理化
-│   └── decision-brief.md              # 决策简报格式：向用户提问的统一结构
+│   ├── engineering-discipline.md      # 工程纪律：证据先于结论、两阶段评审、完成状态协议、YAGNI、版本控制
+│   ├── decision-brief.md              # 决策简报格式：向用户提问的统一结构（轻量/完整两档）
+│   └── storage-track.md               # 存储轨道规则：json/sqlite 双轨唯一规则源（按需加载所选轨道）
 ├── agents/                            # 12 个角色
 │   ├── project-manager.md     product-manager.md   architect.md
 │   ├── backend-developer.md   ui-developer.md      code-reviewer.md
@@ -135,8 +136,12 @@ flowchart TD
 
 **决策简报**（`rules/decision-brief.md`）
 
-- 向用户提问/确认统一用 `D<N>` 简报：ELI10 + 建议 + 完整性评分 + ✅❌ 选项优缺点 + `Net`。
+- 向用户提问/确认统一用 `D<N>` 简报，**两档**：轻量档（单事实澄清，一句直问）与完整档（ELI10 + 建议 + 完整性评分 + ✅❌ 选项优缺点 + `Net`）；不可逆操作永远走完整档。
 - 工具不可用时 prose 降级；**不可逆/破坏性操作必须显式确认**，含糊回复视为未确认。
+
+**存储轨道**（`rules/storage-track.md`）
+
+- 测试数据双轨（json / sqlite）**唯一规则源**：立项时一次性选定（`test/STORE-CONFIG.json`），技能开工**只加载所选轨道一节的规则**（不整读）；仅允许一次 json→sqlite 单向迁移。
 
 ## 安装
 
@@ -159,8 +164,24 @@ codebuddy --plugin-dir <本目录绝对路径>
 
 - 本插件的角色定义基于 `statement.txt`；其中 **独立设计评审员（#10）** 与 **独立项目评审员（#11）** 在原文中未展开，已按其职责定位与流程要求补充定义（见对应 agent 文件顶部注记）。
 - 原文列出的 **bug-reporting（缺陷报告）/ bug-fixing（缺陷修改）** 两技能未单独设立：缺陷报告并入 `case-running`（失败 EXEC → 建 BUG → 回归验证闭环），缺陷修复并入开发者职责（修复 → 回报 → 测试侧 verify_pass 关闭）。可按需拆分。
-- 原文的 **case-running** 已拆为两个技能：`case-instantiate`（建 RUN + 用例×数据配对生成**可执行实例**，交审定）与 `case-running`（执行已审定实例 + 记录 EXEC + 缺陷 + 汇总）。拆分依据：实例化（设计型产物，需审定）与执行（运行型产物，追加式）性质不同，中间夹着 test-manager 审定的真实门禁。
+- 原文的 **case-running** 已拆为两个技能：`case-instantiate`（配对生成**可执行实例**，交审定）与 `case-running`（执行已审定实例 + 记录 EXEC + 缺陷 + 汇总）。拆分依据：实例化（设计型产物，需审定）与执行（运行型产物，追加式）性质不同，中间夹着 test-manager 审定的真实门禁。
 - 目录约定、编号规范、评审闭环等原文未明确处，采用团队公约统一补齐，可按需调整 `rules/team-charter.md`。
 - `rules/engineering-discipline.md` 与 `skills/code-review` 为工程实践增强，来源：Anthropic Skill 编写最佳实践、superpowers 系列技能（TDD/两阶段评审/验证先于完成）。可按需调整。
 - **测试版构建**（两阶段发布之阶段一）为对原文发布流程的增强：代码评审闭环后即构建，作为测试环境来源——解决"测试需要安装手册但手册在发布阶段才产出"的时序倒挂。
 - **测试执行协调**：RUN 头由 test-manager 创建（消除多分片并发建头竞态）；exec_id 采用复合格式 `{plan_ref}-{seq}`（plan_ref 全局唯一 → 并行分片零撞号）；轮次汇总由 `test-rebuild` 从 EXEC 派生（RUN 头为纯计划态，不回写）。
+
+### statement → 实现差异对照表
+
+> `statement.txt` 为原始需求源；实现过程中按评审与裁决做了以下增强/修正，**以实现为准**：
+
+| # | statement 原文 | 实现现状 | 依据 |
+|---|--------------|---------|------|
+| 1 | 评审员 #10（设计）/ #11（项目）未展开 | 已补充完整定义 | 职责定位 + 流程要求反推 |
+| 2 | 技能列表含 bug-reporting / bug-fixing | 并入 case-running 与开发者职责 | 闭环本身就是缺陷流程，不单设技能 |
+| 3 | case-running 单技能 | 拆为 case-instantiate + case-running | 实例化需 TM 审定门禁，与执行性质不同 |
+| 4 | 测试在发布之前、手册在发布产出 | 新增**测试版构建**环节（代码评审闭环后），手册基于真实构建 | 消除时序死锁（评审 D1） |
+| 5 | 功能点编号 `fr-$MOD-xxx` | `fr-$COMPONENT-$MODULE-NNN` 固定 4 段（组件⊃模块，snake_case，无模块用 all） | 组件模块层级改版（可机械解析） |
+| 6 | test-manager"将测试缺陷发送给开发工程师" | TM 判定并登记 assigned_to（落 BUG 单），**实际派发由 PM 执行** | 子代理无消息通道，派发权唯一归 PM |
+| 7 | "变更流程：缺陷修复流程："（原文截断） | CR 变更五步闭环（charter §5.1）+ BUG 状态机闭环 | 原文缺失，最小闭环补齐 |
+| 8 | 开发者完成任务后无明确汇报要求 | TASK-DONE 标准报告（含 commit hash + 状态自评），PM 核对回写看板 | 完成闭环 + 看板单一写者 |
+| 9 | 发布"从 git 拉取分支" | 全新 worktree 从**主干**构建（测试版/生产版两阶段，tag 打在主干） | 单主干版本控制纪律（discipline §13） |

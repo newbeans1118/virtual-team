@@ -26,10 +26,7 @@ description: 把测试用例结构化存储并与功能点、数据单元关联�
 
 ## 存储选择（开工第一步）
 
-读 `test/STORE-CONFIG.json`——**项目立项时已一次性选定，全程跟随；仅允许一次 json→sqlite 单向迁移**（迁移后不可逆）。
-- `store=json` → 写分片文件 `test/trace/$COMPONENT/case-$MODULE.json`。
-- `store=sqlite` → UPSERT `cases` 表（module 列承载分片语义）。
-- 配置缺失 → **BLOCKED 报项目经理**（立项时未完成存储决策，不得代为默认选轨）。**数据契约（实体/字段/关联）两轨完全一致，仅读写方式不同。**
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写分片文件 `test/trace/$COMPONENT/case-$MODULE.json`；`store=sqlite` → UPSERT `cases` 表。配置缺失 → BLOCKED 报 PM。
 
 ## 数据结构
 

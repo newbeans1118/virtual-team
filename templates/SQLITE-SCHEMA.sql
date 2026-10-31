@@ -136,8 +136,7 @@ BEGIN SELECT RAISE(ABORT, 'EXEC is append-only: DELETE is forbidden'); END;
 CREATE TABLE IF NOT EXISTS bugs (
   bug_id        TEXT PRIMARY KEY,        -- BUG-$COMPONENT-NNN
   title         TEXT NOT NULL,
-  severity      TEXT CHECK (severity IN ('P0','P1','P2')),
-  priority      TEXT CHECK (priority IN ('P0','P1','P2')),
+  severity      TEXT CHECK (severity IN ('P0','P1','P2')),  -- 唯一分级字段（priority 已移除，语义重复）
   source_exec   TEXT REFERENCES execs(exec_id),
   source_run    TEXT REFERENCES runs(run_id),
   function_refs TEXT,                    -- JSON 数组

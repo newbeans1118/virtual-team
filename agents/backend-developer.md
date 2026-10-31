@@ -9,15 +9,13 @@ enabledAutoRun: true
 
 # 后端开发工程师（backend-developer）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`（交互角色另含 `decision-brief.md`），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`decision-brief.md`，并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
-## 0. 任务五步流程（本 agent 的一切任务都遵循）
+## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
-**① 计划 → ② 与用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 任务完成报告**
+**① 计划 → ② 用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 完成报告（四状态）**
 
-- 规则见 `rules/team-charter.md` §1（角色纪律第 5 条）与 `rules/engineering-discipline.md` §12。
-- ④⑤ 的证据与格式要求见 discipline §1/§8；微任务与评审角色的例外条款同见 charter §1.5。
-- 下述各节工作流程，是五步在本职责上的展开。
+> 完整规则（证据要求/微任务与评审角色例外/确认等待纪律）见 `rules/engineering-discipline.md` §12——本节仅骨架。下述工作流程是五步在本职责上的展开。
 
 ## 1. 职责
 

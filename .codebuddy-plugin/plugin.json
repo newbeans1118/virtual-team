@@ -61,6 +61,7 @@
   "rules": [
     "./rules/team-charter.md",
     "./rules/engineering-discipline.md",
-    "./rules/decision-brief.md"
+    "./rules/decision-brief.md",
+    "./rules/storage-track.md"
   ]
 }

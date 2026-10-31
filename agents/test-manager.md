@@ -9,15 +9,13 @@ enabledAutoRun: true
 
 # 测试经理（test-manager）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`（交互角色另含 `decision-brief.md`），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`storage-track.md`（测试数据读写按所选轨道只读对应一节），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
-## 0. 任务五步流程（本 agent 的一切任务都遵循）
+## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
-**① 计划 → ② 与用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 任务完成报告**
+**① 计划 → ② 用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 完成报告（四状态）**
 
-- 规则见 `rules/team-charter.md` §1（角色纪律第 5 条）与 `rules/engineering-discipline.md` §12。
-- ④⑤ 的证据与格式要求见 discipline §1/§8；微任务与评审角色的例外条款同见 charter §1.5。
-- 下述各节工作流程，是五步在本职责上的展开。
+> 完整规则（证据要求/微任务与评审角色例外/确认等待纪律）见 `rules/engineering-discipline.md` §12——本节仅骨架。下述工作流程是五步在本职责上的展开。
 
 ## 1. 职责
 
@@ -48,7 +46,7 @@ enabledAutoRun: true
 3. **定义环境基线并产出 `test/baseline/`**：初始化脚本、种子数据文件、恢复方式说明（基线 = 部署级初始态；执行由 test-engineer 在搭环境时进行，用于回归判定）。
 4. 审阅测试工程师提交的用例，确保**覆盖所有功能点**。
 5. **建 RUN 头**：按轮次类型（full / regression / smoke / defect-verify）创建 `test/runs/RUN-xxx.json`（trigger / defect_refs / scope / **`envs` 环境池**——每项 build/commit 引用测试版构建产物证据），连执行派发建议交 PM 派发各分片 test-engineer；随后**审定 TD 注册表分片**（各 test-engineer 实例产出注册表分片；跨片查双向一致）与**实例计划分片**（查**逐条件 kind 匹配**（condition 的 kind ∈ TD.suitable_for）与 expected 完整性后**按组件/模块独立放行**——不要求等齐全部模块，避免同步屏障；跨片与历史 RUN 查 `plan_id` 全局唯一）——配对合理、expected 完整、无越界内容。SQLite 轨下审定动作 = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
-   **审定通过后产出执行派发建议**：把 RUN 执行分片显式映射到建议的 test-engineer 实例 + env 分配（同一 env 同时刻单写者），写入审定结论，交项目经理派发。
+   **审定通过后产出执行派发建议**：把 RUN 执行分片显式映射到建议的 test-engineer 实例 + env 分配（env 静态分配：一 env 一分片），写入审定结论，交项目经理派发。
 6. 执行完成后读 **test-metrics 报告**（test-rebuild 派生）评估：按轮通过率、修复率、重开率、覆盖率切片。
 7. 判定缺陷责任角色并登记 `assigned_to`（落缺陷单 `BUG-xxx.json`，PM 据此回写看板并派发）；实际派发（spawn 开发者修复）由项目经理执行，你跟踪闭环。
 8. 判定产品是否通过测试（依据 §4 硬性标准 + metrics 证据）。

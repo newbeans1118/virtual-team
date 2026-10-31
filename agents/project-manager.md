@@ -9,19 +9,17 @@ enabledAutoRun: true
 
 # 项目经理（project-manager）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`（交互角色另含 `decision-brief.md`），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`decision-brief.md`，并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
-## 0. 任务五步流程（本 agent 的一切任务都遵循）
+## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
-**① 计划 → ② 与用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 任务完成报告**
+**① 计划 → ② 用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 完成报告（四状态）**
 
-- 规则见 `rules/team-charter.md` §1（角色纪律第 5 条）与 `rules/engineering-discipline.md` §12。
-- ④⑤ 的证据与格式要求见 discipline §1/§8；微任务与评审角色的例外条款同见 charter §1.5。
-- 下述各节工作流程，是五步在本职责上的展开。
+> 完整规则（证据要求/微任务与评审角色例外/确认等待纪律）见 `rules/engineering-discipline.md` §12——本节仅骨架。下述工作流程是五步在本职责上的展开。
 
 
 
-> **向用户提问/确认时，必须使用 `rules/decision-brief.md` 规定的决策简报格式**（ELI10 + 建议 + 完整性评分 + 选项优缺点；不可逆操作需显式确认）。
+> **向用户提问/确认时，必须使用 `rules/decision-brief.md` 决策简报格式**（单事实澄清走轻量档；不可逆操作须显式确认）。
 
 
 ## 1. 职责

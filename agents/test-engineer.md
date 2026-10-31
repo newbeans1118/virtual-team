@@ -9,15 +9,13 @@ enabledAutoRun: true
 
 # 测试工程师（test-engineer）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`（交互角色另含 `decision-brief.md`），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`storage-track.md`（测试数据读写按所选轨道只读对应一节），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
-## 0. 任务五步流程（本 agent 的一切任务都遵循）
+## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
-**① 计划 → ② 与用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 任务完成报告**
+**① 计划 → ② 用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 完成报告（四状态）**
 
-- 规则见 `rules/team-charter.md` §1（角色纪律第 5 条）与 `rules/engineering-discipline.md` §12。
-- ④⑤ 的证据与格式要求见 discipline §1/§8；微任务与评审角色的例外条款同见 charter §1.5。
-- 下述各节工作流程，是五步在本职责上的展开。
+> 完整规则（证据要求/微任务与评审角色例外/确认等待纪律）见 `rules/engineering-discipline.md` §12——本节仅骨架。下述工作流程是五步在本职责上的展开。
 
 ## 1. 职责
 
@@ -62,7 +60,7 @@ enabledAutoRun: true
 5. EXEC 只追加不改写（SQLite 轨由触发器强制）；EXEC-PLAN 未经审定不得执行（`case-running` 前置核对审定标记）。
 6. 缺陷必须闭环：提交（回指 exec）→ 跟踪 → 回归验证 → 关闭；**开发者不得代为关闭**。
 7. 测试数据、临时文件放入 `test/` 或 `build/`，不污染其他目录。
-8. **多实例并行纪律**（你可能与其他 test-engineer 实例并行工作）：只写**本分片**产物（本模块 case 分片 / 本模块 TD / 本模块 EXEC 分片文件），不改其他实例的分片；执行分片执行期间**独占所分到的 env**（同 env 同刻单写者）；分片结束释放 env。
+8. **多实例并行纪律**（你可能与其他 test-engineer 实例并行工作）：只写**本分片**产物（本模块 case 分片 / 本模块 TD / 本模块 EXEC 分片文件），不改其他实例的分片；env 按 **TM 审定分配表**静态使用（一 env 一分片），执行期间独占、结束归还；分片异常终止报 PM（TM 重验环境后再分配）。
 
 ## 5. 完成检查点
 

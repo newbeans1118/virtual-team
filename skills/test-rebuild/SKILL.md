@@ -32,10 +32,7 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 
 ## 存储选择（开工第一步）
 
-读 `test/STORE-CONFIG.json`——**项目立项时已一次性选定，全程跟随；仅允许一次 json→sqlite 单向迁移**（迁移后不可逆）。
-- `store=json` → 读五方**文件**全量计算；累计 EXEC > 1 万行时先做聚合索引。
-- `store=sqlite` → SQL 聚合查询（八项指标现成 SQL 见 `templates/SQLITE-SCHEMA.sql` 尾部）；输出物两轨相同。
-- 配置缺失 → **BLOCKED 报项目经理**（立项时未完成存储决策，不得代为默认选轨）。**数据契约（实体/字段/关联）两轨完全一致，仅读写方式不同。**
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 读五方文件全量计算；`store=sqlite` → SQL 聚合查询（八项指标现成 SQL 见 `templates/SQLITE-SCHEMA.sql` 尾部）。输出物两轨相同。配置缺失 → BLOCKED 报 PM。
 
 ## 一致性校验（每次必跑，四项）
 

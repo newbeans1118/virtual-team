@@ -1,7 +1,7 @@
 # 数据结构与算法设计：$PROJECT_NAME
 
 > 产出角色：architect ｜ 存放：design/DATASTRUCT-ALGORITHM.md
-> 面向"重要、复杂"的功能。
+> 面向"重要、复杂"的功能（判据：影响多组件，或含并发/事务一致性；见 team-charter §5「复杂判据」）。
 
 ## 编号：DSA-xxx （功能名称）
 
