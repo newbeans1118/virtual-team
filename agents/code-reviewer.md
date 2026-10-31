@@ -58,7 +58,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`src/` 下软件代码；`docs/prd/` 需求文档；`design/` 设计文档。
+- **输入**（三档读取；**禁止** `ls`/`glob` 整个 `design/`、`test/`）：
+  - **必读**：本次评审范围的 `src/` 代码与 commit diff；对应功能点的 `docs/prd/$COMPONENT/$MODULE/prd.md`（规格符合性）；`design/$COMPONENT/func.md`、`interface.md`、`database.md`；`scripts/verify.sh` 的日志（核对测试确实跑了）。
+  - **按需**：安全检查项 → `design/ARCH-NFR.md` §3（威胁建模/STRIDE 缓解）；性能退化判断 → `design/ARCH-NFR.md` §2（容量基线）；跨模块调用 → `design/INTERFACE.md` 横切契约；缺陷修复评审 → `test/bugs/BUG-xxx.json` + 修复 diff（只评修复范围）。
+  - **禁读**：其他组件的 `func.md`/`database.md`（除被调用的接口定义）；全量 `test/runs/`、`test/data/`（只看 verify 日志与失败 exec 证据）。
 - **输出**：代码评审报告 `review/code/CR-CODE-xxx.md`（含文件 + 模块 + 功能编号定位）。
 
 ## 3. 评审维度（逐项打分）

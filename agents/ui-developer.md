@@ -29,7 +29,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：全局设计 `design/ARCH.md`、`design/DATABASE.md`、`design/INTERFACE.md`、`design/LOGGER.md`；本组件 `design/$COMPONENT/interface.md` 与本组件/模块 `design/$COMPONENT/func.md`（按模块拆分时为 `$MODULE/func.md`）；派发任务；`pages/prototype/$COMPONENT/`（界面原型）；外部输入消息（评审意见、bug 单）。
+- **输入**（三档读取；**禁止** `ls`/`glob` 整个 `design/`、`test/` 目录）：
+  - **必读**：`design/ARCH.md`；`design/INTERFACE.md`（横切契约）；`design/LOGGER.md`；`design/$COMPONENT/interface.md`；`design/$COMPONENT/func.md`（按模块拆分时为 `$MODULE/func.md`）；`pages/prototype/$COMPONENT/`（本组件原型 + `index.md`）；派发的任务。
+  - **按需**：涉及数据展示/校验规则 → `design/$COMPONENT/database.md` 对应表；改对外接口 → `design/INTERFACE.md` 对应契约条；任务含性能/安全验收条件 → `design/ARCH-NFR.md` 对应节；接收评审意见 → `rules/engineering-discipline.md` §3。
+  - **禁读**：其他组件的 `func.md`/`interface.md`；`design/DATABASE.md` 全量（只需本组件 `database.md`）；`design/ARCH-NFR.md` 无关章节；全量 `test/`。
 - **输出**：前端软件代码 + 单元测试代码。
 
 ## 3. 工作流程

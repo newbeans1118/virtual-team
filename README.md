@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 36 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 38 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -29,10 +29,10 @@ virtual-team-plugin/
 │   ├── test-data-gen / test-rebuild / nfr-testing
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 13 个工作流入口
-├── templates/                         # 36 个交付物模版
+├── templates/                         # 38 个交付物模版
 ├── design/                            # 设计交付（全局 + 组件）
-│   ├── ARCH.md / DATABASE.md / INTERFACE.md / LOGGER.md / DEV-TASKS.md
-│   └── $COMPONENT/  interface.md / func.md（过大按 $MODULE/func.md 拆）
+│   ├── ARCH.md / ARCH-NFR.md / DATABASE.md / INTERFACE.md / LOGGER.md / DEV-TASKS.md
+│   └── $COMPONENT/  interface.md / func.md（过大按 $MODULE/func.md 拆）/ database.md
 ├── pages/prototype/$COMPONENT/        # 组件界面原型 + 页面索引（运行时产出）
 ├── board/                             # 进度看板存放（运行时产出）
 ├── docs/ src/ review/ test/ release/   # 各阶段交付目录约定（design 见上）
@@ -176,6 +176,7 @@ codebuddy --plugin-dir <本目录绝对路径>
 - `rules/engineering-discipline.md` 与 `skills/code-review` 为工程实践增强，来源：Anthropic Skill 编写最佳实践、superpowers 系列技能（TDD/两阶段评审/验证先于完成）。可按需调整。
 - **测试版构建**（两阶段发布之阶段一）为对原文发布流程的增强：代码评审闭环后即构建，作为测试环境来源——解决"测试需要安装手册但手册在发布阶段才产出"的时序倒挂。
 - **测试执行协调**：RUN 头由 test-manager 创建（消除多分片并发建头竞态）；exec_id 采用复合格式 `{plan_ref}-{seq}`（plan_ref 全局唯一 → 并行分片零撞号）；轮次汇总由 `test-rebuild` 从 EXEC 派生（RUN 头为纯计划态，不回写）。
+- **读取分层**：`ARCH.md`（开发者主线）/`ARCH-NFR.md`（非功能）、`DATABASE.md`（全局规范）/`$COMPONENT/database.md`（表明细）、`INTERFACE.md`（契约）/`$COMPONENT/interface.md`；agent 输入按「必读/按需/禁读」三档声明，读取纪律见 `rules/engineering-discipline.md` §15。
 - **设计分层**：ARCH/DATABASE/INTERFACE/LOGGER 为全局单件但须内部索引/分节；功能设计按组件 `func.md`（FR > 12 或 > 300 行按模块拆），接口按组件 `interface.md`；算法与日志事件并入 FUNC；设计与 PRD 评审按组件出报告。
 - **工程技术增强**：ARCH 增容量估算/威胁建模/可观测性；INTERFACE 增横切契约（版本/幂等/超时/重试等）；DATABASE 增 expand-contract 迁移；发布增 `RELEASE-PLAN`/SHA256/SBOM/回滚演练/发布后验证；DEV-TASKS 增 `ENABLER` 类型与相对规模。
 
@@ -197,6 +198,7 @@ codebuddy --plugin-dir <本目录绝对路径>
 | 10 | 产物称"需求说明书/规格说明书"，结构化称 req | 统一标准化为 **PRD**：技能 `requirement→prd`、`req-structure→prd-structure`、`requirement-review→prd-review`；文件 `spec*.md→prd*.md`、`req.json→prd.json`；目录 `docs/requirements/→docs/prd/`；SQL 契约 `req_*→prd_*`（acceptance-v3）；命令 `/requirements→/prd` | 术语标准化（消除 req/spec/PRD 三套用语分裂） |
 | 11 | 原文无独立 NFR 测试 | 新增 **NFR 独立轨**：`test/nfr/`（NFR-CASE / NFR-TD / NFR-RUN / NFR-RPT），`/nfr-test` 入口；仅参考报告，不阻塞 FR 流程与发布 | 技术评审（用户裁决：独立轨、仅报告） |
 | 12 | 设计文档为单文件（FUNC/INTERFACE 等） | 设计按组件/模块分层：全局 ARCH/DATABASE/INTERFACE/LOGGER + 组件 `func.md`/`interface.md`；FUNC 超阈值按模块拆；算法与日志事件并入 FUNC；设计与 PRD 评审按组件出报告 | 技术评审（设计分层） |
+| 13 | 全局设计文档被全量加载（DATABASE/ARCH 每次 spawn 全读） | 按读者/消费边界拆分：`ARCH.md`（开发者）+ `ARCH-NFR.md`（架构/评审/测试/发布）；`DATABASE.md` 只留全局概览，表结构下沉 `$COMPONENT/database.md`；agent 输入改「必读/按需/禁读」三档 + 读取纪律（discipline §15） | 上下文成本评审（单次 spawn 降约 38%） |
 
 ## 校验
 

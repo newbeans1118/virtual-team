@@ -1,7 +1,7 @@
 # 日志设计：$PROJECT_NAME
 
 > 产出角色：architect ｜ 存放：design/LOGGER.md
-> **范围**：本文件只定义日志规范（格式/目录/级别/脱敏/保留）；**各组件/模块记录哪些事件**见对应 `design/$COMPONENT/func.md` §5。指标、追踪、健康检查、告警见 `design/ARCH.md` §9。
+> **范围**：本文件只定义日志规范（格式/目录/级别/脱敏/保留）；**各组件/模块记录哪些事件**见对应 `design/$COMPONENT/func.md` §5。指标、追踪、健康检查、告警见 `design/ARCH-NFR.md` §4。
 
 ## 1. 日志目录与文件
 

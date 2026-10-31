@@ -37,7 +37,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/prd/`、`design/`、`review/`、`test/report/`、`release/`。
+- **输入**（验收者需全局，但只读**结论与索引**）：
+  - **必读**：`docs/PROJ_$PROJECT_NAME.md`（验收基线）；`docs/prd/overview.md`、`prd-nonfunc.md`、`RTM.md`；`design/ARCH.md`、`design/ARCH-NFR.md`、`design/DATABASE.md` §0（索引）；`review/` 全部评审结论；`test/report/`；`release/`。
+  - **按需**：抽查功能落地 → 相关组件 `func.md`/`interface.md`；核对数据 → 该组件 `database.md`；NFR 报告 → `test/nfr/report/`。
+  - **禁读**：`src/` 实现（不评代码级）；全量 `test/runs/`；组件级设计正文（用索引与抽查定位）。
 - **输出**：
   - 立项评审报告 `review/project/RV-PROJ-KICKOFF.md`
   - 项目验收评审报告 `review/project/RV-PROJ-ACCEPT.md`

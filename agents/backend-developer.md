@@ -28,7 +28,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：全局设计 `design/ARCH.md`、`design/DATABASE.md`、`design/INTERFACE.md`、`design/LOGGER.md`；本组件 `design/$COMPONENT/interface.md` 与本组件/模块 `design/$COMPONENT/func.md`（按模块拆分时为 `$MODULE/func.md`）；派发的任务（含模块与功能编号）；外部输入消息（评审意见、bug 单）。
+- **输入**（三档读取；**禁止** `ls`/`glob` 整个 `design/`、`test/` 目录）：
+  - **必读**：`design/ARCH.md`；`design/DATABASE.md` §2（全局数据规范）+ `design/$COMPONENT/database.md`；`design/INTERFACE.md`（横切契约）；`design/$COMPONENT/interface.md`；`design/$COMPONENT/func.md`（按模块拆分时为 `$MODULE/func.md`）；`design/LOGGER.md`；派发的任务（含模块与功能编号）。
+  - **按需**：改表结构 → `design/DATABASE.md` §3/§4（跨组件 ER 与引用约束）；改对外/跨模块接口 → 调用方组件的 `interface.md` 对应接口；任务含性能/安全验收条件 → `design/ARCH-NFR.md` 对应节；接收评审意见 → `rules/engineering-discipline.md` §3；收到 bug 单 → 该 BUG 的 `evidence` 指向的 exec 记录。
+  - **禁读**：其他组件的 `func.md`/`database.md`；`design/ARCH-NFR.md` 与任务无关的章节（容量/威胁建模全文）；全量 `test/`、`docs/prd/` 其他模块。
 - **输出**：软件代码 + 单元测试代码，写入 `src/<module>/`。
 
 ## 3. 工作流程

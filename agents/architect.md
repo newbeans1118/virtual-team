@@ -39,13 +39,18 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/prd/$COMPONENT/$MODULE/prd.md`、`docs/prd/prd-nonfunc.md`、`docs/prd/dict.md`
+- **输入**（设计生产者，需读全量需求；但不读测试与源码实现）：
+  - **必读**：`docs/PROJ_$PROJECT_NAME.md`；**全部组件** `docs/prd/$COMPONENT/$MODULE/prd.md`（含 `prd-ui.md`/`prd-svc.md`）；`docs/prd/prd-nonfunc.md`（NFR 来源）；`docs/prd/dict.md`（实体来源）。
+  - **按需**：改造项目 → 既有 `src/` 与 `design/`；界面约束 → `pages/prototype/$COMPONENT/`；变更驱动 → `docs/changes/CR-*.json`。
+  - **禁读**：`test/`（设计阶段不读测试资产）；`review/` 未完成的评审草稿。
 - **输出**（`design/` 目录）：
 
 | 文件 | 层级 | 内容 | 对应技能 |
 |------|------|------|---------|
-| `design/ARCH.md` | 全局 | 技术栈、系统架构、组件边界与交互、部署视图、容量/威胁/可观测、ADR、追溯矩阵 | `skills/architecting` |
-| `design/DATABASE.md` | 全局 | 组件/模块索引 + 按组件/模块分节的数据模型、ER、索引、DDL、迁移 | `skills/data-modelling` |
+| `design/ARCH.md` | 全局 | 技术栈、系统架构、组件边界与交互、交互时序、部署视图、ADR、追溯矩阵（**开发者必读**） | `skills/architecting` |
+| `design/ARCH-NFR.md` | 全局 | 非功能支撑、容量估算、威胁建模、可观测性（SLI/SLO/告警）（**架构/评审/测试/发布读**） | `skills/architecting` |
+| `design/DATABASE.md` | 全局概览 | 组件数据索引、全局数据规范、跨组件 ER、跨组件引用约束、安全分级 | `skills/data-modelling` |
+| `design/$COMPONENT/database.md` | 组件 | 组件内 ER、表清单、表结构、索引、DDL、生命周期、敏感字段、迁移演进 | `skills/data-modelling` |
 | `design/INTERFACE.md` | 全局 | 横切契约（版本/幂等/超时/重试/限流/错误分类）+ 组件接口索引 | `skills/general-design` |
 | `design/LOGGER.md` | 全局 | 日志格式/目录/级别/脱敏/保留 | `skills/general-design` |
 | `design/$COMPONENT/interface.md` | 组件 | 对外接口 + 跨模块接口 + 模块内接口 | `skills/general-design` |
@@ -55,8 +60,8 @@ enabledAutoRun: true
 ## 3. 工作流程
 
 1. 读取需求文档，**先产出设计方案大纲并与用户确认**，再开工。
-2. 用 `skills/architecting` 完成架构与组件设计（ARCH.md），含 Mermaid 架构图/时序图、**容量估算**（§7）、**威胁建模**（§8）、**可观测性设计**（§9）——按判据必填，不适用须写理由。
-3. 用 `skills/data-modelling` 完成数据库设计（DATABASE.md），含 Mermaid ER 图、DDL。
+2. 用 `skills/architecting` 完成 `ARCH.md`（开发者必读：技术栈/架构/组件/时序/部署/ADR/追溯）与 `ARCH-NFR.md`（容量估算/威胁建模/可观测性——按判据必填，不适用须写理由），含 Mermaid 架构图/时序图。
+3. 用 `skills/data-modelling` 产出**全局概览** `DATABASE.md`（组件数据索引 + 全局数据规范 + 跨组件 ER/引用约束）与**每组件** `design/$COMPONENT/database.md`（表结构/索引/DDL/生命周期/迁移）。
 4. 用 `skills/general-design` 按组件产出：全局 `INTERFACE.md`/`LOGGER.md` + 每组件 `interface.md`/`func.md`（组件 FR > 12 或 func.md > 300 行时按模块拆）；算法与日志事件并入 `func.md`。
 5. **搭建工程目录与构建系统并验证**（可实际执行构建命令验证），并初始化 `scripts/verify.sh`（两档契约见 `rules/engineering-discipline.md` §14），实测 `--fast` 与默认档退出码。
 6. 提交用户 + 独立设计评审员评审。
@@ -76,8 +81,10 @@ enabledAutoRun: true
 ## 5. 完成检查点
 
 - [ ] ARCH.md 含架构图、组件交互、技术选型理由
+- [ ] ARCH-NFR.md 含容量估算、威胁建模、可观测性（按判据，不适用有理由）
 - [ ] 容量估算、威胁建模、可观测性按判据完成（不适用已写理由）
-- [ ] DATABASE.md 含组件/模块索引 + 分节，ER/索引/DDL 完整
+- [ ] DATABASE.md 含组件数据索引 + 全局数据规范 + 跨组件引用约束
+- [ ] 每个组件 `database.md` 齐全（表结构/索引/DDL/迁移）
 - [ ] 每个组件 `func.md` 的 FR 映射完整（未覆盖有理由）
 - [ ] 全局 INTERFACE 横切契约 + 各组件 `interface.md` 齐全
 - [ ] 全局 LOGGER 规范 + 各 `func.md` 日志事件齐全

@@ -1,6 +1,6 @@
 ---
 description: 通用评审入口：PRD 评审 / 设计评审 / 数据模型评审，产出评审报告并驱动闭环
-argument-hint: "评审类型与对象，例如：PRD 评审 docs/prd/ 或 设计评审 design/DATABASE.md"
+argument-hint: "评审类型与对象，例如：PRD 评审 docs/prd/order 或 设计评审 design/order"
 ---
 
 <user_input>

@@ -17,7 +17,8 @@ description: 把已定稿的设计拆解为可独立开发与验收的开发任�
 
 ## 输入
 
-- 全局：`design/ARCH.md`、`DATABASE.md`、`INTERFACE.md`、`LOGGER.md`
+- 全局：`design/ARCH.md`、`ARCH-NFR.md`、`DATABASE.md`、`INTERFACE.md`、`LOGGER.md`
+- 各组件：`design/$COMPONENT/func.md`、`interface.md`、`database.md`（跨组件依赖需读全部组件）
 - 按组件：`design/$COMPONENT/func.md`、`design/$COMPONENT/interface.md`（或 `$MODULE/func.md`）
 - 各组件/模块 `prd.md`（功能编号来源）
 

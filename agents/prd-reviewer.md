@@ -25,7 +25,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/prd/overview.md`、各组件/模块 `biz.md`、`prd.md`、`docs/prd/prd-nonfunc.md`、`docs/prd/dict.md`。
+- **输入**（按组件评审）：
+  - **必读**：`docs/PROJ_$PROJECT_NAME.md`；`docs/prd/overview.md`、`prd-nonfunc.md`、`dict.md`、`RTM.md`；**本组件** `docs/prd/$COMPONENT/**/biz.md`、`prd.md`（含 `prd-ui.md`/`prd-svc.md`）。
+  - **按需**：跨组件引用核对 → 相关组件 `prd.md`；原型一致性 → `pages/prototype/$COMPONENT/index.md`。
+  - **禁读**：`design/`、`src/`、`test/`（PRD 评审不评实现与测试）。
 - **输出**：**按组件**出报告 `review/prd/RV-PRD-$COMPONENT-xxx.md`；由 PM 汇总全部组件结论。
 
 ## 3. 评审报告格式

@@ -27,7 +27,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/prd/$COMPONENT/`、全局 `design/ARCH.md`、`design/DATABASE.md`、`design/INTERFACE.md`、`design/LOGGER.md`、各组件 `design/$COMPONENT/interface.md` 与 `func.md`（或模块级 `$MODULE/func.md`）；**设计评审通过后**另含 `design/DEV-TASKS.md`（分解评审）。
+- **输入**（评审者需跨组件全量，但按组件逐个评审）：
+  - **必读**：本组件的 `docs/prd/$COMPONENT/`；全局 `design/ARCH.md`、`design/ARCH-NFR.md`、`design/DATABASE.md`、`design/INTERFACE.md`、`design/LOGGER.md`；本组件 `design/$COMPONENT/interface.md`、`func.md`（或模块级 `$MODULE/func.md`）、`database.md`。
+  - **按需**：跨组件一致性核对（ER/接口引用）→ 相关组件的 `database.md` / `interface.md`；分解评审 → `design/DEV-TASKS.md`。
+  - **禁读**：与本组件无关的业务 PRD 细节（除跨组件引用）；`src/`、`test/`（设计评审不评实现）。
 - **输出**：**按组件**出报告 `review/design/RV-DESIGN-$COMPONENT-xxx.md`；数据模型专项 `RV-DM-$COMPONENT-xxx.md`；由 PM 汇总全部组件结论。
 
 ## 2.1 两轮评审时序

@@ -16,7 +16,8 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 ## 输入
 
 - `docs/prd/`
-- 全局：`design/ARCH.md`、`DATABASE.md`、`INTERFACE.md`、`LOGGER.md`
+- 全局：`design/ARCH.md`、`ARCH-NFR.md`、`DATABASE.md`、`INTERFACE.md`、`LOGGER.md`
+- 按组件：`design/$COMPONENT/database.md`（表结构/DDL/迁移）
 - 按组件：`design/$COMPONENT/interface.md`、`design/$COMPONENT/func.md`（或 `$MODULE/func.md`）
 
 ## 输出
@@ -27,7 +28,7 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 
 1. 技术选型合理性（满足需求、不过度设计、依赖必要）
 2. 架构与组件设计正确性（分层、职责、交互闭环）
-3. 数据库设计（模型规范、索引合理、DDL 与字典一致；存量数据/结构变更须含 expand-contract 迁移与回滚）
+3. 数据库设计（全局规范与组件表结构分层、组件未复制全局规范、跨组件外键在全局登记、索引合理、DDL 与字典一致；存量/结构变更须含 expand-contract 迁移与回滚）
 4. 功能设计完备性（功能编号全覆盖）
 5. 接口设计（契约完整、异常路径定义；横切契约齐全：版本/兼容/幂等/超时/重试/限流/熔断）
 6. 数据结构与算法（正确性、复杂度可接受）
@@ -36,7 +37,7 @@ description: 独立评审架构与详细设计交付物时使用。触发场景�
 9. **非功能设计落地**：容量估算（QPS/存储/资源与依据）、威胁建模（信任边界/STRIDE/密钥/供应链）、可观测性（SLI/SLO/指标/追踪/健康检查/告警）、性能/安全/可扩展措施——四项缺一即 P1
 10. 可追溯性（设计条目 ↔ 功能编号）
 11. **任务分解合理性**（评审 `design/DEV-TASKS.md`，在设计修订完成后进行）：以模块为单位切分、可独立开发与验收、依赖显式且**无环**、并行组划分正确、**功能编号全覆盖**、未越界写优先级/排期；**任务类型（FR/ENABLER）与相对规模已标注**，ENABLER 有独立 DoD
-12. **组件分层完整性**：每个组件有 `interface.md` 与 `func.md`；FUNC 超过阈值（FR > 12 或 > 300 行）已按模块拆；组件设计引用与全局 `ARCH/DATABASE/INTERFACE/LOGGER` 一致，无重复或冲突
+12. **组件分层完整性**：每个组件有 `interface.md` 与 `func.md`；FUNC 超过阈值（FR > 12 或 > 300 行）已按模块拆；组件设计引用与全局 `ARCH/ARCH-NFR/DATABASE/INTERFACE/LOGGER` 一致，无重复或冲突；组件 `database.md` 未复制全局规范
 
 ## 报告格式
 

@@ -19,8 +19,8 @@ $ARGUMENTS
 
 1. 读取 `rules/team-charter.md`、`docs/prd/`。
 2. 依次使用技能：
-   - `architecting` → `design/ARCH.md`（含组件索引与追溯矩阵）
-   - `data-modelling` → `design/DATABASE.md`（组件/模块索引 + 按组件/模块分节）
+   - `architecting` → `design/ARCH.md`（组件索引+追溯矩阵，开发者必读）+ `design/ARCH-NFR.md`（容量/威胁/可观测）
+   - `data-modelling` → 全局 `design/DATABASE.md`（组件数据索引+全局规范+跨组件引用）+ 每组件 `design/$COMPONENT/database.md`（表结构/索引/DDL/迁移）
    - `general-design` → 全局 `design/INTERFACE.md`（横切契约 + 组件接口索引）、`design/LOGGER.md`（日志规范）；按组件 `design/$COMPONENT/interface.md` 与 `design/$COMPONENT/func.md`（组件 FR > 12 或 func.md > 300 行时按模块拆 `$MODULE/func.md`）
    - `diagramming` → 架构图/ER 图/时序图（Mermaid）
 3. **搭建工程目录与构建系统并验证**（实际执行构建命令）。

@@ -16,7 +16,7 @@ description: 设计组件功能、接口与日志时使用。触发场景：需�
 ## 输入
 
 - `docs/prd/$COMPONENT/$MODULE/prd.md`（按组件/模块）
-- `design/ARCH.md`、`design/DATABASE.md`
+- `design/ARCH.md`、`design/DATABASE.md`（全局数据规范）、`design/$COMPONENT/database.md`（本组件表结构）
 
 ## 输出
 

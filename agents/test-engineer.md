@@ -33,7 +33,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`test/plan.md`、`test/baseline/`、`docs/prd/$COMPONENT/$MODULE/trace/prd.json`、测试版构建产物（`release/artifact/` + `release/manual-install.md`）、软件代码。
+- **输入**（三档读取；**禁止** `ls`/`glob` 整个 `design/`、`test/`）：
+  - **必读**：`test/plan.md`；`test/baseline/`；本模块 `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（验收条件）；本模块源码；测试版构建产物（`release/artifact/` + `release/manual-install.md`，环境来源）。
+  - **按需**：设计用例依据 → `design/$COMPONENT/func.md` 对应功能；造数据依据 → `design/$COMPONENT/database.md` 表结构 + `design/INTERFACE.md` 契约；NFR 用例负载模型 → `design/ARCH-NFR.md` §2；复用他人数据 → 该 TD 的 `load_entry` 与 `data_scope`。
+  - **禁读**：其他模块的 `trace/prd.json`、`func.md`；全量 `design/`；全量 `test/runs/`（只看本分片）。
 - **输出**：
   - 测试用例 `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md` + 结构化 `test/trace/$COMPONENT/case-$MODULE.json`
   - 数据单元 `test/data/$COMPONENT/TD-$COMPONENT-NNN/` + 本分片注册表 `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`（SQLite 轨：td_registry 行）

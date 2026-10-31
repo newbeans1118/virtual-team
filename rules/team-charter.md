@@ -62,6 +62,8 @@
 | 缺陷 | `BUG-$COMPONENT-NNN`，状态机闭环，回指 exec | `BUG-order-007` |
 | 组件功能设计 | `design/$COMPONENT/func.md`（组件 FR > 12 或 > 300 行时按模块拆 `$MODULE/func.md`） | `design/order/func.md` |
 | 组件接口设计 | `design/$COMPONENT/interface.md` | `design/order/interface.md` |
+| 组件数据库设计 | `design/$COMPONENT/database.md` | `design/order/database.md` |
+| 架构 NFR 分册 | `design/ARCH-NFR.md`（容量/威胁/可观测） | — |
 | 设计评审报告 | `review/design/RV-DESIGN-$COMPONENT-xxx.md` | `RV-DESIGN-order-001.md` |
 | PRD 评审报告 | `review/prd/RV-PRD-$COMPONENT-xxx.md` | `RV-PRD-order-001.md` |
 
@@ -90,13 +92,15 @@ $PROJECT_ROOT/
 │               └── trace/prd.json  # 结构化需求分片
 ├── design/                     # 设计阶段交付物（架构师）
 │   ├── ARCH.md                 # 全局架构（组件边界/部署/NFR/安全/可观测/ADR/追溯）
-│   ├── DATABASE.md             # 全局：组件/模块索引 + 分节（ER/表/DDL/迁移）
+│   ├── ARCH-NFR.md             # 全局：容量估算/威胁建模/可观测性（架构/评审/测试/发布读）
+│   ├── DATABASE.md             # 全局概览：组件数据索引 + 全局数据规范 + 跨组件 ER/引用约束
 │   ├── INTERFACE.md            # 全局：横切契约 + 组件接口索引
 │   ├── LOGGER.md               # 全局：日志规范（格式/目录/级别/脱敏/保留）
 │   ├── DEV-TASKS.md            # 全局：任务分解（规划物，设计评审通过后产出）
 │   └── $COMPONENT/
 │       ├── interface.md        # 组件接口（对外 + 跨模块 + 模块内）
-│       └── func.md             # 组件功能设计（含算法/日志事件）；组件 FR > 12 或 > 300 行时按模块拆 $MODULE/func.md
+│       ├── func.md             # 组件功能设计（含算法/日志事件）；组件 FR > 12 或 > 300 行时按模块拆 $MODULE/func.md
+│       └── database.md         # 组件表结构/索引/DDL/生命周期/迁移（表明细，非全局规范）
 ├── src/                        # 源代码（开发工程师）
 │   └── $COMPONENT/             # 与组件对齐
 │       └── code + tests/       # tests/ = 单元测试
@@ -222,10 +226,10 @@ $PROJECT_ROOT/
 > 本节只留红线结论；生成清单、检验细则、字段规范等机制细节以对应技能为单一事实源。
 
 - **需求**：功能点必须可独立验收，验证标准**条列化 + GWT 化**并按生成清单逐类对照（细则见 `skills/prd`）；FR 粒度经五条检验；L4 交互细节禁入 FR；前后台边界清晰（前台规则用占位符引用）；**跨产物对账**——凡同时交付 PRD 与原型，页面 × FR 覆盖矩阵无空白方可交付（并入 RTM，见 `templates/RTM.md`）。
-- **设计**：设计条目必须能与**功能编号**关联；对外暴露/敏感数据/高并发项目须含**容量估算、威胁建模、可观测性设计**（判据与模板见 `templates/ARCH.md` §7–§9），不适用须写理由。
-- **设计分层**：ARCH/DATABASE/INTERFACE/LOGGER 为全局单件但须内部分节/索引；功能设计按组件 `func.md`（FR > 12 或 > 300 行按模块拆），接口按组件 `interface.md`；**设计/PRD 评审按组件出报告**，PM 汇总全部组件通过才放行。
+- **设计**：设计条目必须能与**功能编号**关联；对外暴露/敏感数据/高并发项目须含**容量估算、威胁建模、可观测性设计**（`design/ARCH-NFR.md`，判据见 `templates/ARCH-NFR.md` §2–§4），不适用须写理由。
+- **设计分层**：`ARCH/NFR` 按读者拆文件（`ARCH.md` 开发者必读、`ARCH-NFR.md` 架构/评审/测试/发布读）；`DATABASE.md` 只留全局概览，表结构下沉 `$COMPONENT/database.md`；`INTERFACE.md` 只留横切契约，接口下沉 `$COMPONENT/interface.md`；功能设计按组件 `func.md`（FR > 12 或 > 300 行按模块拆）。**消费者只读本组件，生产者与评审者读全量**；**设计/PRD 评审按组件出报告**，PM 汇总全部组件通过才放行。
 - **任务分解**：任务可独立开发与验收，依赖**无环**，功能编号**全覆盖**；任务分 **FR / ENABLER** 两类（ENABLER 不挂 FR 但须有独立 DoD），每任务标注相对规模 S/M/L（细则见 `skills/task-breakdown`）。
-- **数据演进**：涉及存量数据或跨版本表结构变更时，须在 `DATABASE.md` 给出 expand-contract 迁移与回滚方案（含发布顺序、回填、验证；见 `templates/DATABASE.md` §8）。
+- **数据演进**：涉及存量数据或跨版本表结构变更时，须在**对应组件** `database.md` 给出 expand-contract 迁移与回滚方案（回填/验证/大表策略见 `templates/DATABASE-COMP.md` §8）；跨组件发布顺序由 `RELEASE-PLAN` 编排。跨组件外键必须在全局 `DATABASE.md` §4 登记，组件文件单独出现即视为不一致。
 - **代码**：遵循**最简代码原则**，用最简单的代码实现功能。
 - **测试**：测试用例必须覆盖**所有功能点**；每条 active 用例必须有**数据单元支撑**（无 TD = 假覆盖）；逐条覆盖功能点验证条件（`acceptance_refs`）；**测试点级覆盖率仅作度量，不作硬门禁**；测试通过标准为 **无 P0/P1 遗留**（细则见 `skills/case-design`/`case-structure`）。
 - **模板纯净性**：`templates/` 下所有文件的**结构、字段、机制说明**不得包含业务域概念（业务概念只允许出现在**示例/演示内容**中——示例是教学内容，不算违规）。判定标准：把示例删掉后，剩余骨架是否仍完整表达该交付物的结构。

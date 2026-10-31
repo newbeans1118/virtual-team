@@ -39,7 +39,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`；与用户交互。
+- **输入**：
+  - **必读**：`docs/PROJ_$PROJECT_NAME.md`；与用户交互确认业务目标与范围。
+  - **按需**：增量迭代 → 既有 `docs/prd/$COMPONENT/$MODULE/`（只读本组件）；变更驱动 → `docs/changes/CR-*.json`；原型改版 → `pages/prototype/$COMPONENT/`。
+  - **禁读**：`design/`、`src/`、`test/`（需求阶段不绑实现）。
 - **输出**：
   - 业务分析概览 → `docs/prd/overview.md`（模版 `templates/BIZ-OVERVIEW.md`）
   - 业务分析说明书 → `docs/prd/$COMPONENT/$MODULE/biz.md`（模版 `templates/BIZ-MOD.md`）

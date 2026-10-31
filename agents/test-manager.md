@@ -33,7 +33,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：软件代码、需求文档（`docs/prd/`）、设计文档（`design/`）、测试版构建产物（`release/artifact/` + `release/manual-install.md`，envs 证据来源）、各分片实例计划（`test/runs/RUN-xxx/EXEC-PLAN-<组件>-<模块>.json`）、TD 注册表分片（`test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`）、度量报告（`test/report/metrics-*.md`）。
+- **输入**（管理者需全局视图，但只读**索引与结论**，不读设计全文）：
+  - **必读**：`docs/prd/overview.md`、`prd-nonfunc.md`、RTM；`design/ARCH.md` §2/§3（架构与组件索引）；`design/DATABASE.md` §0/§4（组件数据索引与跨组件引用）；`design/INTERFACE.md`（横切契约）；测试版构建产物（`release/artifact/` + `manual-install.md`，envs 证据来源）；各分片 EXEC-PLAN；`test/report/metrics-*.md`。
+  - **按需**：审定具体组件实例计划时 → 该组件 `func.md`/`database.md`；NFR 方案 → `design/ARCH-NFR.md` §2；缺陷责任判定 → 该 BUG 的 exec 证据 + 对应源码片段。
+  - **禁读**：全量 `design/` 组件设计正文（用索引定位）；`src/` 全量（只看缺陷相关片段）。
 - **输出**：
   - 测试方案 `test/plan.md`
   - 测试基线数据 `test/baseline/`

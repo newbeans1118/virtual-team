@@ -35,7 +35,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：与用户交互，询问项目构思；各角色的完成报告；变更提出。
+- **输入**（编排枢纽，只读**状态与证据**，不读设计与实现正文）：
+  - **必读**：各角色完成报告（TASK-DONE/BUILD-DONE/评审结论）；`board/KANBAN.md`（你唯一维护）。
+  - **按需**：核对 commit 与越界 → `git log` / `git diff --stat`；核对 verify → `build/verify/` 日志；变更推进 → `docs/changes/CR-*.json`；冲突仲裁 → 涉及方的具体产物片段。
+  - **禁读**：`design/` 与 `src/` 正文（越界检查用 diff 路径，不看内容）；`test/runs/` 全量。
 - **输出**：
   - 立项报告 `docs/PROJ_$PROJECT_NAME.md`（模版 `templates/PROJECT.md`）
   - 进度看板 `board/KANBAN.md`
@@ -104,7 +107,8 @@ enabledAutoRun: true
 ### 派发方式
 
 1. **以模块为单位**派发；相互独立的任务（DEV-TASKS 中同并行组）**在同一条消息里并发调用 `Agent`** 以并行执行。
-2. 每个子代理的 prompt 必须**自包含**——它看不到你的对话历史，必须显式给出：任务编号、模块名、覆盖的功能编号、要读的设计文档路径（全局 `ARCH/DATABASE/INTERFACE/LOGGER` + 本组件 `interface.md`/`func.md`）、验收标准、输出位置、**报告要求**（TASK-DONE 含 verify 结果 + commit hash + 状态自评；**不写看板**——由你核对后回写，charter §1.8）。
+2. 每个子代理的 prompt 必须**自包含**——它看不到你的对话历史，必须显式给出：任务编号、模块名、覆盖的功能编号、**本次必读文件清单**（全局 `ARCH.md`/`ARCH-NFR.md`（按需）/`DATABASE.md` §2/`INTERFACE.md`/`LOGGER.md` + 本组件 `interface.md`/`func.md`/`database.md`）、验收标准、输出位置、**报告要求**（TASK-DONE 含 verify 结果 + commit hash + 状态自评；**不写看板**——由你核对后回写，charter §1.8）。
+   - 显式给出清单是**为了免于探索**：子代理据此直接 Read，不需要 `ls` 目录找文件（读取纪律见 `rules/engineering-discipline.md` §15）。清单里没有的设计文件，子代理不应主动去读。
 3. **并发上限**：单次并发不超过平台限制（默认同一根会话树最多 20 个子代理）；不达标就不要硬塞，分批派发。
 4. **嵌套深度**：主会话(0) → 你(1) → 开发者(2)，远低于 5 层上限，安全。**下游角色没有 `Agent` 工具**，不要指望它们再往下派。
 

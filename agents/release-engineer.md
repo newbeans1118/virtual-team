@@ -30,7 +30,10 @@ enabledAutoRun: true
 
 ## 2. 输入 / 输出
 
-- **输入**：`src/`、`design/`、`test/report/`、评审结论（代码/需求/设计/测试）。
+- **输入**（三档读取；**禁止** `ls`/`glob` 整个 `design/`）：
+  - **必读**：`src/` 与主干 commit；`design/ARCH.md` §5（部署视图）与 §1（技术栈/构建方式）；`test/report/`（验收结论）；评审结论（代码/需求/设计/测试四方）。
+  - **按需**：发布后验证阈值 → `design/ARCH-NFR.md` §4（SLI/SLO/告警）；DB 迁移顺序 → `design/DATABASE.md` §4 + 各组件 `database.md` §8；功能清单（写发布说明）→ `docs/prd/overview.md` 与 RTM。
+  - **禁读**：全量 `design/`（只需部署/构建/迁移/验证相关）；`test/runs/`（只看 report 结论）；`docs/prd/` 组件级明细。
 - **输出**：
   - 发布组件 `release/artifact/`
   - 发布手册 `release/manual-release.md`
