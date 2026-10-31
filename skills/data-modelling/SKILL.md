@@ -16,7 +16,7 @@ description: 设计数据库、画 ER 图、写 DDL 与索引时使用。触发�
 ## 输入
 
 - `docs/requirements/dict.md`（数据字典）
-- `docs/requirements/spec-$MOD.md`
+- `docs/requirements/$COMPONENT/$MODULE/spec.md`
 - `docs/requirements/spec-nonfunc.md`（性能指标影响索引设计）
 
 ## 输出

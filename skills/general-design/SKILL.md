@@ -15,7 +15,7 @@ description: 设计模块功能、内外部接口、关键算法与数据结构�
 
 ## 输入
 
-- `docs/requirements/spec-$MOD.md`
+- `docs/requirements/$COMPONENT/$MODULE/spec.md`
 - `design/ARCH.md`、`design/DATABASE.md`
 
 ## 输出
@@ -30,7 +30,7 @@ description: 设计模块功能、内外部接口、关键算法与数据结构�
 ## 内容要求
 
 ### FUNC.md
-- 以模块为单位组织；每个功能设计条目标注对应 `fr-$MOD-xxx`。
+- 以组件/模块为单位组织；每个功能设计条目标注对应 `fr-$COMPONENT-$MODULE-NNN`。
 - 条目含：功能说明、处理流程（Mermaid）、依赖、异常路径。
 
 ### DATASTRUCT-ALGORITHM.md

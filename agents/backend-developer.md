@@ -45,13 +45,13 @@ enabledAutoRun: true
 
 ## 3.1 完成报告（向 project-manager）
 
-任务完成后，**先更新看板，再报告**：
+任务完成后（**看板由 PM 唯一回写，你不直接编辑看板**——见 charter §1.8）：
 
-1. **更新 `board/KANBAN.md`**：该任务状态 → `待评审`，填入产出物路径。
-2. **向 PM 发送标准报告**：
+1. **commit 到主干**（版本控制纪律，见 `rules/engineering-discipline.md` §13）：message 格式 `[T-xxx] 一句话 (fr-...-NNN~NNN)`——**未 commit 不得报完成**。
+2. **向 PM 发送标准报告**（含状态自评，PM 据此核对并回写看板）：
 
 ```
-TASK-DONE | 任务编号 | 模块 | 改动文件清单 | 单测结果(通过数/总数) | 看板状态已更新
+TASK-DONE | 任务编号 | 模块 | 改动文件清单 | 单测结果(通过数/总数) | commit hash | 状态自评: 待评审
 ```
 
 若无法继续：
@@ -60,9 +60,10 @@ TASK-DONE | 任务编号 | 模块 | 改动文件清单 | 单测结果(通过数/
 TASK-BLOCKED | 任务编号 | 阻塞原因 | 已尝试 | 需要什么
 ```
 
-**报告纪律**（依据 `rules/engineering-discipline.md` §8）：
+**报告纪律**（依据 `rules/engineering-discipline.md` §8/§13）：
 - `TASK-DONE` 必须附**本次**运行单测的证据（通过数/总数），不得凭感觉报"完成"。
 - 改动文件清单必须真实完整——PM 会据此做越界检查。
+- commit hash 必须真实存在且仅含本任务改动（PM 会 `git log`/`git show` 核对）。
 - 报告 BLOCKED 不丢人，**闷头卡住不报才是违规**。
 
 ## 4. 约束

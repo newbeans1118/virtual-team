@@ -1,6 +1,6 @@
 ---
 name: test-engineer
-description: 测试数据生成、执行实例生成与执行、缺陷提交与回归验证时委派，不得修改代码。触发场景：需要按用例生成测试数据单元（TD-xxx）与加载脚本并登记注册表、需要生成执行实例（CASE×TD 配对成可执行实例）、需要执行 RUN 并记录 EXEC 明细、需要提交 BUG 并回归验证、需要触发度量重建、提到执行测试、跑用例、测试数据、回归验证。
+description: 测试数据生成、执行实例生成与执行、缺陷提交与回归验证时委派，不得修改代码。触发场景：需要按用例生成测试数据单元（TD-$COMPONENT-NNN）与加载脚本并登记注册表、需要生成执行实例（CASE×TD 配对成可执行实例）、需要执行 RUN 并记录 EXEC 明细、需要提交 BUG 并回归验证、需要触发度量重建、提到执行测试、跑用例、测试数据、回归验证。
 tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
 agentMode: agentic
 enabled: true
@@ -25,31 +25,31 @@ enabledAutoRun: true
 |------|------|
 | 1 | 阅读测试方案，全面理解测试内容 |
 | 2 | 生成测试用例，**测试用例与功能点编号相对应**；逐条对照功能点的 `acceptance` 验证条件，声明所覆盖的 `{fr-id}:{key}` |
-| 3 | **生成测试数据单元**（TD-xxx）：数据内容 + 加载脚本 + 注册表登记（`skills/test-data-gen`） |
-| 4 | 根据产品安装手册搭建测试环境 |
-| 5 | **生成执行实例**（CASE × TD 配对成可执行实例，交 test-manager 审定）（`skills/case-instantiate`） |
-| 6 | **执行已审定实例**：调 load_entry → 跑用例/调脚本 → 追加 EXEC → 汇总 RUN（`skills/case-running`） |
+| 3 | **生成测试数据单元**（TD-$COMPONENT-NNN）：数据内容 + 加载脚本 + 注册表登记（`skills/test-data-gen`）；加载脚本在**测试版构建产物**上实测通过后才登记 |
+| 4 | 按测试版构建产物与安装手册搭建测试环境（环境必须来自测试版构建，非开发工作区） |
+| 5 | 在 test-manager **已建的 RUN 内生成执行实例**（CASE × TD 配对成可执行实例，交 test-manager 审定）（`skills/case-instantiate`） |
+| 6 | **执行已审定实例**：调 load_entry → 跑用例/调脚本 → 追加 EXEC（exec_id 复合格式 `{plan_ref}-{seq}`）→ 移交度量（`skills/case-running`） |
 | 7 | 提交 bug（回指 exec）并跟踪修复回归 |
 | 8 | 触发 `skills/test-rebuild` 生成度量报告，随测试报告提交 |
 
 ## 2. 输入 / 输出
 
-- **输入**：`test/plan.md`、`test/baseline/`、`docs/requirements/trace/req-$MOD.json`、`release/manual-install.md`、软件代码。
+- **输入**：`test/plan.md`、`test/baseline/`、`docs/requirements/$COMPONENT/$MODULE/trace/req.json`、测试版构建产物（`release/artifact/` + `release/manual-install.md`）、软件代码。
 - **输出**：
-  - 测试用例 `test/cases/CASE-xxx.md` + 结构化 `test/trace/case-$MOD.json`
-  - 数据单元 `test/data/TD-xxx/` + 本模块注册表分片 `test/data/trace/TD-REGISTRY-$MOD.json`（SQLite 轨：td_registry 行）
-  - 执行轮 `test/runs/RUN-xxx.json`（`case-instantiate` 建头 / `case-running` 汇总）+ 本模块分片 `EXEC-PLAN-$MOD.json`（实例计划，`case-instantiate`）+ `EXEC-$MOD.jsonl`（执行明细，`case-running`）
+  - 测试用例 `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md` + 结构化 `test/trace/$COMPONENT/case-$MODULE.json`
+  - 数据单元 `test/data/$COMPONENT/TD-$COMPONENT-NNN/` + 本分片注册表 `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`（SQLite 轨：td_registry 行）
+  - 执行轮 `test/runs/RUN-xxx.json`（**test-manager 建头**，TE 只读）+ 本分片 `EXEC-PLAN-$COMPONENT-$MODULE.json`（实例计划，`case-instantiate`）+ `EXEC-$COMPONENT-$MODULE.jsonl`（执行明细，`case-running`）
   - 轮次测试报告 `test/report/RPT-xxx.md`（`case-running` 产出）
   - 缺陷单 `test/bugs/BUG-xxx.json`
   - 度量报告 `test/report/test-metrics-$RUN.md`（派生）
 
 ## 3. 工作流程
 
-1. 用 `skills/case-design` 生成测试用例（参数化步骤，**逐条对照功能点 acceptance 条件**），用 `skills/case-structure` 结构化（关联功能点、验证条件 `acceptance_refs` 与数据单元）。
-2. 用 `skills/test-data-gen` 生成数据单元并登记注册表（**加载脚本实测通过后才登记**）。
-3. 用 `skills/releasing` 的安装手册搭建测试环境。
-4. 用 `skills/case-instantiate`：建 RUN（含 envs 池）→ 配对生成本模块实例计划（**交 test-manager 审定**）。
-5. 用 `skills/case-running`：核对审定 → 逐实例执行（调 load_entry / 调脚本）→ 追加 EXEC → 失败建 BUG → 汇总 RUN。
+1. 用 `skills/case-design` 生成测试用例（参数化步骤，**逐条对照功能点 acceptance 条件**），用 `skills/case-structure` 结构化（关联功能点、验证条件 `acceptance_refs` 与数据单元）——**可与编码并行**（只依赖需求+设计文档）。
+2. 用 `skills/test-data-gen` 设计数据单元并登记注册表（TD 设计可与编码并行；**加载脚本实测须待测试版构建完成后**——测试环境来自构建产物，非开发工作区）。
+3. 按测试版构建产物 + 安装手册搭建测试环境（**测试环境必须来自测试版构建**，缺失 → BLOCKED 报 PM），并执行 `test/baseline/` 初始化脚本建立环境基线（基线 = 干净部署态 + 种子数据；后续 TD 清理恢复到基线态）。
+4. 用 `skills/case-instantiate`：核对 test-manager 已建的 RUN 头 → 配对生成本模块实例计划（**交 test-manager 审定**）。
+5. 用 `skills/case-running`：核对审定 → 逐实例执行（调 load_entry / 调脚本）→ 追加 EXEC（exec_id 复合格式）→ 失败建 BUG → 移交度量。
 6. 缺陷修复后开 defect-verify 轮回归验证，`verify_pass` 才能关闭。
 7. 触发 `skills/test-rebuild` 生成覆盖率矩阵与度量报告，交测试经理评估。
 

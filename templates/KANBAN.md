@@ -1,7 +1,7 @@
 # 进度看板：$PROJECT_NAME
 
 > 产出角色：project-manager ｜ 存放：board/KANBAN.md
-> 更新人：每次状态变化后由 project-manager 更新
+> **唯一写者：project-manager**（charter §1.8）——其余角色经完成报告/产物文件传递状态，由 PM 核对后回写；子代理不直接编辑本文件（并行编辑会互相覆盖）。
 
 ## 1. 当前阶段
 

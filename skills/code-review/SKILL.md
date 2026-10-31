@@ -16,7 +16,7 @@ description: 评审代码是否匹配规格与设计、并评估质量与安全�
 ## 输入
 
 - `src/` 下代码
-- `docs/requirements/spec-$MOD.md`、`docs/requirements/trace/req-$MOD.json`（功能编号来源）
+- 各组件/模块 `spec.md`、`docs/requirements/$COMPONENT/$MODULE/trace/req.json`（功能编号来源）
 - `design/`（FUNC / INTERFACE / DATABASE / LOGGER）
 
 ## 输出
@@ -29,7 +29,7 @@ description: 评审代码是否匹配规格与设计、并评估质量与安全�
 
 ### 阶段一 · 规格符合性
 
-- 逐条核对 `fr-$MOD-xxx`：**是否全部实现**。
+- 逐条核对 `fr-$COMPONENT-$MODULE-NNN`：**是否全部实现**。
 - **是否多做**：规格/设计之外的代码 → 记为冗余（P2）或风险。
 - **是否漏做**：规格要求但未实现 → P0/P1。
 - 结论：`规格符合` / `规格不符`。

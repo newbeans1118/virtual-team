@@ -76,4 +76,4 @@ flowchart LR
 
 | 模块 | 关联功能编号 | 架构组件 |
 |------|-------------|---------|
-| $MOD | fr-$MOD-xxx | |
+| $COMPONENT / $MODULE | fr-$COMPONENT-$MODULE-NNN | |

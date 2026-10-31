@@ -1,12 +1,12 @@
 {
-  "_comment": "模版：BUG.json（缺陷单）｜ 提交：case-running（失败 EXEC）｜ 修复：开发者 ｜ 验证：回归轮 ｜ 存放：test/bugs/BUG-xxx.json。状态机：open → in_fix → fixed → verify_pass → closed；verify_fail → 重开回 open（记 reopen_count）。acceptance_refs 可选：精确回指失败的验证条件（有则便于定位）。",
-  "id": "BUG-xxx",
+  "_comment": "模版：BUG.json（缺陷单）｜ 提交：case-running（失败 EXEC）｜ 修复：开发者 ｜ 验证：回归轮 ｜ 存放：test/bugs/BUG-$COMPONENT-NNN.json。状态机：open → in_fix → fixed → verify_pass → closed；verify_fail → 重开回 open（记 reopen_count）。acceptance_refs 可选：精确回指失败的验证条件（有则便于定位）。",
+  "id": "BUG-$COMPONENT-NNN",
   "title": "",
   "severity": "P0 | P1 | P2",
   "priority": "P0 | P1 | P2",
-  "source": { "exec": "E-xxxx", "run": "RUN-xxx", "case": "CASE-xxx", "td": "TD-xxx" },
-  "function_refs": ["fr-$MOD-xxx"],
-  "acceptance_refs": ["fr-$MOD-xxx:c1"],
+  "source": { "exec": "P-xxx-1（exec_id 复合格式 {plan_ref}-{seq}）", "run": "RUN-xxx", "case": "CASE-$COMPONENT-NNN", "td": "TD-$COMPONENT-NNN" },
+  "function_refs": ["fr-$COMPONENT-$MODULE-NNN"],
+  "acceptance_refs": ["fr-$COMPONENT-$MODULE-NNN:c1"],
   "repro_steps": ["复现步骤（引用 TD 加载 + 用例步骤）"],
   "expected": "（来自 PLAN 配对行）",
   "actual": "",
@@ -14,6 +14,6 @@
   "status": "open | in_fix | fixed | verify_pass | verify_fail | closed | rejected | deferred",
   "assigned_to": "backend-developer | ui-developer",
   "fix": { "commit": "", "by": "", "at": "" },
-  "verification": { "run": "RUN-xxx", "execs": ["E-xxxx"], "result": "pass | fail" },
+  "verification": { "run": "RUN-xxx", "execs": ["P-xxx-2"], "result": "pass | fail" },
   "reopen_count": 0
 }

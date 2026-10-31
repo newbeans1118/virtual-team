@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 23 个技能 skill + 11 个工作流命令 + 29 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 23 个技能 skill + 11 个工作流命令 + 31 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -28,7 +28,7 @@ virtual-team-plugin/
 │   ├── test-data-gen / test-rebuild
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 11 个工作流入口
-├── templates/                         # 29 个交付物模版
+├── templates/                         # 31 个交付物模版
 ├── pages/prototype/                   # 界面原型存放（运行时产出）
 ├── board/                             # 进度看板存放（运行时产出）
 ├── docs/ design/ src/ review/ test/ release/   # 各阶段交付目录约定
@@ -48,12 +48,13 @@ flowchart TD
   TASK --> TR{分解评审}
   TR -->|通过| DEV[backend / ui-developer<br/>编码]
   DEV --> CR{代码评审<br/>规格→质量 两阶段}
-  CR -->|通过| TEST[test-manager / test-engineer<br/>测试]
+  CR -->|通过| TB[release-engineer<br/>测试版构建<br/>worktree构建+手册+冒烟]
+  TB --> TEST[test-manager / test-engineer<br/>测试]
   TEST --> ACC{项目验收}
-  ACC -->|通过| REL[release-engineer<br/>发布]
+  ACC -->|通过| REL[release-engineer<br/>生产版发布<br/>四方确认+tag]
 ```
 
-> 分解评审**并入设计评审**（同一门禁）；设计评审通过后由架构师产出 `design/DEV-TASKS.md`，再行分解评审。
+> 分解评审**并入设计评审**（同一门禁）；设计评审通过后由架构师产出 `design/DEV-TASKS.md`，再行分解评审。**测试版构建是测试准入条件**：代码评审闭环后由 release-engineer 产出（构建产物+安装手册+冒烟验证），测试环境与 RUN.envs 证据一律来自该构建。用例/TD 设计可与编码并行。
 
 | 阶段 | 角色 | 技能 |
 |------|------|------|
@@ -63,8 +64,9 @@ flowchart TD
 | 任务分解 | architect | task-breakdown |
 | 编码 | backend-developer / ui-developer | — |
 | 代码评审 | code-reviewer | code-review |
+| 测试版构建 | release-engineer | releasing, doc-writing |
 | 测试 | test-manager / test-engineer | case-design, case-instantiate, case-running, case-structure |
-| 验收 / 发布 | project-reviewer / release-engineer | accepting, releasing, doc-writing |
+| 验收 / 生产版发布 | project-reviewer / release-engineer | accepting, releasing, doc-writing |
 
 ## 命令
 
@@ -76,8 +78,8 @@ flowchart TD
 | `/design` | 架构设计 |
 | `/coding` | 编码（按模块） |
 | `/code-review` | 代码评审（两阶段） |
-| `/test` | 测试 |
-| `/release` | 发布 |
+| `/test` | 测试（前置：测试版构建） |
+| `/release` | 生产版发布（验收通过后：四方确认 + tag） |
 | `/accept` | 项目验收 |
 | `/status` | 更新并展示进度看板 |
 | `/review` | 通用评审入口（需求/设计/数据模型） |
@@ -101,7 +103,7 @@ flowchart TD
 | 设计评审、架构评审、任务分解评审 | `design-review` | design-reviewer |
 | 数据模型专项评审、表结构/DDL 评审 | `datamodel-review` | design-reviewer |
 | 代码评审、规格符合性 + 代码质量两阶段 | `code-review` | code-reviewer |
-| 测试方案、测试用例（CASE-xxx）设计 | `case-design` | test-manager / test-engineer |
+| 测试方案、测试用例（CASE-<组件>-NNN）设计 | `case-design` | test-manager / test-engineer |
 | 执行测试、跑用例、缺陷跟踪、测试报告 | `case-running` | test-engineer |
 | 建 RUN、用例×数据配对成可执行实例、交审定 | `case-instantiate` | test-engineer |
 | 用例结构化、覆盖率矩阵 | `case-structure` | test-engineer |
@@ -114,7 +116,7 @@ flowchart TD
 
 **团队公约**（`rules/team-charter.md`）
 
-- **编号**：业务 `biz-xxx`、功能点 `fr-$MOD-xxx`、用例 `CASE-xxx`、变更 `CR-xxx`、缺陷 `BUG-xxx`。
+- **编号**：组件 `$COMPONENT` ⊃ 模块 `$MODULE`（均 snake_case）。业务 `biz-<组件>-<模块>-NNN`、功能点 `fr-<组件>-<模块>-NNN`（固定 4 段，无模块用 `all`）、用例 `CASE-<组件>-NNN`、数据单元 `TD-<组件>-NNN`、变更 `CR-<组件>-NNN`、缺陷 `BUG-<组件>-NNN`；执行轮 `RUN-NNN`（test-manager 创建）；实例计划行 `P-xxx`（全局唯一）；执行明细 `{plan_ref}-{seq}`（如 `P-003-1`，重跑序号递增——零撞号）。
 - **纪律**：职责边界、文件化输入输出、禁止猜测、目录纯净、**任务五步流程**（计划→用户确认→批准后实施→校验→完成报告，微任务可合并确认批准）、交付物须评审、图形用 Mermaid。
 - **门禁**：无 P0/P1 不得进入下一阶段；测试需覆盖全部功能点。
 - **发布**：四方（产品经理/测试经理/架构师/代码评审员）联合确认方可为生产版并打 tag。
@@ -160,3 +162,5 @@ codebuddy --plugin-dir <本目录绝对路径>
 - 原文的 **case-running** 已拆为两个技能：`case-instantiate`（建 RUN + 用例×数据配对生成**可执行实例**，交审定）与 `case-running`（执行已审定实例 + 记录 EXEC + 缺陷 + 汇总）。拆分依据：实例化（设计型产物，需审定）与执行（运行型产物，追加式）性质不同，中间夹着 test-manager 审定的真实门禁。
 - 目录约定、编号规范、评审闭环等原文未明确处，采用团队公约统一补齐，可按需调整 `rules/team-charter.md`。
 - `rules/engineering-discipline.md` 与 `skills/code-review` 为工程实践增强，来源：Anthropic Skill 编写最佳实践、superpowers 系列技能（TDD/两阶段评审/验证先于完成）。可按需调整。
+- **测试版构建**（两阶段发布之阶段一）为对原文发布流程的增强：代码评审闭环后即构建，作为测试环境来源——解决"测试需要安装手册但手册在发布阶段才产出"的时序倒挂。
+- **测试执行协调**：RUN 头由 test-manager 创建（消除多分片并发建头竞态）；exec_id 采用复合格式 `{plan_ref}-{seq}`（plan_ref 全局唯一 → 并行分片零撞号）；轮次汇总由 `test-rebuild` 从 EXEC 派生（RUN 头为纯计划态，不回写）。

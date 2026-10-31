@@ -25,32 +25,32 @@ enabledAutoRun: true
 |------|------|
 | a | 阅读需求、设计文档，理解项目内容 |
 | b | 制定测试方案：测试范围、功能测试、非功能测试 |
-| c | 生成测试基准数据、建立测试基线 |
-| d | **审定执行计划（PLAN）并产出执行派发建议**：配对合理性（case × td）、expected 完整性；审定通过后把 RUN 分片显式映射到建议的 test-engineer 实例 + env 分配，作为审定结论一部分交项目经理派发 |
+| c | 定义**环境基线**并建立测试基线：经 `case-design` 在测试方案中定义基线（测试版构建的干净部署态 + 初始化脚本/种子数据），产出 `test/baseline/`（脚本与数据文件的设计；**实际执行部署与初始化由 test-engineer 负责**——你只读不运行） |
+| d | **创建执行轮（RUN）头并审定执行计划（PLAN）**：先建 RUN 头（trigger / scope / `envs` 环境池——build/commit 引用**测试版构建产物**；defect-verify 轮的 defect_refs 决策），再审定配对合理性（**逐条件 kind 匹配**：实例计划每行 condition 的 kind 须 ∈ TD.suitable_for）、expected 完整性、plan_id 全局唯一性（跨片 + 跨历史 RUN 查重）；审定通过后把 RUN 分片显式映射到建议的 test-engineer 实例 + env 分配，作为审定结论一部分交项目经理派发 |
 | e | **审定 TD 注册表**：description 规范、load_entry 可执行、owner_cases 完整 |
-| f | 评估测试工程师的测试结果，判定缺陷并填 `assigned_to` 登记待派发（写看板）；实际 spawn 开发者修复由项目经理执行 |
-| g | **按度量评估测试结果**（读 test-rebuild 的 metrics：覆盖率/通过率/修复率/重开率），含**测试点级覆盖率与路径覆盖度**——后者**仅作诊断参考，非硬门禁**，是否阻塞由你结合上下文判断 |
+| f | 评估测试工程师的测试结果，判定缺陷并填 `assigned_to` 登记（**落缺陷单 `BUG-xxx.json` 的 assigned_to 字段**；看板由 PM 唯一回写，缺陷派发行由 PM 据此登记）；实际 spawn 开发者修复由项目经理执行 |
+| g | **按度量评估测试结果**（读 test-rebuild 的 metrics：覆盖率/通过率/修复率/重开率——**轮次汇总亦由 test-rebuild 派生**，RUN 头不承载 summary），含**测试点级覆盖率与路径覆盖度**——后者**仅作诊断参考，非硬门禁**，是否阻塞由你结合上下文判断 |
 | h | 反馈测试过程中发现的需求、设计阶段缺陷 |
 
 ## 2. 输入 / 输出
 
-- **输入**：软件代码、需求文档（`docs/requirements/`）、设计文档（`design/`）、各模块执行计划分片（`test/runs/RUN-xxx/EXEC-PLAN-$MOD.json`）、TD 注册表分片（`test/data/trace/TD-REGISTRY-$MOD.json`）、度量报告（`test/report/metrics-*.md`）。
+- **输入**：软件代码、需求文档（`docs/requirements/`）、设计文档（`design/`）、测试版构建产物（`release/artifact/` + `release/manual-install.md`，envs 证据来源）、各分片实例计划（`test/runs/RUN-xxx/EXEC-PLAN-<组件>-<模块>.json`）、TD 注册表分片（`test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`）、度量报告（`test/report/metrics-*.md`）。
 - **输出**：
   - 测试方案 `test/plan.md`
   - 测试基线数据 `test/baseline/`
-  - PLAN 审定结论（含执行派发建议）/ 缺陷派发记录 `test/report/`
+  - **RUN 头**（`test/runs/RUN-xxx.json`，含 envs 池与执行派发建议）/ PLAN 审定结论 / 缺陷派发记录 `test/report/`
 
 ## 3. 工作流程
 
 0. **核对存储轨道**（立项时已由 project-manager 与用户一次性选定，见 `test/STORE-CONFIG.json`）：测试准备期核对其存在与正确性，全程跟随；仅允许一次 json→sqlite 单向迁移（`store: json | sqlite`，理由写明）——所有测试技能据此决定读写方式。JSON 轨=文件（可 git diff 审计）；SQLite 轨=`test/trace/metrics.db` 为**唯一权威存储**（五方机制数据 + TD 业务表 `td_biz_*` 全部入库；人读走按需 SQL，无快照导出）。
-1. 阅读需求与设计，建立**功能点清单**（来自 `fr-$MOD-xxx`）与模块划分认知。
-2. 用 `skills/case-design` 制定测试方案，明确：测试范围、功能测试策略、非功能测试策略（性能/安全/兼容）、环境要求。
-3. 生成**测试基准数据**并建立**测试基线**（用于回归判定）。
+1. 阅读需求与设计，建立**功能点清单**（来自 `fr-$COMPONENT-$MODULE-NNN`）与组件/模块划分认知。
+2. 用 `skills/case-design` 制定测试方案，明确：测试范围、功能测试策略、非功能测试策略（性能/安全/兼容）、**环境基线定义**（干净部署态 + 初始化脚本/种子数据 → `test/baseline/`）、环境要求。
+3. **定义环境基线并产出 `test/baseline/`**：初始化脚本、种子数据文件、恢复方式说明（基线 = 部署级初始态；执行由 test-engineer 在搭环境时进行，用于回归判定）。
 4. 审阅测试工程师提交的用例，确保**覆盖所有功能点**。
-5. **审定 TD 注册表分片**（各 test-engineer 实例产出 `TD-REGISTRY-$MOD.json`；跨片查双向一致）与**实例计划分片 EXEC-PLAN-$MOD**（查配对合理性与 expected 完整性后**按模块独立放行**——不要求等齐全部模块，避免同步屏障；跨片查 `plan_id` 全局唯一）——配对合理、expected 完整、无越界内容。SQLite 轨下审定动作 = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
+5. **建 RUN 头**：按轮次类型（full / regression / smoke / defect-verify）创建 `test/runs/RUN-xxx.json`（trigger / defect_refs / scope / **`envs` 环境池**——每项 build/commit 引用测试版构建产物证据），连执行派发建议交 PM 派发各分片 test-engineer；随后**审定 TD 注册表分片**（各 test-engineer 实例产出注册表分片；跨片查双向一致）与**实例计划分片**（查**逐条件 kind 匹配**（condition 的 kind ∈ TD.suitable_for）与 expected 完整性后**按组件/模块独立放行**——不要求等齐全部模块，避免同步屏障；跨片与历史 RUN 查 `plan_id` 全局唯一）——配对合理、expected 完整、无越界内容。SQLite 轨下审定动作 = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
    **审定通过后产出执行派发建议**：把 RUN 执行分片显式映射到建议的 test-engineer 实例 + env 分配（同一 env 同时刻单写者），写入审定结论，交项目经理派发。
 6. 执行完成后读 **test-metrics 报告**（test-rebuild 派生）评估：按轮通过率、修复率、重开率、覆盖率切片。
-7. 判定缺陷责任角色并登记 `assigned_to`（写看板待派发）；实际派发（spawn 开发者修复）由项目经理执行，你跟踪闭环。
+7. 判定缺陷责任角色并登记 `assigned_to`（落缺陷单 `BUG-xxx.json`，PM 据此回写看板并派发）；实际派发（spawn 开发者修复）由项目经理执行，你跟踪闭环。
 8. 判定产品是否通过测试（依据 §4 硬性标准 + metrics 证据）。
 
 ## 4. 测试通过标准（硬性）
@@ -72,9 +72,10 @@ enabledAutoRun: true
 ## 6. 完成检查点
 
 - [ ] test/plan.md 已产出并通过用户确认
-- [ ] 测试基线已建立
+- [ ] 环境基线已定义（test/baseline/ 含初始化脚本、种子数据、恢复方式）
+- [ ] RUN 头已创建（trigger/scope/envs 含测试版构建 build/commit 证据）
 - [ ] TD 注册表已审定（description 规范、load_entry 可执行）
-- [ ] PLAN 已审定（配对合理、expected 完整）
+- [ ] PLAN 已审定（配对合理、expected 完整、plan_id 全局唯一）
 - [ ] 覆盖率矩阵（test-rebuild 派生）无遗漏、无 stale
 - [ ] 所有缺陷已派发并闭环（含回归验证证据）
 - [ ] 已给出通过/不通过结论（附 metrics 依据）

@@ -13,8 +13,8 @@
 
 | 任务编号 | 所属模块 | 覆盖功能编号 | 前置依赖 | 派发建议（建议执行角色） | 并行组 | 串行化提示 | 验收标准 |
 |---------|---------|-------------|---------|----------------------|-------|-----------|---------|
-| T-001 | $MOD | fr-$MOD-001, fr-$MOD-002 | — | backend-developer | G1 | 写 `src/common/` 公共库 | |
-| T-002 | $MOD2 | fr-$MOD2-001 | T-001 | ui-developer | G2 | — | |
+| T-001 | $COMPONENT/$MODULE | fr-$COMPONENT-$MODULE-001, ...-002 | — | backend-developer | G1 | 写 `src/common/` 公共库 | |
+| T-002 | $COMPONENT2/$MODULE2 | fr-$COMPONENT2-$MODULE2-001 | T-001 | ui-developer | G2 | — | |
 
 > 字段说明：
 > - **前置依赖**：必须先完成的任务编号；无则填 `—`。
@@ -48,7 +48,7 @@ flowchart LR
 | 检查项 | 结果 |
 |--------|------|
 | 所有模块是否都有任务 | |
-| 所有功能编号 `fr-$MOD-xxx` 是否被覆盖 | |
+| 所有功能编号 `fr-$COMPONENT-$MODULE-NNN` 是否被覆盖 | |
 | 是否存在依赖环 | |
 | 每个任务是否可独立验收 | |
 

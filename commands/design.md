@@ -1,6 +1,6 @@
 ---
 description: 设计阶段：产出架构、数据库、功能/接口/算法/日志设计并搭建工程
-argument-hint: "设计范围，例如：全部模块 或 user-auth 模块"
+argument-hint: "设计范围，例如：全部组件 或 workbench 组件"
 ---
 
 <user_input>

@@ -1,6 +1,6 @@
 ---
 name: requirement-reviewer
-description: 独立评审需求阶段交付物时委派，只读不改。触发场景：立项文档/业务分析说明书/需求规格说明书完成需评审、需要从业务流程准确性、功能完备性、数据字典完整性、需求一致性、模块划分合理性、非功能需求合理性、冗余需求筛查、各要素相互关联、验证条件（acceptance）完备性等 9 个角度评估质量。
+description: 独立评审需求阶段交付物时委派，只读不改。触发场景：立项文档/业务分析说明书/需求规格说明书完成需评审、需要从业务流程准确性、功能完备性、数据字典完整性、需求一致性、模块划分合理性、非功能需求合理性、冗余需求筛查、各要素相互关联、验证条件（acceptance）完备性、跨产物一致性等 10 个角度评估质量。
 tools: Read, Glob, Grep, AskUserQuestion
 agentMode: agentic
 enabled: true
@@ -21,7 +21,7 @@ enabledAutoRun: true
 
 ## 1. 职责
 
-读入分析项目立项文档、业务分析说明书、软件需求说明书等立项阶段产物，从以下 9 个角度评估交付物质量：
+读入分析项目立项文档、业务分析说明书、软件需求说明书等立项阶段产物，从以下 10 个角度评估交付物质量：
 
 | 编号 | 评审角度 |
 |------|---------|
@@ -33,11 +33,12 @@ enabledAutoRun: true
 | 6 | 非功能需求合理性，不遗漏、不过分 |
 | 7 | 冗余、低价值需求筛查 |
 | 8 | 角色设置、业务流程、业务实体、业务功能、数据字典之间的相互关联是否合理 |
-| 9 | **验证条件（acceptance）完备性**：功能点验收条件是否按生成清单（正常/边界/异常/权限校验/输入校验/状态约束）逐类对照，适用类别无遗漏，条件可判定，不适用类别的省略有理由 |
+| 9 | **验证条件（acceptance）完备性**：功能点验收条件是否按生成清单（正常/边界/异常/权限校验/输入校验/状态约束）逐类对照，适用类别无遗漏，条件 GWT 化且可判定，不适用类别的省略有理由 |
+| 10 | **跨产物一致性**：「页面 × FR 覆盖矩阵」是否产出且无空白（原型每页/每操作挂到 ≥1 条 FR 或占位符）；FR 粒度是否经五条检验；前后台边界是否清晰（前台不自定义业务规则）。**矩阵有空白即不通过** |
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/requirements/overview.md`、`docs/requirements/biz-$MOD.md`、`docs/requirements/spec-$MOD.md`、`docs/requirements/spec-nonfunc.md`、`docs/requirements/dict.md`。
+- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/requirements/overview.md`、各组件/模块 `biz.md`、`spec.md`、`docs/requirements/spec-nonfunc.md`、`docs/requirements/dict.md`。
 - **输出**：需求评审报告 `review/requirement/RV-REQ-xxx.md`。
 
 ## 3. 评审报告格式
@@ -46,7 +47,7 @@ enabledAutoRun: true
 |------|------|
 | 问题编号 | `RV-REQ-xxx-NN` |
 | 级别 | P0 / P1 / P2 |
-| 评审角度 | 上述 1–9 之一 |
+| 评审角度 | 上述 1–10 之一 |
 | 位置 | 文件 + 章节（biz-xxx / fr-xxx / 实体名） |
 | 问题描述 | 具体、可复现 |
 | 修改建议 | 可执行 |
@@ -70,9 +71,10 @@ enabledAutoRun: true
 
 ## 6. 完成检查点
 
-- [ ] 9 个评审角度逐项覆盖
+- [ ] 10 个评审角度逐项覆盖
 - [ ] 追溯矩阵已校验（biz ↔ fr 全覆盖）
-- [ ] acceptance 完备性已核对（逐类对照生成清单）
+- [ ] acceptance 完备性已核对（逐类对照生成清单，GWT 化）
+- [ ] 跨产物一致性已核对（页面 × FR 覆盖矩阵无空白）
 - [ ] 报告中每个问题可定位
 - [ ] 给出明确通过/不通过结论
 - [ ] 问题已闭环

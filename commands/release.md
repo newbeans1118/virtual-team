@@ -1,5 +1,5 @@
 ---
-description: 发布阶段：全新 worktree 构建、打包、部署验证并标记测试版/生产版
+description: 生产版发布：项目验收通过后四方联合确认、构建决策并打 tag
 argument-hint: "版本号或范围，例如：v1.0.0"
 ---
 
@@ -9,21 +9,24 @@ $ARGUMENTS
 
 ---
 
-委派 **release-engineer** agent 执行**产品发布**。
+委派 **release-engineer** agent 执行**生产版发布**（阶段二）。
+
+> 测试版构建（阶段一）在代码评审闭环后进行，由 PM 在进入测试阶段前派发，不走本命令。
+
+## 前置（硬性）
+
+- 项目验收评审已通过（`review/project/RV-PROJ-ACCEPT.md`）。
 
 ## 要求
 
-1. 读取 `rules/team-charter.md`、`design/`、`test/report/`。
-2. 用 `releasing` 技能：
-   - **全新 worktree**：从 git 拉取分支到独立 worktree，从头构建
-   - 编译 → 打包 → 归档到 `release/artifact/`
-   - 部署验证（冒烟测试），记录命令与结果
-3. 用 `doc-writing` 产出 `release/manual-release.md`、`release/manual-install.md`。
-4. 标记发布状态：
-   - **测试版**：未四方联合确认
-   - **生产版**：经产品经理、测试经理、架构师、代码评审员**联合确认**后，打 tag
+1. 读取 `rules/team-charter.md`、`design/`、`test/report/`、验收结论。
+2. **四方联合确认**：产品经理、测试经理、架构师、代码评审员。
+3. **构建决策**：测试期无代码变更 → 测试版构建直接升级标记为生产版；有变更 → 重新构建（全新 worktree 从主干）再确认。
+4. **打 tag**：`git tag` 打在主干 commit 上。
+5. 发布组件可复现：记录版本、commit、构建命令、依赖版本；产出发布说明交付用户。
 
 ## 禁止
 
-- 禁止在脏工作区直接构建。
+- 验收未通过，禁止生产版发布。
 - 未经四方联合确认，禁止标记为生产版。
+- 禁止在脏工作区直接构建。

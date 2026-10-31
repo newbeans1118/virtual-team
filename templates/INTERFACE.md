@@ -10,7 +10,7 @@
 |----|------|
 | 提供方模块 | |
 | 调用方模块 | |
-| 关联功能编号 | fr-$MOD-xxx |
+| 关联功能编号 | fr-$COMPONENT-$MODULE-NNN |
 | 签名 | `func(arg1, arg2) -> ret` |
 | 参数 | | 
 | 返回 | |
@@ -27,7 +27,7 @@
 |----|------|
 | 协议 | REST / RPC / MQ |
 | 方法与路径 | `POST /api/v1/xxx` |
-| 关联功能编号 | fr-$MOD-xxx |
+| 关联功能编号 | fr-$COMPONENT-$MODULE-NNN |
 | 认证 | |
 | 幂等 | |
 

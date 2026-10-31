@@ -1,6 +1,6 @@
-# 业务分析说明书：$MOD
+# 业务分析说明书：$COMPONENT / $MODULE
 
-> 模版：BIZ-MOD.md ｜ 产出角色：product-manager ｜ 存放：docs/requirements/biz-$MOD.md
+> 模版：BIZ-MOD.md ｜ 产出角色：product-manager ｜ 存放：docs/requirements/$COMPONENT/$MODULE/biz.md（组件不细分模块时省略 $MODULE/）
 
 ## 1. 模块说明
 
@@ -70,4 +70,4 @@ stateDiagram-v2
 
 | 业务编号 | 所属模块 |
 |---------|---------|
-| biz-xxx | $MOD |
+| biz-$COMPONENT-$MODULE-NNN | $COMPONENT |

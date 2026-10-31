@@ -4,18 +4,18 @@
 
 ## 1. 说明
 
-以模块为单位组织，每个设计条目必须关联功能编号 `fr-$MOD-xxx`。
+以组件/模块为单位组织，每个设计条目必须关联功能编号 `fr-$COMPONENT-$MODULE-NNN`。
 
 ---
 
-## 2. 模块：$MOD
+## 2. 组件/模块：$COMPONENT / $MODULE
 
-### 2.1 fr-$MOD-xxx （功能名称）
+### 2.1 fr-$COMPONENT-$MODULE-NNN （功能名称）
 
 | 项 | 内容 |
 |----|------|
-| 对应功能编号 | fr-$MOD-xxx |
-| 所属模块 | $MOD |
+| 对应功能编号 | fr-$COMPONENT-$MODULE-NNN |
+| 所属组件/模块 | $COMPONENT / $MODULE |
 | 功能说明 | |
 | 依赖 | |
 | 处理流程 | 见下方流程 |

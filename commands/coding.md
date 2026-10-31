@@ -1,6 +1,6 @@
 ---
 description: 编码阶段：PM 按 DEV-TASKS 派发，开发者按模块实现前后端代码与单元测试
-argument-hint: "模块名与功能范围，例如：user-auth 实现 fr-user-auth-001~005"
+argument-hint: "组件/模块与功能范围，例如：workbench 实现 fr-workbench-task_list-001~005"
 ---
 
 <user_input>
@@ -17,8 +17,8 @@ $ARGUMENTS
 ## 流程
 
 1. **project-manager**（持 `Agent` 工具）：按 `design/DEV-TASKS.md` 的并行组并发派发开发者子代理；prompt 自包含（任务编号/模块/功能编号/设计文档路径/验收标准/输出位置/报告要求）。
-2. **backend-developer / ui-developer**：按派发任务编码 + 单测；完成后**更新看板并向 PM 报告**（`TASK-DONE` / `TASK-BLOCKED`，格式见各自 agent 定义 §3.1）。
-3. **project-manager**：核对报告（越界检查 + 单测证据 + 看板更新）→ 看板置 `待评审` → 组织代码评审（code-reviewer）。
+2. **backend-developer / ui-developer**：按派发任务编码 + 单测；完成后 **commit 到主干**（message `[T-xxx] (fr-...)`）并**向 PM 报告**（`TASK-DONE` 含 commit hash + 状态自评 / `TASK-BLOCKED`，格式见各自 agent 定义 §3.1；**不直接写看板**——PM 唯一回写）。
+3. **project-manager**：核对报告（越界检查 + 单测证据 + **commit 验证（git log/show）**）→ **回写看板**（置 `待评审`）→ 组织代码评审（code-reviewer）。
 
 ## 开发者要求
 
@@ -33,5 +33,6 @@ $ARGUMENTS
 
 - 禁止修改设计/需求文档。
 - 禁止未通过自测就提交评审。
+- 禁止未 commit 就报 TASK-DONE（版本控制纪律）。
 - 禁止开发者越权 spawn 其他代理（派发权唯一归 PM）。
 - 禁止完成不报告、报告不带证据。

@@ -34,7 +34,7 @@ enabledAutoRun: true
 > 依据 `rules/engineering-discipline.md` §2。必须先做规格符合性，再做质量评审；混在一起评会漏检规格。
 
 **阶段一 · 规格符合性**（用 `code-review` 技能）
-- 逐条核对功能编号 `fr-$MOD-xxx` 是否**全部实现**。
+- 逐条核对功能编号 `fr-$COMPONENT-$MODULE-NNN` 是否**全部实现**。
 - **是否多做**：规格外代码记为冗余（P2）或风险。
 - **是否漏做**：规格内未实现 = P0/P1。
 - 结论：规格符合 / 规格不符。

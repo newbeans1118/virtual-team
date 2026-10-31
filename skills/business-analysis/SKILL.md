@@ -21,12 +21,12 @@ description: 从业务与用户角度建模系统、定义业务与实体、划�
 ## 输出
 
 - `docs/requirements/overview.md`（模版 `templates/BIZ-OVERVIEW.md`）
-- `docs/requirements/biz-$MOD.md`（模版 `templates/BIZ-MOD.md`）
+- `docs/requirements/$COMPONENT/$MODULE/biz.md`（模版 `templates/BIZ-MOD.md`）
 
 ## 流程
 
 1. **角色识别**：列出所有使用用户与角色，及其权限边界。
-2. **边界与模块划分**：明确做什么 / 不做什么；划分系统高层模块 `$MOD`（模块间尽量独立）。
+2. **边界与模块划分**：明确做什么 / 不做什么；划分系统高层**组件** `$COMPONENT` 与组件内**模块** `$MODULE`（组件/模块间尽量独立）。
 3. **业务建模**：每项业务给出独立编号 `biz-xxx`，并描述：
    - 业务说明
    - 前置条件

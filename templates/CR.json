@@ -1,0 +1,29 @@
+{
+  "_comment": "模版：CR.json（变更单）｜ 提出：任何角色（报 PM 登记，不直接改文档）｜ 评估：PM 按涉及面派发对应角色列影响清单 ｜ 批准：用户（用户主权）｜ 实施：责任角色修订 + 下游同步 ｜ 关闭：PM 校验 ｜ 存放：docs/changes/CR-$COMPONENT-NNN.json。状态机：draft → assessing → approved → implementing → verified → closed；任一环节拒绝 → rejected。边界：缺陷修复走 BUG 状态机、评审打回走评审闭环，均不走 CR。",
+  "id": "CR-$COMPONENT-NNN",
+  "title": "",
+  "source": "用户 | 角色名 | 外部事件",
+  "raised_by": "提出角色",
+  "raised_at": "",
+  "type": "requirement | design | code | test-asset",
+  "description": "变更内容（改什么、为什么）",
+  "impact": {
+    "fr": ["fr-$COMPONENT-$MODULE-NNN"],
+    "biz": ["biz-$COMPONENT-$MODULE-NNN"],
+    "cases": ["CASE-$COMPONENT-NNN"],
+    "td": ["TD-$COMPONENT-NNN"],
+    "docs": ["受影响文档与章节"],
+    "assessment": "影响评估结论（由责任角色给出：范围/工作量/风险）",
+    "assessed_by": "",
+    "assessed_at": ""
+  },
+  "approval": { "by": "user", "decision": "approved | rejected", "note": "", "at": "" },
+  "implementation": {
+    "steps": ["实施步骤（含 req-structure 重跑、case/TD 对齐等下游同步）"],
+    "commit": "",
+    "by": "",
+    "at": ""
+  },
+  "verification": { "result": "verified | failed", "evidence": "test-rebuild 源同步无 stale / 评审通过结论", "at": "" },
+  "status": "draft | assessing | approved | implementing | verified | closed | rejected"
+}

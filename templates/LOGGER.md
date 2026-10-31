@@ -20,8 +20,8 @@
 |------|------|------|
 | 时间 | ISO8601 | 2026-01-01T10:00:00.000+08:00 |
 | 级别 | DEBUG/INFO/WARN/ERROR | INFO |
-| 模块 | 模块名 | user-auth |
-| 功能编号 | fr-$MOD-xxx | fr-user-auth-001 |
+| 组件/模块 | 名称 | workbench/task_list |
+| 功能编号 | fr-$COMPONENT-$MODULE-NNN | fr-workbench-task_list-001 |
 | traceId | 链路追踪 | |
 | 消息 | 人类可读 | |
 
@@ -44,5 +44,5 @@
 ## 5. 日志样例
 
 ```
-[2026-01-01T10:00:00.123+08:00] [INFO] [user-auth] [fr-user-auth-001] [t-8f2a] [http-nio-8080-exec-1] 用户注册成功 {"userId":1001}
+[2026-01-01T10:00:00.123+08:00] [INFO] [workbench] [fr-workbench-task_list-001] [t-8f2a] [http-nio-8080-exec-1] 用户注册成功 {"userId":1001}
 ```

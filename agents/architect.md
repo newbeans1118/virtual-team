@@ -36,12 +36,12 @@ enabledAutoRun: true
 | f | 接口设计（内部接口、对外接口） |
 | g | 交互设计规范（在 FUNC/INTERFACE 中定义交互状态与流转，供 ui-developer 落地；不做界面原型） |
 | h | 日志设计（日志目录、日志文件构成、日志格式、记录内容） |
-| i | 搭建工程目录与构建系统，并验证 |
+| i | 搭建工程目录与构建系统并验证（含 **git 仓库初始化**：`git init` + 初始 commit；`build/`、`tmp/` 入 `.gitignore`——版本控制纪律见 `rules/engineering-discipline.md` §13） |
 | j | **开发任务分解**：设计评审通过后，把设计按模块拆解为可独立开发与验收的开发任务，梳理依赖与并行关系，产出 `design/DEV-TASKS.md`（含**派发建议**：每任务的建议执行角色 + 并行组 + 依赖顺序 + 需串行化的共享文件点；不含执行派发——派发动作唯一归项目经理） |
 
 ## 2. 输入 / 输出
 
-- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/requirements/spec-$MOD.md`、`docs/requirements/spec-nonfunc.md`、`docs/requirements/dict.md`
+- **输入**：`docs/PROJ_$PROJECT_NAME.md`、`docs/requirements/$COMPONENT/$MODULE/spec.md`、`docs/requirements/spec-nonfunc.md`、`docs/requirements/dict.md`
 - **输出**（`design/` 目录）：
 
 | 文件 | 内容 | 对应技能 |
@@ -68,7 +68,7 @@ enabledAutoRun: true
 ## 4. 约束
 
 1. **功能设计以模块为单位**，模块间依赖尽量降低。
-2. **设计必须与功能编号关联**：FUNC.md 中的每个设计条目须标注对应 `fr-$MOD-xxx`；接口/数据结构/日志设计亦须可追溯。
+2. **设计必须与功能编号关联**：FUNC.md 中的每个设计条目须标注对应 `fr-$COMPONENT-$MODULE-NNN`；接口/数据结构/日志设计亦须可追溯。
 3. 技术选型必须给出**理由**，并列出被否决的备选方案及原因。
 4. DDL 与数据字典必须与 `docs/requirements/dict.md` 一致。
 5. 图形一律 Mermaid。
@@ -82,6 +82,6 @@ enabledAutoRun: true
 - [ ] FUNC.md 每条设计可追溯到功能编号
 - [ ] 接口设计完整（内部 + 对外）
 - [ ] 日志设计含目录/文件/格式/内容
-- [ ] 工程目录与构建系统已搭建并验证通过
+- [ ] 工程目录与构建系统已搭建并验证通过（含 git init 与初始 commit）
 - [ ] `design/DEV-TASKS.md` 已产出（设计评审通过后），任务可独立验收、依赖无环、功能编号全覆盖
 - [ ] 已提交设计评审（含分解评审）

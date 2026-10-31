@@ -1,7 +1,7 @@
 {
-  "_comment": "模版：TD.json（数据单元内部组织建议）｜ 产出角色：test-engineer（test-data-gen）｜ 存放：test/data/TD-xxx/data.json。说明性模版——内部结构项目自由组织，机制层不读取不解释本文件；机制层唯一入口是注册表中的 load_entry。",
-  "id": "TD-xxx",
-  "note": "本文件是数据单元内部内容的建议组织方式，项目可按业务需要自由调整；加载脚本与业务数据都在本目录内",
+  "_comment": "模版：TD.json（数据单元内部组织建议）｜ 产出角色：test-engineer（test-data-gen）｜ 存放：test/data/$COMPONENT/TD-$COMPONENT-NNN/data.json。说明性模版——内部结构项目自由组织，机制层不读取不解释本文件；机制层唯一入口是注册表中的 load_entry。",
+  "id": "TD-$COMPONENT-NNN",
+  "note": "本文件是数据单元内部内容的建议组织方式，项目可按业务需要自由调整；加载脚本与业务数据都在本目录内。tags 可标注该底座支撑的 kind（normal/boundary/negative，与注册表 suitable_for 一致）",
   "values": {},
   "expected_hints": "预期语义提示（供 PLAN 配对时提炼 expected 文本；非机制字段）",
   "tags": []

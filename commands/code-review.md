@@ -1,6 +1,6 @@
 ---
 description: 代码评审：评审代码完整性/正确性/质量/安全/性能并驱动修复闭环
-argument-hint: "评审范围，例如：src/user-auth 模块"
+argument-hint: "评审范围，例如：src/workbench 组件"
 ---
 
 <user_input>
