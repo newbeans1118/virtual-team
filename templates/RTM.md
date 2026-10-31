@@ -10,7 +10,9 @@
 
 | 需求编号 | 需求描述 | PRD 章节 | 页面/原型 | 设计/接口 | 测试用例 | 状态 |
 |---------|---------|---------|----------|----------|---------|------|
-| fr-$COMPONENT-$MODULE-001 | | 3.1 | `pages/prototype/$COMPONENT/xxx.html` | `design/$COMPONENT/func.md#3.1` | CASE-$COMPONENT-001 | active |
+| fr-$COMPONENT-$MODULE-001 | | 3.1 | `pages/prototype/$COMPONENT/xxx.html` | `design/$COMPONENT/func.md#3.1` | CASE-$COMPONENT-001~004 | active |
+
+> **「测试用例」列可填编号区间**（`CASE-$COMPONENT-001~004`）：一条 FR 常由多条用例覆盖，填区间比逐条罗列可读；区间必须连续且真实存在，不得用区间掩盖"部分用例未设计"。
 
 > **状态取值（需求生命周期态）**：`active`（有效）/ `deprecated`（已废弃，保留编号与追溯）/ `待补充`（占位符引用待落定）。**实现进度（开发中/已验证等）不在本表**——查 KANBAN。
 
@@ -36,7 +38,7 @@
 - [ ] 页面 × FR 覆盖矩阵**无空白**（无孤立的页面/操作）
 - [ ] biz ↔ fr 全覆盖（无有 biz 无 fr）
 - [ ] 状态列为需求生命周期态（active/deprecated/待补充；实现进度走 KANBAN）
-- [ ] 占位符引用已登记（待哪份 PRD 补充、规则名明确）
+- [ ] 占位符引用已登记（待哪份 PRD 补充、规则名明确；回填清单见 PRD §7.3，含责任人与回填位置）
 
 **结论**：通过 / 不通过（列出空白项）
 

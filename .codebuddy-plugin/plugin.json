@@ -1,6 +1,6 @@
 {
   "name": "virtual-team",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "虚拟软件开发团队插件：把项目经理、产品经理、架构师、前后端工程师、代码评审员、测试经理/工程师、发布工程师、独立需求/设计/项目评审员组织成可编排的开发流程，涵盖立项→需求→设计→编码→评审→测试→发布→验收全过程。遵循业界最佳实践：证据先于结论、两阶段代码评审（规格符合性→代码质量）、评审闭环、最简代码/YAGNI。",
   "description_en": "A virtual software development team for CodeBuddy: orchestrates project-manager, product-manager, architect, developers, reviewers, testers, and release engineer across the full lifecycle from kickoff to acceptance, following engineering best practices such as evidence-before-claims, two-stage code review (spec compliance then code quality), review closure, and YAGNI.",
   "author": {

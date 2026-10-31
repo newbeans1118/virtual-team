@@ -12,6 +12,8 @@
               test/bugs/BUG-*.json
     SQLite 轨 test/trace/metrics.db（七表存在、execs 只追加触发器、td_biz_* 孤儿检查、
               closed/verify_pass 缺陷须 verification.result=pass）
+    通用      docs/prd/*/prd*.md 的需求状态（draft/gated/closed）与占位符闭合：
+              closed 须零占位、gated 须占位与 §7.3 回填清单双向一致
 
 原则：schema 未覆盖的跨产物闭合（plan_ref 回指、fail 必有 defect_ref、blocked 必有
 evidence、exec_id 全局唯一）由本脚本代码检查。以 `_` 开头的键（模板说明字段）一律忽略。
@@ -345,6 +347,72 @@ def run_sqlite_track(root, db_path):
         con.close()
 
 
+# ------------------------------------------- PRD 需求状态与占位符闭合（skills/prd）
+STATE_WORDS = ("draft", "gated", "closed")
+OCC_RE = re.compile(r"【占位[^】]*】")
+SEC73_RE = re.compile(r"^###\s*7\.3[^\n]*\n(.*?)(?=^###\s|^##\s|\Z)", re.S | re.M)
+
+
+def _norm(text):
+    return re.sub(r"\s+", "", text)
+
+
+def check_prd_status(root):
+    """两级完成态：gated 允许占位未清零但须全部登记；closed 须清零。
+
+    - 未标状态 / 状态行含多个值 → FAIL
+    - closed → 正文占位符必须为 0，§7.3 不得残留登记
+    - gated  → 正文占位符与 §7.3 登记表双向一致（未登记 / 幽灵登记均 FAIL）
+    """
+    files = rglob(root, "docs/prd/*/prd*.md") + rglob(root, "docs/prd/*/*/prd*.md")
+    if not files:
+        skip("prd-status", "未发现组件/模块 PRD（阶段未到即 SKIP，非失败）")
+        return
+    bad, checked = 0, 0
+    for path in files:
+        try:
+            with open(path, encoding="utf-8") as fh:
+                text = fh.read()
+        except OSError as exc:
+            fail("prd-status", rel(root, path), "读取失败: %s" % exc)
+            bad += 1
+            continue
+        line = next((ln for ln in text.splitlines() if "需求状态" in ln), "")
+        found = [w for w in STATE_WORDS if re.search(r"(?<![a-z])%s(?![a-z])" % w, line)]
+        if len(found) != 1:
+            fail("prd-status", rel(root, path),
+                 "需求状态行须且仅须标注一个值（draft/gated/closed）；当前命中：%s" % ("、".join(found) or "无"))
+            bad += 1
+            continue
+        state = found[0]
+        checked += 1
+        sec = SEC73_RE.search(text)
+        body = (text[:sec.start()] + text[sec.end():]) if sec else text
+        body_set = {_norm(x) for x in OCC_RE.findall(body)}
+        reg_set = {_norm(x) for x in OCC_RE.findall(sec.group(1))} if sec else set()
+        if state == "closed":
+            if body_set:
+                fail("prd-status", rel(root, path),
+                     "closed 但正文仍有 %d 处占位符：%s" % (len(body_set), "、".join(sorted(body_set)[:3])))
+                bad += 1
+            if reg_set:
+                fail("prd-status", rel(root, path), "closed 但 §7.3 仍有 %d 条待回填记录" % len(reg_set))
+                bad += 1
+            continue
+        missing = body_set - reg_set
+        ghost = reg_set - body_set
+        if missing:
+            fail("prd-status", rel(root, path),
+                 "%d 处占位符未登记进 §7.3：%s" % (len(missing), "、".join(sorted(missing)[:3])))
+            bad += 1
+        if ghost:
+            fail("prd-status", rel(root, path),
+                 "§7.3 有 %d 条幽灵登记（正文中不存在）：%s" % (len(ghost), "、".join(sorted(ghost)[:3])))
+            bad += 1
+    if bad == 0 and checked:
+        ok("prd-status", "%d 份 PRD 的需求状态与占位符登记闭合" % checked)
+
+
 # ------------------------------------------------------------------- main
 def main():
     if len(sys.argv) != 2:
@@ -380,6 +448,7 @@ def main():
             track = None
 
     run_json_track(root, schemas)
+    check_prd_status(root)
     if track == "sqlite":
         run_sqlite_track(root, os.path.join(root, "test", "trace", "metrics.db"))
 
