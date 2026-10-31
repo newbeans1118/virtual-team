@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 35 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 36 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -29,7 +29,7 @@ virtual-team-plugin/
 │   ├── test-data-gen / test-rebuild / nfr-testing
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 13 个工作流入口
-├── templates/                         # 35 个交付物模版
+├── templates/                         # 36 个交付物模版
 ├── pages/prototype/                   # 界面原型存放（运行时产出）
 ├── board/                             # 进度看板存放（运行时产出）
 ├── docs/ design/ src/ review/ test/ release/   # 各阶段交付目录约定
@@ -173,6 +173,7 @@ codebuddy --plugin-dir <本目录绝对路径>
 - `rules/engineering-discipline.md` 与 `skills/code-review` 为工程实践增强，来源：Anthropic Skill 编写最佳实践、superpowers 系列技能（TDD/两阶段评审/验证先于完成）。可按需调整。
 - **测试版构建**（两阶段发布之阶段一）为对原文发布流程的增强：代码评审闭环后即构建，作为测试环境来源——解决"测试需要安装手册但手册在发布阶段才产出"的时序倒挂。
 - **测试执行协调**：RUN 头由 test-manager 创建（消除多分片并发建头竞态）；exec_id 采用复合格式 `{plan_ref}-{seq}`（plan_ref 全局唯一 → 并行分片零撞号）；轮次汇总由 `test-rebuild` 从 EXEC 派生（RUN 头为纯计划态，不回写）。
+- **工程技术增强**：ARCH 增容量估算/威胁建模/可观测性；INTERFACE 增横切契约（版本/幂等/超时/重试等）；DATABASE 增 expand-contract 迁移；发布增 `RELEASE-PLAN`/SHA256/SBOM/回滚演练/发布后验证；DEV-TASKS 增 `ENABLER` 类型与相对规模。
 
 ### statement → 实现差异对照表
 

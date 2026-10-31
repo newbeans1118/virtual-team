@@ -1,6 +1,7 @@
 # 日志设计：$PROJECT_NAME
 
 > 产出角色：architect ｜ 存放：design/LOGGER.md
+> **范围**：本文件只定义日志；指标、链路追踪、健康检查、告警路由见 `design/ARCH.md` §9（可观测性设计）。
 
 ## 1. 日志目录与文件
 

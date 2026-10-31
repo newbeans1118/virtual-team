@@ -55,7 +55,7 @@ enabledAutoRun: true
 ## 3. 工作流程
 
 1. 读取需求文档，**先产出设计方案大纲并与用户确认**，再开工。
-2. 用 `skills/architecting` 完成架构与组件设计（ARCH.md），含 Mermaid 架构图/时序图。
+2. 用 `skills/architecting` 完成架构与组件设计（ARCH.md），含 Mermaid 架构图/时序图、**容量估算**（§7）、**威胁建模**（§8）、**可观测性设计**（§9）——按判据必填，不适用须写理由。
 3. 用 `skills/data-modelling` 完成数据库设计（DATABASE.md），含 Mermaid ER 图、DDL。
 4. 用 `skills/general-design` 完成 FUNC.md / DATASTRUCT-ALGORITHM.md / INTERFACE.md / LOGGER.md。
 5. **搭建工程目录与构建系统并验证**（可实际执行构建命令验证），并初始化 `scripts/verify.sh`（两档契约见 `rules/engineering-discipline.md` §14），实测 `--fast` 与默认档退出码。
@@ -76,6 +76,7 @@ enabledAutoRun: true
 ## 5. 完成检查点
 
 - [ ] ARCH.md 含架构图、组件交互、技术选型理由
+- [ ] 容量估算、威胁建模、可观测性按判据完成（不适用已写理由）
 - [ ] DATABASE.md 含 ER 图、索引、可执行 DDL
 - [ ] FUNC.md 每条设计可追溯到功能编号
 - [ ] 接口设计完整（内部 + 对外）
