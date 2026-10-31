@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "STORE-CONFIG（存储轨道唯一开关）",
+  "comment": "对应 templates/STORE-CONFIG.json；存放 test/STORE-CONFIG.json。缺失 = FAIL（storage-track：配置缺失不得代为默认选轨）。",
+  "type": "object",
+  "required": ["project", "store", "created_at"],
+  "properties": {
+    "project": { "type": "string", "minLength": 1 },
+    "store": { "type": "string", "enum": ["json", "sqlite"] },
+    "reason": { "type": "string" },
+    "one_way_migration": { "type": "string" },
+    "created_at": { "type": "string", "minLength": 1 },
+    "confirmed_by": { "type": "string" },
+    "sqlite": {
+      "type": "object",
+      "properties": {
+        "db_path": { "type": "string" },
+        "schema_template": { "type": "string" },
+        "biz_table_prefix": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "migrated_from": { "type": ["string", "null"] }
+  }
+}

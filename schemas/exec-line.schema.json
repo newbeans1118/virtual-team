@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EXEC 执行明细行（test/runs/RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl 每行）",
+  "comment": "对应 templates/EXEC.jsonl 单行。追加式红线由代码检查（同文件 exec_id 重复 = 改写嫌疑）。",
+  "type": "object",
+  "required": ["exec_id", "plan_ref", "run", "case", "td", "env", "result", "started_at"],
+  "properties": {
+    "exec_id": { "type": "string", "pattern": "^P-[0-9]{3}-[0-9]+$" },
+    "plan_ref": { "type": "string", "pattern": "^P-[0-9]{3}$" },
+    "run": { "type": "string", "pattern": "^RUN-[0-9]{3}$" },
+    "case": { "type": "string", "pattern": "^CASE-[a-z][a-z0-9_]*-[0-9]{3}$" },
+    "condition": { "type": ["string", "null"], "pattern": "^fr-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[0-9]{3}:[a-z0-9_]+$" },
+    "td": { "type": "string", "pattern": "^TD-[a-z][a-z0-9_]*-[0-9]{3}$" },
+    "env": { "type": "string", "minLength": 1 },
+    "result": { "type": "string", "enum": ["pass", "fail", "blocked"] },
+    "defect_ref": { "type": ["string", "null"], "pattern": "^BUG-[a-z][a-z0-9_]*-[0-9]{3}$" },
+    "started_at": { "type": "string", "minLength": 1 },
+    "duration_ms": { "type": "integer", "minimum": 0 },
+    "evidence": { "type": "string" }
+  },
+  "additionalProperties": false
+}

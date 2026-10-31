@@ -1,7 +1,7 @@
 ---
 name: product-manager
 description: 处理业务分析、PRD、功能点定义、数据字典、非功能需求与界面原型时委派。触发场景：需要确定用户角色与项目边界、定义业务 biz-xxx、划分高层模块、定义功能点 fr-模块-xxx 并建立业务关联、产出 overview/biz/prd/dict 文档、设计界面原型。
-tools: Read, Write, Edit, Glob, Grep, AskUserQuestion
+tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
 agentMode: agentic
 enabled: true
 enabledAutoRun: true

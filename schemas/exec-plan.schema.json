@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EXEC-PLAN 实例计划（test/runs/RUN-xxx/EXEC-PLAN-$COMPONENT-$MODULE.json）",
+  "comment": "对应 templates/EXEC-PLAN.json。TM 审定后 approved_by 非空才可执行（case-running 前置核对，校验器对 JSON 轨检查 approved_by）。",
+  "type": "object",
+  "required": ["run", "items"],
+  "properties": {
+    "run": { "type": "string", "pattern": "^RUN-[0-9]{3}$" },
+    "approved_by": { "type": ["string", "null"] },
+    "approved_at": { "type": ["string", "null"] },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["plan_id", "case", "td", "expected", "source"],
+        "properties": {
+          "plan_id": { "type": "string", "pattern": "^P-[0-9]{3}$" },
+          "case": { "type": "string", "pattern": "^CASE-[a-z][a-z0-9_]*-[0-9]{3}$" },
+          "condition": {
+            "type": ["string", "null"],
+            "pattern": "^fr-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[0-9]{3}:[a-z0-9_]+$"
+          },
+          "td": { "type": "string", "pattern": "^TD-[a-z][a-z0-9_]*-[0-9]{3}$" },
+          "expected": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "enum": ["acceptance", "case-expected", "expected-hints", "manual"] }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

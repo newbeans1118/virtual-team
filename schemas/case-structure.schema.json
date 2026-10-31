@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CASE-STRUCTURE 分片（test/trace/$COMPONENT/case-$MODULE.json）",
+  "comment": "对应 templates/CASE-STRUCTURE.json。acceptance_refs 引用闭合（前缀 fr-id ∈ function_refs）由校验器代码检查。",
+  "type": "object",
+  "required": ["project", "component", "module", "cases"],
+  "properties": {
+    "project": { "type": "string", "minLength": 1 },
+    "component": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "module": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "updated_at": { "type": "string" },
+    "prd_source_hash": { "type": "string" },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "function_refs", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^CASE-[a-z][a-z0-9_]*-[0-9]{3}$" },
+          "title": { "type": "string", "minLength": 1 },
+          "function_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^fr-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[0-9]{3}$" } },
+          "acceptance_refs": { "type": "array", "items": { "type": "string", "pattern": "^fr-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[0-9]{3}:[a-z0-9_]+$" } },
+          "dataset_refs": { "type": "array", "items": { "type": "string", "pattern": "^TD-[a-z][a-z0-9_]*-[0-9]{3}$" } },
+          "type": { "type": "string", "enum": ["functional", "performance", "security", "compatibility"] },
+          "priority": { "type": "string", "enum": ["P0", "P1", "P2"] },
+          "status": { "type": "string", "enum": ["draft", "active", "deprecated"] },
+          "preconditions": { "type": "array", "items": { "type": "string" } },
+          "automation": {
+            "type": "object",
+            "properties": {
+              "automatable": { "type": "boolean" },
+              "script_ref": { "type": ["string", "null"] },
+              "last_verified_run": { "type": ["string", "null"] }
+            }
+          },
+          "latest_result_ref": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

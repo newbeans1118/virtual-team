@@ -19,7 +19,7 @@ description: 独立评估非功能需求（性能/安全/可用性/兼容性）�
 
 - `docs/prd/prd-nonfunc.md`（NF-P / NF-S / NF-A 清单与目标）
 - **`design/ARCH-NFR.md`**：§2 容量与负载基线（`load_model` 须与架构估算一致，不得拍脑袋）、§3 威胁清单（渗透/扫描用例来源）、§4 SLI/SLO（指标口径与目标值来源）
-- 测试版构建产物（`/build-test`：artifact + build/commit）
+- 测试版构建产物（`/vt-build-test`：artifact + build/commit）
 - 环境规格与可用工具
 
 ## 输出（全部落 `test/nfr/`）

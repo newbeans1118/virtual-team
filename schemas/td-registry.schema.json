@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TD-REGISTRY 分片（test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json）",
+  "comment": "对应 templates/TD-REGISTRY.json。黑盒红线：只暴露 {id, description, load_entry, verified}，禁写 expected 与业务字段值（additionalProperties: false 固化）。",
+  "type": "object",
+  "required": ["project", "component", "module", "entries"],
+  "properties": {
+    "project": { "type": "string", "minLength": 1 },
+    "component": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "module": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "updated_at": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "load_entry"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^TD-[a-z][a-z0-9_]*-[0-9]{3}$" },
+          "description": {
+            "type": "object",
+            "required": ["purpose", "suitable_for"],
+            "properties": {
+              "purpose": { "type": "string", "minLength": 1 },
+              "suitable_for": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "enum": ["normal", "boundary", "negative"] }
+              },
+              "preconditions": { "type": "array", "items": { "type": "string" } },
+              "data_scope": { "type": "string" },
+              "owner_cases": { "type": "array", "items": { "type": "string", "pattern": "^CASE-[a-z][a-z0-9_]*-[0-9]{3}$" } }
+            },
+            "additionalProperties": false
+          },
+          "load_entry": { "type": "string", "minLength": 1 },
+          "verified": {
+            "type": "object",
+            "properties": {
+              "command": { "type": "string" },
+              "result": { "type": "string", "enum": ["pass", "fail"] },
+              "at": { "type": "string" }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RUN 执行轮头（test/runs/RUN-xxx.json，纯计划态）",
+  "comment": "对应 templates/RUN.json。禁止 summary/finished_at 字段（由 test-rebuild 从 EXEC 派生，charter §5）——additionalProperties: false 固化该红线。",
+  "type": "object",
+  "required": ["id", "trigger", "envs", "started_at"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^RUN-[0-9]{3}$" },
+    "trigger": { "type": "string", "enum": ["full", "regression", "smoke", "defect-verify"] },
+    "defect_refs": { "type": "array", "items": { "type": "string", "pattern": "^BUG-[a-z][a-z0-9_]*-[0-9]{3}$" } },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "modules": { "type": "array", "items": { "type": "string" } },
+        "case_ids": { "type": ["array", "null"], "items": { "type": "string" } },
+        "tags": { "type": ["array", "null"], "items": { "type": "string" } }
+      }
+    },
+    "envs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "build", "commit"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "build": { "type": "string", "minLength": 1 },
+          "commit": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "started_at": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

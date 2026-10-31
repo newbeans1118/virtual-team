@@ -1,5 +1,5 @@
 ---
-description: 需求分析阶段：产出业务分析、PRD、数据字典与原型（/prd）
+description: 需求分析阶段：产出业务分析、PRD、数据字典与原型（/vt-prd）
 argument-hint: "组件/模块名或范围，例如：workbench 工作台组件"
 ---
 
@@ -13,7 +13,7 @@ $ARGUMENTS
 
 ## 前置
 
-- 必须已存在 `docs/PROJ_$PROJECT_NAME.md`（否则先执行 `/kickoff`）。
+- 必须已存在 `docs/PROJ_$PROJECT_NAME.md`（否则先执行 `/vt-kickoff`）。
 
 ## 要求
 

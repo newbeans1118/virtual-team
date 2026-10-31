@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 38 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 40 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -29,7 +29,11 @@ virtual-team-plugin/
 │   ├── test-data-gen / test-rebuild / nfr-testing
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 13 个工作流入口
-├── templates/                         # 38 个交付物模版
+├── templates/                         # 40 个交付物模版
+├── schemas/                           # 8 个运行时产物 JSON Schema（verify_artifacts 消费）
+├── scripts/
+│   ├── verify_plugin.py               # 插件结构校验（提交前）
+│   └── verify_artifacts.py            # 运行时产物校验（JSON/SQLite 双轨）
 ├── design/                            # 设计交付（全局 + 组件）
 │   ├── ARCH.md / ARCH-NFR.md / DATABASE.md / INTERFACE.md / LOGGER.md / DEV-TASKS.md
 │   └── $COMPONENT/  interface.md / func.md（过大按 $MODULE/func.md 拆）/ database.md
@@ -76,19 +80,19 @@ flowchart TD
 
 | 命令 | 说明 |
 |------|------|
-| `/start` | 启动团队，从立项推进完整流程 |
-| `/kickoff` | 立项，产出立项报告 |
-| `/prd` | 需求分析（产出 PRD） |
-| `/design` | 架构设计 |
-| `/coding` | 编码（按模块） |
-| `/code-review` | 代码评审（两阶段） |
-| `/build-test` | 测试版构建（测试准入：worktree 构建 + 手册 + 冒烟） |
-| `/test` | 测试（前置：`/build-test` 已完成） |
-| `/nfr-test` | NFR 独立评估（性能/安全/兼容，仅参考报告） |
-| `/release` | 生产版发布（验收通过后：四方确认 + tag） |
-| `/accept` | 项目验收 |
-| `/status` | 更新并展示进度看板 |
-| `/review` | 通用评审入口（PRD/设计/数据模型） |
+| `/vt-start` | 启动团队，从立项推进完整流程（可传入立项简报文件路径，缺失项自动追问） |
+| `/vt-kickoff` | 立项，产出立项报告 |
+| `/vt-prd` | 需求分析（产出 PRD） |
+| `/vt-design` | 架构设计 |
+| `/vt-coding` | 编码（按模块） |
+| `/vt-code-review` | 代码评审（两阶段） |
+| `/vt-build-test` | 测试版构建（测试准入：worktree 构建 + 手册 + 冒烟） |
+| `/vt-test` | 测试（前置：`/vt-build-test` 已完成） |
+| `/vt-nfr-test` | NFR 独立评估（性能/安全/兼容，仅参考报告） |
+| `/vt-release` | 生产版发布（验收通过后：四方确认 + tag） |
+| `/vt-accept` | 项目验收 |
+| `/vt-status` | 更新并展示进度看板 |
+| `/vt-review` | 通用评审入口（PRD/设计/数据模型） |
 
 ## 技能触发索引
 
@@ -146,9 +150,13 @@ flowchart TD
 - 向用户提问/确认统一用 `D<N>` 简报，**两档**：轻量档（单事实澄清，一句直问）与完整档（ELI10 + 建议 + 完整性评分 + ✅❌ 选项优缺点 + `Net`）；不可逆操作永远走完整档。
 - 工具不可用时 prose 降级；**不可逆/破坏性操作必须显式确认**，含糊回复视为未确认。
 
-**存储轨道**（`rules/storage-track.md`）
+- **存储轨道**（`rules/storage-track.md`）
 
 - 测试数据双轨（json / sqlite）**唯一规则源**：立项时一次性选定（`test/STORE-CONFIG.json`），技能开工**只加载所选轨道一节的规则**（不整读）；仅允许一次 json→sqlite 单向迁移。
+
+**流程档位**（`rules/team-charter.md` §9）
+
+- YAGNI 也适用于流程：立项时定档（**微项目 / 标准 / 完整**，默认完整档），决定评审合并、原型/NFR 轨/测试分片等裁剪项；证据先于结论、verify 门禁、P0/P1 阻塞、缺陷闭环、发布四方确认为**不可裁红线**。
 
 ## 安装
 
@@ -195,20 +203,28 @@ codebuddy --plugin-dir <本目录绝对路径>
 | 7 | "变更流程：缺陷修复流程："（原文截断） | CR 变更五步闭环（charter §5.1）+ BUG 状态机闭环 | 原文缺失，最小闭环补齐 |
 | 8 | 开发者完成任务后无明确汇报要求 | TASK-DONE 标准报告（含 verify 结果 + commit hash + 状态自评），PM 核对回写看板 | 完成闭环 + 可执行校验 + 看板单一写者 |
 | 9 | 发布"从 git 拉取分支" | 全新 worktree 从**主干**构建（测试版/生产版两阶段，tag 打在主干） | 单主干版本控制纪律（discipline §13） |
-| 10 | 产物称"需求说明书/规格说明书"，结构化称 req | 统一标准化为 **PRD**：技能 `requirement→prd`、`req-structure→prd-structure`、`requirement-review→prd-review`；文件 `spec*.md→prd*.md`、`req.json→prd.json`；目录 `docs/requirements/→docs/prd/`；SQL 契约 `req_*→prd_*`（acceptance-v3）；命令 `/requirements→/prd` | 术语标准化（消除 req/spec/PRD 三套用语分裂） |
-| 11 | 原文无独立 NFR 测试 | 新增 **NFR 独立轨**：`test/nfr/`（NFR-CASE / NFR-TD / NFR-RUN / NFR-RPT），`/nfr-test` 入口；仅参考报告，不阻塞 FR 流程与发布 | 技术评审（用户裁决：独立轨、仅报告） |
+| 10 | 产物称"需求说明书/规格说明书"，结构化称 req | 统一标准化为 **PRD**：技能 `requirement→prd`、`req-structure→prd-structure`、`requirement-review→prd-review`；文件 `spec*.md→prd*.md`、`req.json→prd.json`；目录 `docs/requirements/→docs/prd/`；SQL 契约 `req_*→prd_*`（acceptance-v3）；命令 `/requirements→/vt-prd` | 术语标准化（消除 req/spec/PRD 三套用语分裂） |
+| 11 | 原文无独立 NFR 测试 | 新增 **NFR 独立轨**：`test/nfr/`（NFR-CASE / NFR-TD / NFR-RUN / NFR-RPT），`/vt-nfr-test` 入口；仅参考报告，不阻塞 FR 流程与发布 | 技术评审（用户裁决：独立轨、仅报告） |
 | 12 | 设计文档为单文件（FUNC/INTERFACE 等） | 设计按组件/模块分层：全局 ARCH/DATABASE/INTERFACE/LOGGER + 组件 `func.md`/`interface.md`；FUNC 超阈值按模块拆；算法与日志事件并入 FUNC；设计与 PRD 评审按组件出报告 | 技术评审（设计分层） |
 | 13 | 全局设计文档被全量加载（DATABASE/ARCH 每次 spawn 全读） | 按读者/消费边界拆分：`ARCH.md`（开发者）+ `ARCH-NFR.md`（架构/评审/测试/发布）；`DATABASE.md` 只留全局概览，表结构下沉 `$COMPONENT/database.md`；agent 输入改「必读/按需/禁读」三档 + 读取纪律（discipline §15） | 上下文成本评审（单次 spawn 降约 38%） |
 
 ## 校验
 
-提交前运行结构校验（无需第三方依赖）：
+**插件结构校验**（提交前，无需第三方依赖）：
 
 ```bash
 python scripts/verify_plugin.py
 ```
 
 校验项：JSON 合法性、技能/角色 frontmatter 与目录一致、plugin.json 路径存在、术语黑名单（legacy `spec`/`req` 用语）、版本三处一致、README 计数与实际一致、模板引用存在。失败退出码 1，输出 `规则 | 位置 | 明细`。
+
+**运行时产物校验**（对开发中的项目跑，门禁以退出码为准）：
+
+```bash
+python scripts/verify_artifacts.py <项目根目录>
+```
+
+校验项：`schemas/` 下 8 个 JSON Schema 覆盖 STORE-CONFIG / PRD 分片 / 用例分片 / TD 注册表 / RUN 头 / EXEC-PLAN / EXEC 明细行 / BUG 单；跨产物闭合（fail→BUG 回指、blocked→evidence、exec_id 全局唯一、plan_ref 回指、P0/P1 修复评审与验证证据）；SQLite 轨校验机制七表、execs 只追加触发器、td_biz_* 孤儿、关闭缺陷的证据。阶段未到的产物 SKIP 不算失败；`test/STORE-CONFIG.json` 缺失即 FAIL（fail-closed，对齐 storage-track §0）。
 
 ## 许可证
 

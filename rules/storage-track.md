@@ -2,6 +2,8 @@
 
 本文件是 virtual-team 插件**测试数据双轨存储（json / sqlite）的唯一规则源**。所有测试类技能（prd-structure / case-structure / test-data-gen / case-instantiate / case-running / test-rebuild）**开工第一步读本文件**——按 `test/STORE-CONFIG.json` 选定的轨道，**只读对应一节的规则**（另一节不加载）。
 
+> **机械校验**：两轨产物的结构与跨产物闭合由 `scripts/verify_artifacts.py <项目根>` 机械校验（schema 见 `schemas/`）：JSON 轨校验各分片格式、fail→BUG 回指、blocked→evidence、exec_id 全局唯一、plan_ref 闭合；SQLite 轨校验机制七表、execs 只追加触发器、td_biz_* 孤儿、关闭缺陷的验证与修复评审证据。门禁以退出码为准（discipline §14 同一哲学）。
+
 ## 0. 选轨与迁移（唯一开关）
 
 - `test/STORE-CONFIG.json` 由 **project-manager 立项时与用户一次性选定**（参考 `templates/STORE-CONFIG.json` 的选轨指引），全程跟随。
@@ -42,9 +44,9 @@
 | 执行明细 | `execs` | **只追加**（库级触发器禁 UPDATE/DELETE） |
 | 缺陷 | `bugs` | 状态机同 JSON 轨 |
 
-- **建库**：DDL 见 `templates/SQLITE-SCHEMA.sql`（含触发器与八项指标 SQL）；首次建库由 prd-structure/case-structure/test-data-gen 执行。
+- **建库**：DDL 见 `templates/SQLITE-SCHEMA.sql`（含触发器与八项指标 SQL）；首次建库由 prd-structure/case-structure/test-data-gen 的执行角色执行——**建库与查库动作要求执行角色持 Bash 工具**（product-manager / test-engineer / test-manager 均已具备，见各 agent frontmatter）。
 - **加载脚本不入库**：`test/data/$COMPONENT/scripts/TD-xxx-load.*` 仍单独存文件（职责：从业务表 SELECT → 装入被测系统；幂等 + 可清理）；`load_entry` 登记脚本路径。
-- **审定动作** = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
+- **审定动作** = 查库核对（`td_registry` 行、`exec_plans.approved` 标记；只读 SELECT，由持 Bash 的角色执行）。
 - **两轨混用 = 违规**：建了业务表仍把数据写文件、或 JSON 轨项目写 metrics.db，均为红线。
 
 ## 3. 迁移（json→sqlite，一次性）

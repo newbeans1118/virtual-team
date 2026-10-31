@@ -1,6 +1,7 @@
 -- ============================================================
 -- 模版：SQLITE-SCHEMA.sql ｜ 使用：store=sqlite 时由 test-data-gen/
---       case-structure/prd-structure 首次建库执行 ｜ 参照 templates/STORE-CONFIG.json
+--       case-structure/prd-structure 首次建库执行（执行角色须持 Bash 工具，
+--       见 rules/storage-track.md §2）｜ 参照 templates/STORE-CONFIG.json
 -- 契约版本: acceptance-v3（acceptance 条列 + GWT{given,when,then,kind} + cases.acceptance_refs；req_* → prd_* 契约重命名；JSON 与 SQL 双轨同序列化）
 -- 原则：
 --   1. 机制七表字段与 JSON 契约一一对应（templates/ 各模板）

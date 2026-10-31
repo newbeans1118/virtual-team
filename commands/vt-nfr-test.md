@@ -14,7 +14,7 @@ $ARGUMENTS
 ## 前置
 
 - PRD 已定稿（`docs/prd/prd-nonfunc.md` 存在，含 NF-* 与目标值）。
-- 测试版构建可用（`release/artifact/` + build/commit；未完成 → 先执行 `/build-test`）。
+- 测试版构建可用（`release/artifact/` + build/commit；未完成 → 先执行 `/vt-build-test`）。
 
 ## 要求
 
