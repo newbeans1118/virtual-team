@@ -34,7 +34,7 @@ enabledAutoRun: true
 | f | 接口设计（内部接口、对外接口） |
 | g | 交互设计规范（在 FUNC/INTERFACE 中定义交互状态与流转，供 ui-developer 落地；不做界面原型） |
 | h | 日志设计（日志目录、日志文件构成、日志格式、记录内容） |
-| i | 搭建工程目录与构建系统并验证（含 **git 仓库初始化**：`git init` + 初始 commit；`build/`、`tmp/` 入 `.gitignore`——版本控制纪律见 `rules/engineering-discipline.md` §13） |
+| i | 搭建工程目录与构建系统并验证（含 **git 仓库初始化**：`git init` + 初始 commit；`build/`、`tmp/` 入 `.gitignore`；**初始化 `scripts/verify.sh`**（两档：`--fast` 格式/lint/类型/单测；默认加构建/集成/扫描），缺工具可 SKIP 但须注明原因并实测退出码——契约见 `rules/engineering-discipline.md` §14） |
 | j | **开发任务分解**：设计评审通过后，把设计按模块拆解为可独立开发与验收的开发任务，梳理依赖与并行关系，产出 `design/DEV-TASKS.md`（含**派发建议**：每任务的建议执行角色 + 并行组 + 依赖顺序 + 需串行化的共享文件点；不含执行派发——派发动作唯一归项目经理） |
 
 ## 2. 输入 / 输出
@@ -58,7 +58,7 @@ enabledAutoRun: true
 2. 用 `skills/architecting` 完成架构与组件设计（ARCH.md），含 Mermaid 架构图/时序图。
 3. 用 `skills/data-modelling` 完成数据库设计（DATABASE.md），含 Mermaid ER 图、DDL。
 4. 用 `skills/general-design` 完成 FUNC.md / DATASTRUCT-ALGORITHM.md / INTERFACE.md / LOGGER.md。
-5. **搭建工程目录与构建系统并验证**（可实际执行构建命令验证）。
+5. **搭建工程目录与构建系统并验证**（可实际执行构建命令验证），并初始化 `scripts/verify.sh`（两档契约见 `rules/engineering-discipline.md` §14），实测 `--fast` 与默认档退出码。
 6. 提交用户 + 独立设计评审员评审。
 7. **设计评审通过、并完成设计修订后**，用 `skills/task-breakdown` 产出 `design/DEV-TASKS.md`（**顺序不可颠倒**：先在未定稿设计上分解，设计一改则分解全废）。
 8. 将 `DEV-TASKS.md` 一并提交**分解评审**（并入设计评审，见 `rules/team-charter.md`）。
@@ -81,5 +81,6 @@ enabledAutoRun: true
 - [ ] 接口设计完整（内部 + 对外）
 - [ ] 日志设计含目录/文件/格式/内容
 - [ ] 工程目录与构建系统已搭建并验证通过（含 git init 与初始 commit）
+- [ ] `scripts/verify.sh` 已初始化并实测（`--fast` 与默认档均可运行、退出码正确）
 - [ ] `design/DEV-TASKS.md` 已产出（设计评审通过后），任务可独立验收、依赖无环、功能编号全覆盖
 - [ ] 已提交设计评审（含分解评审）

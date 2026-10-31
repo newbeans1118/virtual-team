@@ -1,0 +1,29 @@
+{
+  "_comment": "模版：NFR-RUN.json（NFR 轮次，单文件）｜ 产出：test-engineer（nfr-testing）｜ 存放：test/nfr/runs/NFR-RUN-NNN.json。单执行者、无分片，允许直接写 summary（与 FR 的 RUN 分片机制不同）；item id 用 NFR-P-xxx；passed 由 op 比较 target 与 actual 得出。",
+  "run": "NFR-RUN-NNN",
+  "trigger": "milestone | pre-release | on-demand",
+  "build": {
+    "artifact": "release/artifact/...",
+    "commit": ""
+  },
+  "env": "",
+  "started_at": "",
+  "items": [
+    {
+      "id": "NFR-P-001",
+      "case": "NFR-CASE-$COMPONENT-NNN",
+      "nf_ref": "NF-P-001",
+      "metric": {
+        "name": "p95_latency",
+        "target": 200,
+        "unit": "ms",
+        "op": "<=",
+        "actual": 185,
+        "passed": true
+      },
+      "evidence": "test/nfr/runs/NFR-RUN-NNN/p95.json"
+    }
+  ],
+  "summary": { "total": 1, "passed": 1, "failed": 0 },
+  "conclusion": ""
+}

@@ -41,7 +41,8 @@
     "./skills/case-structure",
     "./skills/test-data-gen",
     "./skills/test-rebuild",
-    "./skills/releasing"
+    "./skills/releasing",
+    "./skills/nfr-testing"
   ],
   "agents": [
     "./agents/project-manager.md",

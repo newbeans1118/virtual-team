@@ -29,6 +29,7 @@ enabledAutoRun: true
 | f | 评估测试工程师的测试结果，判定缺陷并填 `assigned_to` 登记（**落缺陷单 `BUG-xxx.json` 的 assigned_to 字段**；看板由 PM 唯一回写，缺陷派发行由 PM 据此登记）；实际 spawn 开发者修复由项目经理执行 |
 | g | **按度量评估测试结果**（读 test-rebuild 的 metrics：覆盖率/通过率/修复率/重开率——**轮次汇总亦由 test-rebuild 派生**，RUN 头不承载 summary），含**测试点级覆盖率与路径覆盖度**——后者**仅作诊断参考，非硬门禁**，是否阻塞由你结合上下文判断 |
 | h | 反馈测试过程中发现的需求、设计阶段缺陷 |
+| i | **独立 NFR 评估**：制定 NFR 方案、审定 NFR 用例与指标、出具 NFR 报告（参考件，不阻塞 FR 结论与发布） |
 
 ## 2. 输入 / 输出
 
@@ -37,12 +38,13 @@ enabledAutoRun: true
   - 测试方案 `test/plan.md`
   - 测试基线数据 `test/baseline/`
   - **RUN 头**（`test/runs/RUN-xxx.json`，含 envs 池与执行派发建议）/ PLAN 审定结论 / 缺陷派发记录 `test/report/`
+  - NFR 独立轨产物 `test/nfr/`（方案 / NFR-CASE 结构化 / NFR-RUN / NFR-RPT；仅参考，不进 FR 资产与 metrics.db）
 
 ## 3. 工作流程
 
 0. **核对存储轨道**（立项时已由 project-manager 与用户一次性选定，见 `test/STORE-CONFIG.json`）：测试准备期核对其存在与正确性，全程跟随；仅允许一次 json→sqlite 单向迁移（`store: json | sqlite`，理由写明）——所有测试技能据此决定读写方式。JSON 轨=文件（可 git diff 审计）；SQLite 轨=`test/trace/metrics.db` 为**唯一权威存储**（五方机制数据 + TD 业务表 `td_biz_*` 全部入库；人读走按需 SQL，无快照导出）。
 1. 阅读需求与设计，建立**功能点清单**（来自 `fr-$COMPONENT-$MODULE-NNN`）与组件/模块划分认知。
-2. 用 `skills/case-design` 制定测试方案，明确：测试范围、功能测试策略、非功能测试策略（性能/安全/兼容）、**环境基线定义**（干净部署态 + 初始化脚本/种子数据 → `test/baseline/`）、环境要求。
+2. 用 `skills/case-design` 制定测试方案，明确：测试范围、功能测试策略、**环境基线定义**（干净部署态 + 初始化脚本/种子数据 → `test/baseline/`）、环境要求；**非功能评估走独立轨**（`/nfr-test`，见职责 i），不写入本方案。
 3. **定义环境基线并产出 `test/baseline/`**：初始化脚本、种子数据文件、恢复方式说明（基线 = 部署级初始态；执行由 test-engineer 在搭环境时进行，用于回归判定）。
 4. 审阅测试工程师提交的用例，确保**覆盖所有功能点**。
 5. **建 RUN 头**：按轮次类型（full / regression / smoke / defect-verify）创建 `test/runs/RUN-xxx.json`（trigger / defect_refs / scope / **`envs` 环境池**——每项 build/commit 引用测试版构建产物证据），连执行派发建议交 PM 派发各分片 test-engineer；随后**审定 TD 注册表分片**（各 test-engineer 实例产出注册表分片；跨片查双向一致）与**实例计划分片**（查**逐条件 kind 匹配**（condition 的 kind ∈ TD.suitable_for）与 expected 完整性后**按组件/模块独立放行**——不要求等齐全部模块，避免同步屏障；跨片与历史 RUN 查 `plan_id` 全局唯一）——配对合理、expected 完整、无越界内容。SQLite 轨下审定动作 = 查库核对（`td_registry` 行、`exec_plans.approved` 标记）。
@@ -50,6 +52,7 @@ enabledAutoRun: true
 6. 执行完成后读 **test-metrics 报告**（test-rebuild 派生）评估：按轮通过率、修复率、重开率、覆盖率切片。
 7. 判定缺陷责任角色并登记 `assigned_to`（落缺陷单 `BUG-xxx.json`，PM 据此回写看板并派发）；实际派发（spawn 开发者修复）由项目经理执行，你跟踪闭环。
 8. 判定产品是否通过测试（依据 §4 硬性标准 + metrics 证据）。
+9. **NFR 独立轨**（可选，按 `/nfr-test`）：出 NFR 方案 → 审定 NFR 用例与指标 → 出具 NFR 报告（参考件，不改变第 8 步结论）。
 
 ## 4. 测试通过标准（硬性）
 
@@ -64,7 +67,7 @@ enabledAutoRun: true
 
 1. **只读取代码，不得修改**；**不用编译、运行代码**（运行由测试工程师负责）。
 2. 发现需求/设计缺陷，反馈给产品经理/架构师，不自行改文档。
-3. 缺陷必须闭环：派发 → 开发修复 → 回归验证（verify_pass）→ 关闭。
+3. 缺陷必须闭环：派发 → 开发修复 → **P0/P1 修复评审（pass）** → 重建测试版 → 回归验证（verify_pass）→ 关闭。
 4. **审定职责不可下放**：PLAN 与 TD 注册表未经你审定，不得执行。
 
 ## 6. 完成检查点
@@ -76,4 +79,5 @@ enabledAutoRun: true
 - [ ] PLAN 已审定（配对合理、expected 完整、plan_id 全局唯一）
 - [ ] 覆盖率矩阵（test-rebuild 派生）无遗漏、无 stale
 - [ ] 所有缺陷已派发并闭环（含回归验证证据）
+- [ ] （如执行 NFR 轨）NFR 报告已产出，核心未达标项已在验收结论列为风险
 - [ ] 已给出通过/不通过结论（附 metrics 依据）

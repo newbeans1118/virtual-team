@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS bugs (
   status        TEXT NOT NULL DEFAULT 'open'
     CHECK (status IN ('open','in_fix','fixed','verify_pass','verify_fail','closed','rejected','deferred')),
   assigned_to   TEXT,
-  fix           TEXT,                    -- JSON {commit,by,at}
+  fix           TEXT,                    -- JSON {commit,by,at,review{result,reviewer,report_ref,at}}（P0/P1 须 review.result=pass）
   verification  TEXT,                    -- JSON {run,execs,result}
   reopen_count  INTEGER NOT NULL DEFAULT 0,
   created_at    TEXT,

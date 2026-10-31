@@ -47,6 +47,8 @@ $ARGUMENTS
 | 测试 | test-manager / test-engineer | case-design, case-instantiate, case-running, case-structure |
 | 验收/发布 | project-reviewer / release-engineer | accepting, releasing, doc-writing |
 
+> **NFR 独立轨（可选）**：非功能评估走 `/nfr-test`，产出参考报告，不进入上述主流程门禁。
+
 ## 纪律
 
 - 所有输入输出**必须是文件**，写入规定目录。

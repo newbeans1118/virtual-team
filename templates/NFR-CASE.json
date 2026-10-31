@@ -1,0 +1,28 @@
+{
+  "_comment": "模版：NFR-CASE.json（NFR 用例结构化分片）｜ 产出：test-engineer（nfr-testing）｜ 存放：test/nfr/trace/nfr-case-$MODULE.json。独立轨：id 用 NFR-CASE-*，不进入 FR 的 case-*.json；一个用例可覆盖多条 NF；metrics 为判定契约（op 取 <= / >= / == / < / >）。",
+  "project": "$PROJECT_NAME",
+  "module": "$MODULE",
+  "updated_at": "",
+  "cases": [
+    {
+      "id": "NFR-CASE-$COMPONENT-NNN",
+      "title": "接口 P95 负载测试",
+      "component": "$COMPONENT",
+      "nf_refs": ["NF-P-001"],
+      "method": "load-test | security-scan | fault-injection | compatibility-matrix",
+      "load_model": {
+        "concurrency": 500,
+        "duration_min": 30,
+        "data_volume": "100k records",
+        "warmup_min": 5
+      },
+      "metrics": [
+        { "name": "p95_latency", "target": 200, "unit": "ms", "op": "<=" }
+      ],
+      "environment": "test-env 2C4G（测试版构建）",
+      "data_ref": "NFR-TD-$COMPONENT-NNN | reuse:TD-$COMPONENT-NNN",
+      "evidence_format": "工具原始报告 + 日志切片",
+      "status": "active"
+    }
+  ]
+}

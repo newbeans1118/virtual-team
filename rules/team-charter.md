@@ -51,6 +51,10 @@
 | 功能点 | `fr-$COMPONENT-$MODULE-NNN`（固定 4 段）；前后台拆分时模块位取 `ui`/`svc` 或 `all` | `fr-workbench-task_list-001` |
 | 测试用例 | `CASE-$COMPONENT-NNN`（用例属主组件；可跨组件引用功能点） | `CASE-workbench-001` |
 | 测试数据单元 | `TD-$COMPONENT-NNN`（数据属主组件；可服务多用例） | `TD-workbench-012` |
+| NFR 用例 | `NFR-CASE-$COMPONENT-NNN`（**独立轨**，不进入 FR 的 case 分片） | `NFR-CASE-pay-001` |
+| NFR 数据单元 | `NFR-TD-$COMPONENT-NNN`（可选；可只读复用 TD） | `NFR-TD-pay-001` |
+| NFR 轮次 | `NFR-RUN-NNN`（独立轨，单文件） | `NFR-RUN-001` |
+| NFR 轮内条目 | `NFR-P-xxx` | `NFR-P-001` |
 | 执行轮 | `RUN-NNN`，度量的分母单位（**test-manager 创建**；跨组件，不加前缀） | `RUN-007` |
 | 执行明细 | `{plan_ref}-{seq}`（如 `P-003-1`），追加式，回指实例行；plan_ref 全局唯一 → exec_id 全局唯一（并行分片零撞号） | `P-003-1` → P-003 |
 | 实例计划行 | `P-xxx`，**全局唯一（跨 RUN，TM 审定时查重）**，EXEC 回指锚点 | `P-003` |
@@ -98,7 +102,14 @@ $PROJECT_ROOT/
 │   └── project/
 ├── test/                       # 测试阶段（测试经理 / 测试工程师）
 │   ├── STORE-CONFIG.json       # ★ 存储轨道开关（json|sqlite，PM 立项时创建经用户确认，唯一开关）
-│   ├── plan.md                 # 测试方案
+│   ├── plan.md                 # 测试方案（FR）
+│   ├── nfr/                    # ★ NFR 独立轨（仅参考报告，不阻塞 FR 流程与发布）
+│   │   ├── plan-nfr.md         # NFR 方案
+│   │   ├── cases/              # NFR-CASE-$COMPONENT-NNN.md
+│   │   ├── data/               # NFR-TD-$COMPONENT-NNN/（可 reuse FR TD，只读）
+│   │   ├── trace/              # nfr-case-$MODULE.json
+│   │   ├── runs/               # NFR-RUN-NNN.json
+│   │   └── report/             # NFR-RPT-*.md
 │   ├── baseline/               # 环境基线（TM 定义：初始化脚本/种子数据/恢复方式；TE 搭环境时执行——基线=部署级初始态，TD=用例级数据）
 │   ├── cases/$COMPONENT/       # 测试用例 CASE-$COMPONENT-NNN.md（按组件分层）
 │   ├── data/$COMPONENT/        # 数据单元：JSON 轨=TD-$COMPONENT-NNN/；SQLite 轨=数据入业务表 td_biz_*
@@ -155,6 +166,8 @@ $PROJECT_ROOT/
 - **生产版发布**：项目验收通过 + 四方联合确认 → 打 tag；测试期无代码变更可直接升级标记，有变更须重新构建再确认。
 - **RUN 头归 test-manager**：TM 建头（trigger/scope/envs/defect_refs）→ TE 在既定 RUN 内配对实例 → TM 审定 → PM 派发执行。RUN 头为**纯计划态**（无 summary/finished_at）——轮次汇总由 `test-rebuild` 从 EXEC 派生，不回写。
 - **测试执行门禁**：TD 注册表与**实例计划 EXEC-PLAN** 未经 test-manager 审定不得执行；EXEC 只追加不改写；缺陷关闭须 verify_pass 证据。
+- **缺陷修复门禁**：P0/P1 修复 commit 后须过**单阶段修复评审**（`skills/code-review` 修复评审模式，5 项检查）；评审未过不得重建测试版、不得进入回归；P2 豁免。
+- **NFR 独立轨**：`/nfr-test` 可与任意阶段并行，产出参考报告；**不进入主流程门禁**（不阻塞验收与发布）。
 - **"复杂"判据（统一口径）**：功能涉及 **≥2 次状态迁移或跨模块/跨组件调用** → 功能流程图必填；影响多组件或含并发/事务一致性 → 进 DATASTRUCT-ALGORITHM；任务数 >20 或并行组 >3 → 看板用甘特图。不满足判据的图形为可选（建议项）。
 - **工程骨架归属**：architect 搭建的工程目录与构建系统属**代码产物**——入 `src/`（或工程根的标准位置），**同样过代码评审**，不因出自架构师而豁免。
 - **测试准备并行边界**：用例设计与 TD 设计**只依赖需求+设计文档，可与编码并行**；**TM 建 RUN 头不属并行范围**（envs 需引用测试版构建的 build/commit，须待构建完成）；TD 加载脚本实测与用例执行**须待测试版构建完成**（环境来自构建产物）。
@@ -193,11 +206,11 @@ $PROJECT_ROOT/
 
 ## 6. 缺陷分级
 
-| 级别 | 定义 | 处理 |
-|------|------|------|
-| P0 | 阻塞性缺陷，功能不可用、数据错误、安全漏洞 | 必须修复，阻塞发布 |
-| P1 | 严重缺陷，主要功能受损但可绕过 | 必须修复，阻塞发布 |
-| P2 | 一般缺陷，体验问题 | 可排期修复 |
+| 级别 | 定义 | 处理 | 修复评审 |
+|------|------|------|---------|
+| P0 | 阻塞性缺陷，功能不可用、数据错误、安全漏洞 | 必须修复，阻塞发布 | **必须**（单阶段修复评审） |
+| P1 | 严重缺陷，主要功能受损但可绕过 | 必须修复，阻塞发布 | **必须**（单阶段修复评审） |
+| P2 | 一般缺陷，体验问题 | 可排期修复 | 免（可抽样） |
 
 ## 7. 交付物质量红线
 
@@ -211,6 +224,7 @@ $PROJECT_ROOT/
 - **模板纯净性**：`templates/` 下所有文件的**结构、字段、机制说明**不得包含业务域概念（业务概念只允许出现在**示例/演示内容**中——示例是教学内容，不算违规）。判定标准：把示例删掉后，剩余骨架是否仍完整表达该交付物的结构。
 - **TD 黑盒与配对**：TD 对机制层只暴露 `{id, description, load_entry}`，禁写 expected 与业务字段值；`suitable_for` 值域 = normal/boundary/negative（与 acceptance.kind 同枚举），是逐条件配对的匹配键（细则见 `skills/test-data-gen`/`case-instantiate`）；关联双向一致（owner_cases ↔ dataset_refs）。
 - **测试执行分片**：测试任务按**组件**分片可并行；执行分片 = 组件（一组件一分片一文件）；**env 由 TM 审定时静态分配**（一 env 一分片，活跃分片数 ≤ RUN.envs 数）；实例只写本分片产物（细则见 `skills/case-running`）。
+- **NFR 独立轨**：NFR（NF-*）由 `nfr-testing` 独立评估，资产全部落 `test/nfr/`（NFR-CASE / NFR-TD / NFR-RUN / NFR-RPT），**不得写入 FR 的 case/TD/RUN/EXEC/BUG/metrics.db**；NFR 报告**仅参考，不阻塞 FR 流程与发布**，核心项未达标须在验收结论列风险（细则见 `skills/nfr-testing`）。
 - **组件/模块层级（主归属）**：功能点严格属「组件 × 模块」（`fr-$COMPONENT-$MODULE-NNN` 固定 4 段，无模块用 `all`）；用例与数据单元**有主组件**，跨组件复用经 `function_refs`/`dataset_refs`/`owner_cases` 表达；组件/模块名一律 snake_case（连字符只作层级分隔），保证编号可机械解析；目录按组件/模块分层存放。
 - **存储轨道纪律**：双轨（json/sqlite）立项时一次性选定（`test/STORE-CONFIG.json` 唯一开关），禁止混写/默认选轨，仅允许一次 json→sqlite 单向迁移；SQLite 轨 `metrics.db` 为唯一权威存储，业务表必含 `td_id` 外键（孤儿 = P0），`execs` 只追加——**两轨规则详见 `rules/storage-track.md`（唯一规则源，按所选轨道只读对应一节）**；该库属跨阶段集中存储的约定例外，product-manager 的 prd-structure 亦可写 `test/trace/`。
 

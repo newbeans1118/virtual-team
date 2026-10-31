@@ -11,6 +11,8 @@ $ARGUMENTS
 
 委派 **test-manager**（方案/RUN 头/评估）与 **test-engineer**（用例/数据/执行）agent。
 
+> **NFR 不在此命令内**：非功能评估走 `/nfr-test`（独立轨，仅参考报告，不阻塞本流程）。
+
 ## 前置
 
 - **测试版构建已完成**（`release/artifact/` + `release/manual-install.md`，代码评审闭环后由 release-engineer 产出）——测试环境来源；未完成 → 先执行 `/build-test`。

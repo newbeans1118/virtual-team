@@ -75,6 +75,8 @@ description: 把业务分析落地为可验收的功能需求、编写 PRD（产
 
 > **取舍原则**：只写"该功能点自己该验的行为"。系统级的安全/性能约束（加密算法、防注入机制、审计日志格式）**不写在此处**——它们属 `prd-nonfunc.md` 的 `NF-S-xxx`/`NF-P-xxx`。
 >
+> **NFR 可执行性**：每条 NF 须写清目标值、负载/场景、测量点、验证方式（见 `templates/PRD-NONFUNC.md`）；NFR 由 `nfr-testing` 独立评估，**不进入 FR acceptance**（两轨不混写）。
+>
 > **示例**（用户注册功能点）：
 > ```
 > c1 (normal)   Given 合法邮箱与合规密码 / When 提交注册 / Then 注册成功且落库

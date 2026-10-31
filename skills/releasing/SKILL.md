@@ -18,7 +18,8 @@ description: 测试版构建与生产版发布时使用。触发场景：代码�
 **前置（硬性）**：
 
 1. 全部开发任务的代码评审已闭环（无未关闭 P0/P1）。
-2. 主干含全部通过代码评审的任务 commit（任务完成即 commit，见 `rules/engineering-discipline.md` 版本控制纪律）。
+2. 主干含全部通过代码评审的任务 commit（任务完成即 commit，见 `rules/engineering-discipline.md` §13）。
+3. **同一 commit 全量 verify 通过**（`scripts/verify.sh`，日志留档；契约见 §14）。
 
 **流程**：
 
@@ -57,6 +58,7 @@ description: 测试版构建与生产版发布时使用。触发场景：代码�
 - 未经四方联合确认的产物**只能标记为测试版**，不得作为生产版发布。
 - 生产版必须打标签。
 - **测试环境必须来自测试版构建产物**（与发布形态同源）——不得用开发工作区直接部署充当测试环境。
+- **构建前须全量 verify 通过**：在 worktree 对同一 commit 执行 `scripts/verify.sh`，失败不得打包（契约见 discipline §14）。
 
 ## 检查清单
 
@@ -64,6 +66,7 @@ description: 测试版构建与生产版发布时使用。触发场景：代码�
 - [ ] 前置满足（代码评审闭环、主干含全部 commit）
 - [ ] 全新 worktree 构建成功
 - [ ] 组件归档且可复现（版本/commit/构建命令/依赖）
+- [ ] 同一 commit 全量 verify 通过（`scripts/verify.sh`，日志路径记入构建元数据）
 - [ ] 安装/发布手册已产出（基于真实构建）
 - [ ] 部署冒烟验证通过（附命令与结果）
 - [ ] 已标记测试版（build/commit 证据可供 RUN.envs 引用）

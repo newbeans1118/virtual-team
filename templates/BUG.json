@@ -1,5 +1,5 @@
 {
-  "_comment": "模版：BUG.json（缺陷单）｜ 提交：case-running（失败 EXEC）｜ 修复：开发者 ｜ 验证：回归轮 ｜ 存放：test/bugs/BUG-$COMPONENT-NNN.json。状态机：open → in_fix → fixed → verify_pass → closed；verify_fail → 重开回 open（记 reopen_count）。acceptance_refs 可选：精确回指失败的验证条件（有则便于定位）。severity 为唯一分级字段（priority 与其语义重复，已移除）。",
+  "_comment": "模版：BUG.json（缺陷单）｜ 提交：case-running（失败 EXEC）｜ 修复：开发者 ｜ 验证：回归轮 ｜ 存放：test/bugs/BUG-$COMPONENT-NNN.json。状态机：open → in_fix → fixed →（P0/P1 修复评审 pass）→ 重建测试版 → verify_pass → closed；verify_fail → 重开回 open（记 reopen_count）。acceptance_refs 可选：精确回指失败的验证条件（有则便于定位）。severity 为唯一分级字段（priority 与其语义重复，已移除）。P0/P1 的 fix.review.result 必须为 pass 才可进入回归。",
   "id": "BUG-$COMPONENT-NNN",
   "title": "",
   "severity": "P0 | P1 | P2",
@@ -12,7 +12,7 @@
   "evidence": "logs/…",
   "status": "open | in_fix | fixed | verify_pass | verify_fail | closed | rejected | deferred",
   "assigned_to": "backend-developer | ui-developer",
-  "fix": { "commit": "", "by": "", "at": "" },
+  "fix": { "commit": "", "by": "", "at": "", "review": { "result": "pending | pass | fail", "reviewer": "", "report_ref": "review/code/CR-FIX-BUG-xxx.md", "at": "" } },
   "verification": { "run": "RUN-xxx", "execs": ["P-xxx-2"], "result": "pass | fail" },
   "reopen_count": 0
 }

@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 23 个技能 skill + 12 个工作流命令 + 31 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 35 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -21,15 +21,15 @@ virtual-team-plugin/
 │   ├── backend-developer.md   ui-developer.md      code-reviewer.md
 │   ├── test-manager.md        test-engineer.md     release-engineer.md
 │   └── prd-reviewer.md design-reviewer.md  project-reviewer.md
-├── skills/                            # 23 个技能
+├── skills/                            # 24 个技能
 │   ├── planning / business-analysis / prd / prd-review
 │   ├── architecting / data-modelling / general-design / task-breakdown / design-review / datamodel-review
 │   ├── code-review
 │   ├── case-design / case-instantiate / case-running / case-structure / prd-structure
-│   ├── test-data-gen / test-rebuild
+│   ├── test-data-gen / test-rebuild / nfr-testing
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
-├── commands/                          # 12 个工作流入口
-├── templates/                         # 31 个交付物模版
+├── commands/                          # 13 个工作流入口
+├── templates/                         # 35 个交付物模版
 ├── pages/prototype/                   # 界面原型存放（运行时产出）
 ├── board/                             # 进度看板存放（运行时产出）
 ├── docs/ design/ src/ review/ test/ release/   # 各阶段交付目录约定
@@ -81,6 +81,7 @@ flowchart TD
 | `/code-review` | 代码评审（两阶段） |
 | `/build-test` | 测试版构建（测试准入：worktree 构建 + 手册 + 冒烟） |
 | `/test` | 测试（前置：`/build-test` 已完成） |
+| `/nfr-test` | NFR 独立评估（性能/安全/兼容，仅参考报告） |
 | `/release` | 生产版发布（验收通过后：四方确认 + tag） |
 | `/accept` | 项目验收 |
 | `/status` | 更新并展示进度看板 |
@@ -109,6 +110,7 @@ flowchart TD
 | 执行测试、跑用例、缺陷跟踪、测试报告 | `case-running` | test-engineer |
 | 建 RUN、用例×数据配对成可执行实例、交审定 | `case-instantiate` | test-engineer |
 | 用例结构化、覆盖率矩阵 | `case-structure` | test-engineer |
+| NFR 独立评估（压测/扫描/故障注入）、NFR 报告 | `nfr-testing` | test-manager / test-engineer |
 | 画图（架构图/ER/流程/时序/状态/甘特），统一 Mermaid | `diagramming` | 全体 |
 | 安装/发布/用户手册、配置说明 | `doc-writing` | release-engineer |
 | 项目验收、立项评审（总体评估） | `accepting` | project-reviewer |
@@ -126,6 +128,7 @@ flowchart TD
 **工程纪律**（`rules/engineering-discipline.md`）
 
 - **证据先于结论**：没有本次验证证据，不得声称"完成/通过/修好"。
+- **可执行校验**：项目必须有 `scripts/verify.sh`（`--fast` / 全量两档）；TASK-DONE 附日志，门禁以退出码为准（discipline §14）。
 - **两阶段评审**：先规格符合性（功能编号全覆盖、无多做漏做），后代码质量。
 - **完成状态协议**：收尾必报 `DONE` / `DONE_WITH_CONCERNS` / `BLOCKED` / `NEEDS_CONTEXT`；3 次失败必上报。
 - **否定性断言需证据**："做不到/不可能"也要给原文错误或实测；便宜探针先跑再问。
@@ -184,9 +187,10 @@ codebuddy --plugin-dir <本目录绝对路径>
 | 5 | 功能点编号 `fr-$MOD-xxx` | `fr-$COMPONENT-$MODULE-NNN` 固定 4 段（组件⊃模块，snake_case，无模块用 all） | 组件模块层级改版（可机械解析） |
 | 6 | test-manager"将测试缺陷发送给开发工程师" | TM 判定并登记 assigned_to（落 BUG 单），**实际派发由 PM 执行** | 子代理无消息通道，派发权唯一归 PM |
 | 7 | "变更流程：缺陷修复流程："（原文截断） | CR 变更五步闭环（charter §5.1）+ BUG 状态机闭环 | 原文缺失，最小闭环补齐 |
-| 8 | 开发者完成任务后无明确汇报要求 | TASK-DONE 标准报告（含 commit hash + 状态自评），PM 核对回写看板 | 完成闭环 + 看板单一写者 |
+| 8 | 开发者完成任务后无明确汇报要求 | TASK-DONE 标准报告（含 verify 结果 + commit hash + 状态自评），PM 核对回写看板 | 完成闭环 + 可执行校验 + 看板单一写者 |
 | 9 | 发布"从 git 拉取分支" | 全新 worktree 从**主干**构建（测试版/生产版两阶段，tag 打在主干） | 单主干版本控制纪律（discipline §13） |
 | 10 | 产物称"需求说明书/规格说明书"，结构化称 req | 统一标准化为 **PRD**：技能 `requirement→prd`、`req-structure→prd-structure`、`requirement-review→prd-review`；文件 `spec*.md→prd*.md`、`req.json→prd.json`；目录 `docs/requirements/→docs/prd/`；SQL 契约 `req_*→prd_*`（acceptance-v3）；命令 `/requirements→/prd` | 术语标准化（消除 req/spec/PRD 三套用语分裂） |
+| 11 | 原文无独立 NFR 测试 | 新增 **NFR 独立轨**：`test/nfr/`（NFR-CASE / NFR-TD / NFR-RUN / NFR-RPT），`/nfr-test` 入口；仅参考报告，不阻塞 FR 流程与发布 | 技术评审（用户裁决：独立轨、仅报告） |
 
 ## 校验
 

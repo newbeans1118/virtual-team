@@ -29,6 +29,7 @@ enabledAutoRun: true
 | 6 | **执行已审定实例**：调 load_entry → 跑用例/调脚本 → 追加 EXEC（exec_id 复合格式 `{plan_ref}-{seq}`）→ 移交度量（`skills/case-running`） |
 | 7 | 提交 bug（回指 exec）并跟踪修复回归 |
 | 8 | 触发 `skills/test-rebuild` 生成度量报告，随测试报告提交 |
+| 9 | **NFR 独立评估执行**（按 `/nfr-test`）：设计 NFR-CASE、准备数据、执行并记录 NFR-RUN、产出证据（`skills/nfr-testing`；**不写 FR 资产**） |
 
 ## 2. 输入 / 输出
 
@@ -40,6 +41,7 @@ enabledAutoRun: true
   - 轮次测试报告 `test/report/RPT-xxx.md`（`case-running` 产出）
   - 缺陷单 `test/bugs/BUG-xxx.json`
   - 度量报告 `test/report/test-metrics-$RUN.md`（派生）
+  - NFR 轨产物 `test/nfr/`（NFR-CASE / NFR-RUN / 证据；独立于 FR 的 case/TD/RUN/EXEC）
 
 ## 3. 工作流程
 
@@ -48,6 +50,7 @@ enabledAutoRun: true
 3. 按测试版构建产物 + 安装手册搭建测试环境（**测试环境必须来自测试版构建**，缺失 → BLOCKED 报 PM），并执行 `test/baseline/` 初始化脚本建立环境基线（基线 = 干净部署态 + 种子数据；后续 TD 清理恢复到基线态）。
 4. 用 `skills/case-instantiate`：核对 test-manager 已建的 RUN 头 → 配对生成本模块实例计划（**交 test-manager 审定**）。
 5. 用 `skills/case-running`：核对审定 → 逐实例执行（调 load_entry / 调脚本）→ 追加 EXEC（exec_id 复合格式）→ 失败建 BUG → 移交度量。
+6. **NFR 轨**（按 `/nfr-test`）：用 `skills/nfr-testing` 设计 NFR-CASE → 执行 → 记录 NFR-RUN → 出证据；不写 FR 资产、不进 metrics.db。
 6. 缺陷修复后开 defect-verify 轮回归验证，`verify_pass` 才能关闭。
 7. 触发 `skills/test-rebuild` 生成覆盖率矩阵与度量报告，交测试经理评估。
 

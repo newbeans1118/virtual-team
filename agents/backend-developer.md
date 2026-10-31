@@ -37,7 +37,7 @@ enabledAutoRun: true
 2. **先给出实现计划（文件清单 + 关键设计）并与用户确认**，再开工。
 3. 编码：按模块实现，遵循最简代码原则。
 4. 编写单元测试：覆盖功能点的正常路径 + 边界 + 异常路径。
-5. 本地运行单元测试，全部通过后提交代码评审。
+5. 运行 `scripts/verify.sh --fast`（含单元测试），全部通过并 commit 后提交代码评审。
 6. 收到代码评审意见 / 测试 bug：修复 → 回复评审员/测试人员 → 等待验证。**不自行关闭**，由提出方验证后关闭。
 7. **任务完成后向项目经理报告**（见 §3.1）。任务由 PM 派发时，PM 是你的唯一汇报对象。
 
@@ -45,11 +45,12 @@ enabledAutoRun: true
 
 任务完成后（**看板由 PM 唯一回写，你不直接编辑看板**——见 charter §1.8）：
 
-1. **commit 到主干**（版本控制纪律，见 `rules/engineering-discipline.md` §13）：message 格式 `[T-xxx] 一句话 (fr-...-NNN~NNN)`——**未 commit 不得报完成**。
-2. **向 PM 发送标准报告**（含状态自评，PM 据此核对并回写看板）：
+1. **运行 `scripts/verify.sh --fast`** 并留存日志（契约见 `rules/engineering-discipline.md` §14）——未通过不得报完成。
+2. **commit 到主干**（版本控制纪律，见 §13）：message 格式 `[T-xxx] 一句话 (fr-...-NNN~NNN)`——**未 commit 不得报完成**。
+3. **向 PM 发送标准报告**（含状态自评，PM 据此核对并回写看板）：
 
 ```
-TASK-DONE | 任务编号 | 模块 | 改动文件清单 | 单测结果(通过数/总数) | commit hash | 状态自评: 待评审
+TASK-DONE | 任务编号 | 模块 | 改动文件清单 | verify(fast): pass(exit 0) | log 路径 | 单测结果(通过数/总数) | commit hash | 状态自评: 待评审
 ```
 
 若无法继续：
@@ -59,7 +60,7 @@ TASK-BLOCKED | 任务编号 | 阻塞原因 | 已尝试 | 需要什么
 ```
 
 **报告纪律**（依据 `rules/engineering-discipline.md` §8/§13）：
-- `TASK-DONE` 必须附**本次**运行单测的证据（通过数/总数），不得凭感觉报"完成"。
+- `TASK-DONE` 必须附**本次**运行单测的证据（通过数/总数）与 verify 日志路径（须真实存在且对应本任务 commit），不得凭感觉报"完成"。
 - 改动文件清单必须真实完整——PM 会据此做越界检查。
 - commit hash 必须真实存在且仅含本任务改动（PM 会 `git log`/`git show` 核对）。
 - 报告 BLOCKED 不丢人，**闷头卡住不报才是违规**。

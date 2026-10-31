@@ -11,6 +11,8 @@ $ARGUMENTS
 
 委派 **code-reviewer** agent 执行**代码评审**（两阶段，顺序不可颠倒）。
 
+> **缺陷修复评审**：P0/P1 修复后以 BUG 编号 + fix commit 为输入，走**单阶段修复评审**（五项检查，见技能同名小节），结论回填 `BUG.fix.review`。
+
 ## 要求
 
 1. 读取 `rules/team-charter.md`、`rules/engineering-discipline.md`、`docs/prd/`、`design/`、`src/`。
