@@ -18,9 +18,9 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 | 方 | 来源 | 角色 |
 |----|------|------|
 | 需求 | `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（分片） | 功能点全集 + **acceptance 验证条件条列**（测试点级分母） |
-| 用例 | `test/trace/$COMPONENT/case-$MODULE.json`（分片） | 覆盖关系（function_refs / **acceptance_refs** / dataset_refs） |
-| 数据 | `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`（**分片**，合并读取；SQLite 轨=td_registry 表） | 数据单元（黑盒：id + description + load_entry） |
-| 执行 | `test/runs/RUN-xxx.json`（**计划态，TM 建**）+ `RUN-xxx/EXEC-PLAN-<组件>-<模块>.json` + `EXEC-<组件>-<模块>.jsonl`（**按组件/模块分片**） | 计划配对 + 执行明细（**轮次汇总唯一来源**） |
+| 用例 | `test/trace/$COMPONENT/$MODULE/case.json`（分片） | 覆盖关系（function_refs / **acceptance_refs** / dataset_refs） |
+| 数据 | `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`（**分片**，合并读取；SQLite 轨=td_registry 表） | 数据单元（黑盒：id + description + load_entry） |
+| 执行 | `test/runs/RUN-xxx.json`（**计划态，TM 建**）+ `RUN-xxx/EXEC-PLAN.json` + `EXEC.jsonl`（**按组件/模块分片**） | 计划配对 + 执行明细（**轮次汇总唯一来源**） |
 | 缺陷 | `test/bugs/BUG-xxx.json` | 缺陷状态机 |
 
 ## 输出（全部**派生只读**，禁止手工编辑）
@@ -40,7 +40,7 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 |---|------|------|---------|
 | 1 | **ID 完整性** | 每个 `function_refs` 必须存在于 PRD 分片；每条 EXEC 的 case/td 必须存在于 CASE/REGISTRY | 孤立项 = P0，报告 PM |
 | 2 | **覆盖完整性** | 每个功能点 ≥1 条 active 用例；每条 active 用例 ≥1 个 TD | 缺口显式列出（**禁止标"通过"**） |
-| 3 | **源同步** | `prd.md` hash == `prd.json.source_hash`；`prd.json` hash == `case-<模块>.json.prd_source_hash` | 不同步 = 提示对应技能重跑，指标标 `stale` |
+| 3 | **源同步** | `prd.md` hash == `prd.json.source_hash`；`prd.json` hash == `case.json.prd_source_hash` | 不同步 = 提示对应技能重跑，指标标 `stale` |
 | 4 | **状态合法** | 枚举校验；BUG 状态机合法迁移；TD 的 owner_cases 与用例侧 `dataset_refs` 双向一致 | 违规 = P1 |
 | 5 | **验证条件引用完整性** | 每个 `acceptance_refs` 项必须存在于对应功能点的 `acceptance[].key`；引用闭合（前缀 fr-id ∈ 本用例 function_refs） | 悬空引用 = **告警**（列「遗留风险」，不阻塞） |
 
@@ -53,7 +53,7 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 | **测试点级覆盖率**（度量，非门禁） | 被 ≥1 active 用例 `acceptance_refs` 引用的验证条件数 ÷ 全部 active 功能点的 acceptance 条件总数 | prd.acceptance × case.acceptance_refs |
 | **路径覆盖度**（度量，按 kind 分组） | 各 kind（normal/boundary/negative）已覆盖条件数 ÷ 该 kind 条件总数 | prd.acceptance.kind |
 | 用例执行率 | 已执行 PLAN 行 ÷ 计划 PLAN 行 | PLAN vs EXEC |
-| 通过率 | pass EXEC ÷ 已执行 EXEC（**按轮**；可按组件/模块/优先级/suitable_for 切片） | EXEC-<组件>-<模块>.jsonl 分片 |
+| 通过率 | pass EXEC ÷ 已执行 EXEC（**按轮**；可按组件/模块/优先级/suitable_for 切片） | EXEC.jsonl 分片 |
 | 缺陷密度 | bug 数 ÷ 执行数（或 ÷ 功能点数） | EXEC × BUG |
 | 修复率 | verify_pass 的 bug ÷ 提交修复的 bug | BUG.verification |
 | 重开率 | reopen 次数 ÷ closed bug 数（**质量逃逸信号**） | BUG 状态历史 |

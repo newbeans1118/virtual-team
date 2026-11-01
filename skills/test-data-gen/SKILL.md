@@ -16,7 +16,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 ## 输入
 
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（功能验收标准）
-- `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`、`test/trace/$COMPONENT/case-$MODULE.json`（用例意图）
+- `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`、`test/trace/$COMPONENT/$MODULE/case.json`（用例意图）
 - `test/plan.md`（测试范围与环境约束）
 - `design/INTERFACE.md`、`design/$COMPONENT/database.md`（本组件表结构）、`design/$COMPONENT/func.md`（或 `$MODULE/func.md`）；全局数据规范见 `design/DATABASE.md` §2（加载方法的依据，只读）
 
@@ -26,7 +26,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 - **JSON 轨**（默认）：
   - `test/data/$COMPONENT/TD-$COMPONENT-NNN/`（数据文件+加载脚本）
-  - `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`——**注册表分片**（每组件/模块一片，与 case/PRD 分片对称；全局视图由 test-rebuild 合并，禁止实例间互相改写对方分片）
+  - `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`——**注册表分片**（每组件/模块一片，与 case/PRD 分片对称；全局视图由 test-rebuild 合并，禁止实例间互相改写对方分片）
 - **SQLite 轨**（STORE-CONFIG.store=sqlite）：
   - 机制数据 → `test/trace/metrics.db` 的 `td_registry` 表（字段同上，双向一致约束同；行级 INSERT 无并行冲突）
   - **数据本体 → 业务表 `td_biz_*`**（本技能设计并建表，INSERT 数据行；**必须含 `td_id` 列外键关联 `td_registry(id)`**，见 `templates/SQLITE-SCHEMA.sql` 样例）
@@ -52,7 +52,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 ## 前置（硬门禁，缺任一 → BLOCKED 报 PM）
 
 1. 需求定稿且已结构化（本分片 `prd.json` 存在）。
-2. 用例已设计并结构化（本分片 `case-$MODULE.json` 存在，owner 用例明确）。
+2. 用例已设计并结构化（本分片 `case.json` 存在，owner 用例明确）。
 3. 测试方案已经用户确认（`test/plan.md`）。
 4. 设计文档可读（加载方法依据）。
 5. **测试版构建产物可用**（`release/artifact/` + `release/manual-install.md`，代码评审闭环后由 release-engineer 产出）——**加载脚本必须在其上实测跑通**，验证记录写入注册表分片。设计 TD 与加载脚本可与编码并行，实测须待测试版构建完成。
@@ -99,12 +99,12 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 3. **设计数据内容**：写 `test/data/$COMPONENT/TD-$COMPONENT-NNN/` 内部文件（业务相关，形态项目自定：JSON/CSV/脚本生成均可）。
 4. **编写加载方法**：`load_entry` 可执行脚本——负责"把数据装入被测系统"（走 API / 数据库 / 静态配置，依设计文档定）；**必须幂等**（重复加载不残留），配套清理逻辑。
 5. **实测验证**：执行 `load_entry`，确认加载成功且可清理；验证命令与结果写入注册表 `verified` 字段。
-6. **登记**：更新本分片注册表 `TD-REGISTRY-$MODULE.json`（编号顺序分配 `TD-$COMPONENT-NNN`；description 六字段；owner_cases 与本分片 `case-$MODULE.json` 双向一致）。
+6. **登记**：更新本分片注册表 `TD-REGISTRY.json`（编号顺序分配 `TD-$COMPONENT-NNN`；description 六字段；owner_cases 与本分片 `case.json` 双向一致）。
 7. **提交审定**：注册表交 `test-manager` 审定（description 规范性、加载入口可执行、owner_cases 完整）。
 
 ## 质量要求
 
-- 每个引用了 TD 的用例，在 `case-$MODULE.json` 中有对应 `dataset_refs`；反之 owner_cases 与用例侧 `dataset_refs` **双向一致**。
+- 每个引用了 TD 的用例，在 `case.json` 中有对应 `dataset_refs`；反之 owner_cases 与用例侧 `dataset_refs` **双向一致**。
 - 加载幂等、可清理、实测通过（附验证证据）。
 - `suitable_for` 与所支撑验证条件的 kind 一致（边界数据不能标 normal）——它是 `case-instantiate` 逐条件配对的**匹配键**。
 - 数据文件**不含真实用户凭证/PII**（测试专用数据或环境变量）。

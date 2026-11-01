@@ -17,18 +17,33 @@ $ARGUMENTS
 
 ## 要求
 
-1. 读取 `rules/team-charter.md` 与立项报告。
+1. 读取 `rules/team-charter.md`、`rules/decision-brief.md` 与立项报告。
 2. 依次使用技能：
-   - `business-analysis` → `docs/prd/overview.md`、各组件/模块 `biz.md`
+   - `business-analysis` → `docs/prd/overview.md`、各组件/模块 `ba.md`
    - `prd` → 各组件/模块 `prd.md`、`prd-nonfunc.md`、`dict.md`
    - `prototype` → `pages/prototype/$COMPONENT/`
    - `prd-structure` → `docs/prd/$COMPONENT/$MODULE/trace/prd.json`
    - `diagramming` → 业务流程图（Mermaid）
 3. 所有输出遵循 `templates/` 对应模版。
-4. 校验：所有 `biz` 被 `fr` 覆盖（附追溯矩阵）。
+4. 校验：所有 `biz` 被 `fr` 覆盖（附追溯矩阵）；`ba.md` §8 待确认台账**未处理完不得进入 `prd`**（有假设 + 有责任人 + 有回填点者可放行，同 gated 标准）。
 5. 完成后**按组件提交 PRD 评审**（用户 + prd-reviewer，报告 `RV-PRD-$COMPONENT-xxx.md`）；PM 汇总全部组件结论。
+
+## 两个强制确认门（业务分析阶段，必停）
+
+不得一步到位。以下两处**必须停下等用户答复**，并在报告留痕「经用户确认：X」：
+
+- **G1 主干确认**：业务主干流程（角色 → 环节 → 交接）出来后即停，用户确认前**不得往下挖规则**。
+- **G2 规则确认**：决策表（判断点 → 条件组合 → 结果）出来后即停，用户确认前**不得出 PRD**。
+
+用户未答复 → 转 `NEEDS_CONTEXT` 报项目经理，**不得自行猜答案继续**。
+
+## 关于材料
+
+优先向用户索取**原始材料**（访谈转写、会议纪要原文、截图、规则表、旧 PRD 草稿），不要让用户"先消化再给"。必问项只有 4 个：业务目标、角色与职责边界、触发条件、异常兜底责任归属；其余取默认值并标 `[假设]`。
 
 ## 禁止
 
 - 禁止创建无法独立验收的"功能点"。
 - 禁止跳过与用户确认业务规则。
+- 禁止用行业惯例填充未知规则——一律标 `[TBD: 待确认]` 并进台账。
+- 禁止只画 happy path（每个菱形必须有否分支）。

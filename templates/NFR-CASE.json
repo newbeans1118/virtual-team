@@ -1,5 +1,5 @@
 {
-  "_comment": "模版：NFR-CASE.json（NFR 用例结构化分片）｜ 产出：test-engineer（nfr-testing）｜ 存放：test/nfr/trace/nfr-case-$MODULE.json。独立轨：id 用 NFR-CASE-*，不进入 FR 的 case-*.json；一个用例可覆盖多条 NF；metrics 为判定契约（op 取 <= / >= / == / < / >）。",
+  "_comment": "模版：NFR-CASE.json（NFR 用例结构化分片）｜ 产出：test-engineer（nfr-testing）｜ 存放：test/nfr/trace/$COMPONENT/nfr-case.json。独立轨：id 用 NFR-CASE-*，不进入 FR 的 case-*.json；一个用例可覆盖多条 NF；metrics 为判定契约（op 取 <= / >= / == / < / >）。",
   "project": "$PROJECT_NAME",
   "module": "$MODULE",
   "updated_at": "",

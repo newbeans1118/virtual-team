@@ -40,7 +40,7 @@
 
 **层级模型**：`组件（component）` ⊃ `模块（module）`。**组件是划分与存放的主层级**；组件较小时可不细分模块（模块位用 `all` 占位，**保证编号恒为固定段数、可机械解析**）。
 
-> **`all` 占位时的文件命名（硬性）**：模块位为 `all` 时，结构化文件名**仍带 `all`**——如 `test/trace/workbench/case-all.json`、`test/trace/workbench/TD-REGISTRY-all.json`、`docs/prd/workbench/all/trace/prd.json`（组件不细分模块时**目录省略模块层**，文件名保留 `all`）——保证文件名与编号的机械对应，不产生特例分支。
+> **模块层省略规则（硬性）**：组件不细分模块时（编号模块位为 `all`），**目录省略模块层、文件名不带模块位**——如 `test/trace/workbench/case.json`、`docs/prd/workbench/trace/prd.json`。原则：**文件名只表"类型"，路径表"组件/模块归属"**，同一信息不在两处重复承载；**禁止在文件名中出现 `all` 占位**（`case-all.json` 这类写法会让占位符语义泄露给使用者，已废止）。
 
 | 对象 | 规则 | 示例 |
 |------|------|------|
@@ -87,7 +87,7 @@ $PROJECT_ROOT/
 │       ├── RTM.md              # PRD 追踪矩阵（含「页面/原型」列，与页面×FR覆盖矩阵合并维护）
 │       └── $COMPONENT/         # ★ 按组件分层
 │           └── $MODULE/        #   （组件不细分模块时可省略此层，文件直接放组件目录）
-│               ├── biz.md      # 业务分析说明书
+│               ├── ba.md       # 业务分析说明书
 │               ├── prd.md     # PRD（前后台拆分：prd-ui.md / prd-svc.md）
 │               └── trace/prd.json  # 结构化需求分片
 ├── design/                     # 设计阶段交付物（架构师）
@@ -116,16 +116,16 @@ $PROJECT_ROOT/
 │   │   ├── plan-nfr.md         # NFR 方案
 │   │   ├── cases/              # NFR-CASE-$COMPONENT-NNN.md
 │   │   ├── data/               # NFR-TD-$COMPONENT-NNN/（可 reuse FR TD，只读）
-│   │   ├── trace/              # nfr-case-$MODULE.json
+│   │   ├── trace/$COMPONENT/  # nfr-case.json（组件级；不细分子目录）
 │   │   ├── runs/               # NFR-RUN-NNN.json
 │   │   └── report/             # NFR-RPT-*.md
 │   ├── baseline/               # 环境基线（TM 定义：初始化脚本/种子数据/恢复方式；TE 搭环境时执行——基线=部署级初始态，TD=用例级数据）
 │   ├── cases/$COMPONENT/       # 测试用例 CASE-$COMPONENT-NNN.md（按组件分层）
 │   ├── data/$COMPONENT/        # 数据单元：JSON 轨=TD-$COMPONENT-NNN/；SQLite 轨=数据入业务表 td_biz_*
 │   ├── automation/             # 自动化脚本（CASE.automation.script_ref 指向）
-│   ├── runs/                   # 执行轮（JSON 轨：RUN/EXEC-PLAN/EXEC；SQLite 轨入 metrics.db）
+│   ├── runs/                   # 执行轮：RUN-xxx.json（头）；RUN-xxx/$COMPONENT/$MODULE/{EXEC-PLAN.json,EXEC.jsonl}（模块层可省）
 │   ├── bugs/                   # 缺陷单（JSON 轨；SQLite 轨入 metrics.db）
-│   ├── trace/$COMPONENT/       # 结构化数据：JSON 轨=case-<组件>-<模块>.json 分片 + TD 注册表分片；SQLite 轨=metrics.db
+│   ├── trace/$COMPONENT/       # 结构化数据：JSON 轨=$MODULE/{case.json,TD-REGISTRY.json}（不细分模块时直接放组件目录）；SQLite 轨=metrics.db
 │   └── report/                 # 度量报告（test-rebuild 派生，两轨同格式）+ 评估报告
 ├── release/                    # 发布阶段（发布工程师）
 │   ├── artifact/               # 发布组件
@@ -151,7 +151,7 @@ $PROJECT_ROOT/
 - 评审报告须指明：**文件 + 组件/模块 + 功能编号**，缺陷按 `P0/P1/P2` 分级。
 - 未关闭的 P0/P1 缺陷不得进入下一阶段。
 - **打回终止条件**：同一评审对象打回 **≥3 次**仍不通过 → PM 升级用户仲裁（对齐 discipline §8 三次上报），不得无限循环修订。
-- 评审员**只读代码/文档，不得修改**。必要时可以运行验证，但不得改动被评审物。
+- 评审员**除自身评审报告外，只读代码/文档，不得修改**被评审物。必要时可以运行验证，但不得改动被评审物。
 
 ## 5. 阶段与门禁
 

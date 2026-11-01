@@ -214,7 +214,7 @@ def check_readme_counts():
 # -------------------------------------------------------- 7. 模板/技能引用存在
 def check_references():
     checked = 0
-    for path in iter_files(('.md',)):
+    for path in iter_files(('.md', '.txt')):
         text = read(path)
         for match in re.finditer(r'templates/([A-Za-z0-9._-]+\.(?:md|json|sql|jsonl))', text):
             checked += 1

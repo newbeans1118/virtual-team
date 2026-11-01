@@ -18,7 +18,7 @@ description: 制定测试方案、设计功能测试用例时使用。触发场�
 - `docs/prd/`（功能点清单，按组件/模块分层）
 - `design/`
 - `test/plan.md`（若已存在则增量补充）
-- `test/trace/$COMPONENT/case-$MODULE.json`（结构化分片，如已存在）
+- `test/trace/$COMPONENT/$MODULE/case.json`（结构化分片，如已存在）
 
 ## 输出（按组件/模块分片）
 
@@ -26,7 +26,7 @@ description: 制定测试方案、设计功能测试用例时使用。触发场�
 
 - `test/plan.md`（测试方案）
 - `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`（本组件测试用例）
-- 本分片 `test/trace/$COMPONENT/case-$MODULE.json`（经 case-structure）
+- 本分片 `test/trace/$COMPONENT/$MODULE/case.json`（经 case-structure）
 
 ## 测试方案内容
 

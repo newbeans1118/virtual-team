@@ -1,6 +1,6 @@
 ---
 name: case-instantiate
-description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块把用例与数据单元配对生成可执行实例（执行实例计划）时使用。触发场景：需要按轮次组织测试、在既定 RUN 内把静态用例与 TD 数据配对成可执行实例、产出 EXEC-PLAN-模块.json 并交 test-manager 审定、提到生成执行计划、实例化、用例数据配对、执行轮准备。
+description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块把用例与数据单元配对生成可执行实例（执行实例计划）时使用。触发场景：需要按轮次组织测试、在既定 RUN 内把静态用例与 TD 数据配对成可执行实例、产出 EXEC-PLAN.json 并交 test-manager 审定、提到生成执行计划、实例化、用例数据配对、执行轮准备。
 ---
 
 # 测试实例化（case-instantiate）
@@ -23,8 +23,8 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 
 - **已存在的 RUN 头** `test/runs/RUN-xxx.json`（test-manager 创建：id/trigger/defect_refs/scope/envs）
 - `test/plan.md`（测试方案，含范围与环境要求）
-- 本分片 `test/trace/$COMPONENT/case-$MODULE.json`（用例分片，含 `function_refs`/`acceptance_refs`/`dataset_refs`）
-- 本分片注册表 `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`（SQLite 轨：查库）
+- 本分片 `test/trace/$COMPONENT/$MODULE/case.json`（用例分片，含 `function_refs`/`acceptance_refs`/`dataset_refs`）
+- 本分片注册表 `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`（SQLite 轨：查库）
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（acceptance 文本，expected 来源之一）
 
 ## 输出（按存储轨道 × 分片）
@@ -32,14 +32,14 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 **分片规则**：实例计划**按组件/模块分片**——一个 test-engineer 实例只负责一个 `$COMPONENT/$MODULE`，只产出本分片实例计划；多实例并行零交叉。
 
 - **JSON 轨**（默认）：
-  - `test/runs/RUN-xxx/EXEC-PLAN-$COMPONENT-$MODULE.json`（本分片实例计划，**TM 审定后生效**）
+  - `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json`（本分片实例计划，**TM 审定后生效**）
 - **SQLite 轨**（STORE-CONFIG.store=sqlite）：写 `test/trace/metrics.db`
   - `exec_plans` 行（plan_id / module / run_id / case_id / td_id / expected / source / approved=0）
   - `approved` 列承载 TM 审定标记（未审定行禁止执行）
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写 `EXEC-PLAN-$COMPONENT-$MODULE.json`；`store=sqlite` → 写 `exec_plans` 行。配置缺失 → BLOCKED 报 PM。（RUN 头由 test-manager 创建，本技能不建头。）
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写 `EXEC-PLAN.json`；`store=sqlite` → 写 `exec_plans` 行。配置缺失 → BLOCKED 报 PM。（RUN 头由 test-manager 创建，本技能不建头。）
 
 ## 执行轮类型（trigger）
 
@@ -70,7 +70,7 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 - **一用例跨多 kind** → 每个条件各生成实例行，各行挂 kind 匹配的 TD（dataset_refs 本就是数组，天然支持）。
 - **fallback（未声明 acceptance_refs 的用例）**：功能点级配对——从 `dataset_refs` 中选 `suitable_for` 含 normal 的 TD，`condition` 置 null、source 标 `manual`；缺口报告呈现（point-untagged）。
 - 参考用例侧 `dataset_refs`（该用例声明的可用数据单元）与 TD 侧 `owner_cases`（双向一致），确定候选集。
-- 产出**本分片实例计划** `EXEC-PLAN-$COMPONENT-$MODULE.json`。
+- 产出**本分片实例计划** `EXEC-PLAN.json`。
 
 ### 3. 提交审定
 

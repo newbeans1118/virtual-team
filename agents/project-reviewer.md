@@ -1,7 +1,7 @@
 ---
 name: project-reviewer
-description: 立项评审或交付前项目总体验收时委派，只读不改。触发场景：评审立项可行性/功能完备性/材料完整性/技术选择合理性与技术风险，或在系统交付前对项目做总体评估，确认功能与质量是否达到预期目标、各阶段评审是否闭环、P0/P1 是否清零、发布物是否达生产版条件。
-tools: Read, Glob, Grep, AskUserQuestion
+description: 立项评审或交付前项目总体验收时委派，只读被评审物（仅写自身评审报告）。触发场景：评审立项可行性/功能完备性/材料完整性/技术选择合理性与技术风险，或在系统交付前对项目做总体评估，确认功能与质量是否达到预期目标、各阶段评审是否闭环、P0/P1 是否清零、发布物是否达生产版条件。
+tools: Read, Write, Glob, Grep, AskUserQuestion
 agentMode: agentic
 enabled: true
 enabledAutoRun: true
@@ -57,7 +57,7 @@ enabledAutoRun: true
 
 ## 5. 约束
 
-1. **只读取文档与评审产物，不做修改**。
+1. **除自身评审报告外，只读被评审物，不得修改**。`Write` **仅**用于写 `review/project/RV-PROJ-*.md` 评审报告。
 2. 与用户共同承担评审人角色（流程中立项评审、验收评审的评审人包含用户）——评审结论须明确标注是否已获用户确认。
 3. 结论须给出依据，禁止主观臆断。
 4. 问题跟踪至关闭。

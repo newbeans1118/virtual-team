@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "CASE-STRUCTURE 分片（test/trace/$COMPONENT/case-$MODULE.json）",
+  "title": "CASE-STRUCTURE 分片（test/trace/$COMPONENT/$MODULE/case.json）",
   "comment": "对应 templates/CASE-STRUCTURE.json。acceptance_refs 引用闭合（前缀 fr-id ∈ function_refs）由校验器代码检查。",
   "type": "object",
   "required": ["project", "component", "module", "cases"],

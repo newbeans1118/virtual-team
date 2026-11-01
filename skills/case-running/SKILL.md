@@ -19,9 +19,9 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 
 ## 输入
 
-- **已审定的实例计划分片** `test/runs/RUN-xxx/EXEC-PLAN-$COMPONENT-$MODULE.json`（SQLite 轨：`exec_plans.approved=1` 的行）
+- **已审定的实例计划分片** `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json`（SQLite 轨：`exec_plans.approved=1` 的行）
 - `test/runs/RUN-xxx.json`（RUN 头，test-manager 创建，含 `envs` 池——build/commit 引用**测试版构建产物**）
-- 本分片 `test/trace/$COMPONENT/case-$MODULE.json`（用例与 automation 信息）
+- 本分片 `test/trace/$COMPONENT/$MODULE/case.json`（用例与 automation 信息）
 - `test/automation/`（`script_ref` 指向的自动化脚本）
 - 测试版构建产物 + `release/manual-install.md`（环境部署依据；**测试环境必须来自测试版构建，不得用开发工作区充当**——缺失 → BLOCKED 报 PM）
 
@@ -30,10 +30,10 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 **分片规则**：执行分片 = **组件/模块**（一分片一文件，彻底避免同文件并发写）。**env 由 test-manager 审定时静态分配**——审定结论中"分片 → env"映射固定（同一 env 同刻只承载一个分片），TE 按**分配表**使用 env，不做运行时抢占。分片执行期间独占该 env，结束（含清理）后归还；同一分片可先后在多个 env 执行（EXEC 行以 `env` 字段区分）。**分片异常终止**（崩溃/BLOCKED）→ 报 PM，PM 通知 TM 重验环境（重跑 `test/baseline/` 初始化确认干净态）后再分配后续分片。
 
 - **JSON 轨**（默认）：
-  - `test/runs/RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl`（本分片执行明细，**追加式**——分片文件互不交叉，多实例并行零冲突）
+  - `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC.jsonl`（本分片执行明细，**追加式**——分片文件互不交叉，多实例并行零冲突）
   - `test/bugs/BUG-xxx.json`（缺陷单）
   - `test/report/RPT-xxx.md`（轮次测试报告）
-  - 更新本分片 `test/trace/$COMPONENT/case-$MODULE.json` 的 `latest_result_ref`
+  - 更新本分片 `test/trace/$COMPONENT/$MODULE/case.json` 的 `latest_result_ref`
 - **SQLite 轨**（STORE-CONFIG.store=sqlite）：写 `test/trace/metrics.db`
   - `execs` 表（**只追加**，由触发器强制：UPDATE/DELETE 直接 ABORT）
   - `bugs` 表
@@ -43,7 +43,7 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写文件（EXEC-<组件>-<模块>.jsonl / BUG / RPT）；`store=sqlite` → 入库（`execs` 只追加由触发器强制；`bugs`）。配置缺失 → BLOCKED 报 PM。
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写文件（EXEC.jsonl / BUG / RPT）；`store=sqlite` → 入库（`execs` 只追加由触发器强制；`bugs`）。配置缺失 → BLOCKED 报 PM。
 
 ## 流程（五步，顺序固定）
 
@@ -57,7 +57,7 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 逐实例执行：
 1. 调用该行 TD 的 `load_entry`（加载数据；不解释内容，照单调用）。
 2. 执行用例步骤——**若该用例 `automation.script_ref` 存在则调用自动化脚本，否则人工按步骤执行**。
-3. **追加**一行 EXEC 到本分片 `RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl`：`{exec_id, plan_ref, run, case, td, env, result, defect_ref, started_at, duration_ms, evidence}`。
+3. **追加**一行 EXEC 到本分片 `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC.jsonl`：`{exec_id, plan_ref, run, case, td, env, result, defect_ref, started_at, duration_ms, evidence}`。
    - **exec_id = 复合格式 `{plan_ref}-{seq}`**（如 `P-003-1`）：seq 为同一实例的重跑序号（首次=1，重跑+1）。plan_ref 全局唯一 → exec_id 全局唯一，**并行分片零撞号、无需集中分配**；同实例多次重跑的行天然聚合。
 4. 无论成败，按数据单元的清理逻辑恢复环境（**恢复到环境基线态**——`test/baseline/` 定义部署级初始态；TD 清理只清本单元数据，不清基线种子数据）。
 
@@ -95,7 +95,7 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 - 每条 EXEC 必须回指实例行（plan_ref）——度量可复算的前提；exec_id 用复合格式 `{plan_ref}-{seq}`（plan_ref 全局唯一 → 零撞号）。
 - 数据加载必须经 `load_entry`，**禁止绕过直接改环境**（保证配对与执行的对应）。
 - BUG 必须回指 exec（否则修复率无分母）。
-- **env 静态分配**：按 TM 审定分配表使用 env（一 env 一分片，同刻不重叠）；分片实例**只写本分片产物**（EXEC-<组件>-<模块>.jsonl / 本分片 case 分片）。
+- **env 静态分配**：按 TM 审定分配表使用 env（一 env 一分片，同刻不重叠）；分片实例**只写本分片产物**（EXEC.jsonl / 本分片 case 分片）。
 - **不越界**：本技能不改实例计划（修正配对须回 `case-instantiate` 重新生成并审定）、不回写 RUN 头（轮次汇总由 test-rebuild 派生）。
 
 ## 检查清单

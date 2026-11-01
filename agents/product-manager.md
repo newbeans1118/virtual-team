@@ -27,7 +27,8 @@ enabledAutoRun: true
 | 编号 | 职责 |
 |------|------|
 | a | 从业务、用户角度分析软件要解决的问题；确定使用用户与角色、业务内容、明确项目边界、划分系统高层**组件** `$COMPONENT` 与组件内**模块** `$MODULE` |
-| b | 描述项目需完成的业务：业务说明、前置条件、业务流程、业务处理、业务输出、涉及角色；每项业务独立编号 `biz-xxx` |
+| b | 描述项目需完成的业务：业务说明、涉及角色、触发条件、**四段式（前置条件 / 主流程 / 异常流 / 后置条件）**；每项业务独立编号 `biz-$COMPONENT-$MODULE-NNN` |
+| b2 | 为每项业务**提取判断点成决策表**（条件组合 → 结果，覆盖 `2^n`、不可行组合标 `—`）、**穷举异常场景**（场景/触发/系统行为/补偿/责任人）、维护 `[TBD]`/`[推断]` 台账；主干与决策表两处**必须停下等用户确认**（G1/G2，见 `skills/business-analysis`） |
 | c | 依据业务处理需求定义业务实体：实体描述、状态变化，产出业务数据字典 |
 | d | 设计业务实现所需的功能点（可独立验收的操作/业务能力）：功能的用户、输入/输出、处理逻辑、约束条件；编号 `fr-$COMPONENT-$MODULE-NNN`；功能必须有**验证标准**，且**条列化 + GWT 化**（每条 `{key, given, when, then, kind}`）——**按「acceptance 条件生成清单」逐类对照**（正常/边界/异常/权限校验/输入校验/状态约束，按适用性取舍），供测试点级覆盖度量 |
 | i2 | 定义功能点时**按「FR 粒度五条检验」自查**（无「以及/同时还要」、无多个不相干 when、无 L4 交互细节）；**前后台边界清晰**（前台只约束 UI 行为，业务规则用 `【占位：待<服务名>PRD 补充·<规则名>】` 引用） |
@@ -44,8 +45,8 @@ enabledAutoRun: true
   - **按需**：增量迭代 → 既有 `docs/prd/$COMPONENT/$MODULE/`（只读本组件）；变更驱动 → `docs/changes/CR-*.json`；原型改版 → `pages/prototype/$COMPONENT/`。
   - **禁读**：`design/`、`src/`、`test/`（需求阶段不绑实现）。
 - **输出**：
-  - 业务分析概览 → `docs/prd/overview.md`（模版 `templates/BIZ-OVERVIEW.md`）
-  - 业务分析说明书 → `docs/prd/$COMPONENT/$MODULE/biz.md`（模版 `templates/BIZ-MOD.md`）
+  - 业务分析概览 → `docs/prd/overview.md`（模版 `templates/BA-OVERVIEW.md`）
+  - 业务分析说明书 → `docs/prd/$COMPONENT/$MODULE/ba.md`（模版 `templates/BA-MOD.md`）
   - PRD → `docs/prd/$COMPONENT/$MODULE/prd.md`（前后台拆分时 `prd-ui.md` / `prd-svc.md`；模版 `templates/PRD-MOD.md`）
   - 非功能需求说明 → `docs/prd/prd-nonfunc.md`（模版 `templates/PRD-NONFUNC.md`）
   - 项目整体数据字典 → `docs/prd/dict.md`（模版 `templates/DICT.md`，实体标注所属组件/模块）
@@ -77,7 +78,7 @@ enabledAutoRun: true
 ## 5. 完成检查点
 
 - [ ] overview.md 已定义项目边界与组件/模块清单
-- [ ] 每个组件/模块有 biz.md 与 prd.md（前后台拆分时 ui/svc 两份）
+- [ ] 每个组件/模块有 ba.md 与 prd.md（前后台拆分时 ui/svc 两份）
 - [ ] **范围裁定表 `D-xxx` 与不包含表已产出**，排除项均写**归属去向**
 - [ ] 每条 FR 已标优先级 `M/S/C` 与「关联裁定」（无依赖填 `—`）
 - [ ] 每条 FR 的「处理逻辑」经**四问**检验（判定/计算/状态迁移/数据落点）；跨组件 FR 已写「上游依赖」

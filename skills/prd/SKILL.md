@@ -15,7 +15,7 @@ description: 把业务分析落地为可验收的功能需求、编写 PRD（产
 
 ## 输入
 
-- `docs/prd/overview.md`、`docs/prd/$COMPONENT/$MODULE/biz.md`（组件不细分模块时 `docs/prd/$COMPONENT/biz.md`）
+- `docs/prd/overview.md`、`docs/prd/$COMPONENT/$MODULE/ba.md`（组件不细分模块时 `docs/prd/$COMPONENT/ba.md`）
 - `docs/PROJ_$PROJECT_NAME.md`
 
 ## 输出

@@ -27,11 +27,11 @@ h、编写软件产品的需求说明书，包括以上内容，分模块输出�
 i、设计系统界面原型系统。
 输入：docs/PROJ_$PROJECT_NAME.md,与用户交互；
 输出：
-a、项目整体的业务分析概览，在docs/requirements/overview.md,模版templates/BIZ-OVERVIEW.md;
-b、分模块的业务分析说明书，docs/requirements/biz-$MOD.md,模版templates/BIZ-MOD.md;
-c、分模块的软件规格说明书，doc/requirements/spec-$MOD.md,模版templates/SPEC-MOD.md；
-d、项目整体的非功能需求说明书，doc/requirements/spec-nonfunc.md，模版templates/SPEC-NONFUNC.md;
-e、项目整体的数据字典，doc/requirements/dict.md,模版templates/DICT.md;
+a、项目整体的业务分析概览，在docs/prd/overview.md,模版templates/BA-OVERVIEW.md;
+b、分模块的业务分析说明书，docs/prd/$COMPONENT/$MODULE/ba.md,模版templates/BA-MOD.md;
+c、分模块的软件规格说明书，docs/prd/$COMPONENT/$MODULE/prd.md,模版templates/PRD-MOD.md；
+d、项目整体的非功能需求说明书，docs/prd/prd-nonfunc.md，模版templates/PRD-NONFUNC.md;
+e、项目整体的数据字典，docs/prd/dict.md,模版templates/DICT.md;
 约束：
 a、软件规格说明书中的内容要覆盖业务分析说明书中的内容；
 b、模块之间尽量保持独立，减少关联；

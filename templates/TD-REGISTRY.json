@@ -1,5 +1,5 @@
 {
-  "_comment": "模版：TD-REGISTRY.json（数据单元注册表分片）｜ 产出角色：test-engineer（test-data-gen）｜ 每组件/模块一片：test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json。双轨：JSON 轨=本文件；SQLite 轨=td_registry 表（component+module 双列承载分片键，与 prd_functions/cases 对齐）。黑盒红线：注册表只暴露 {id, module, description(六字段), load_entry, verified}，禁写 expected 与业务字段值。suitable_for 值域 = normal/boundary/negative（与 PRD 侧 acceptance.kind 同枚举，case-instantiate 逐条件配对的匹配键；混合底座用数组多值表达，不设 combination）。",
+  "_comment": "模版：TD-REGISTRY.json（数据单元注册表分片）｜ 产出角色：test-engineer（test-data-gen）｜ 每组件/模块一片：test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json。双轨：JSON 轨=本文件；SQLite 轨=td_registry 表（component+module 双列承载分片键，与 prd_functions/cases 对齐）。黑盒红线：注册表只暴露 {id, module, description(六字段), load_entry, verified}，禁写 expected 与业务字段值。suitable_for 值域 = normal/boundary/negative（与 PRD 侧 acceptance.kind 同枚举，case-instantiate 逐条件配对的匹配键；混合底座用数组多值表达，不设 combination）。",
   "project": "$PROJECT_NAME",
   "component": "$COMPONENT",
   "module": "$MODULE",

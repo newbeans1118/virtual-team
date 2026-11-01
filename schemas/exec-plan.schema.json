@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "EXEC-PLAN 实例计划（test/runs/RUN-xxx/EXEC-PLAN-$COMPONENT-$MODULE.json）",
+  "title": "EXEC-PLAN 实例计划（test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json）",
   "comment": "对应 templates/EXEC-PLAN.json。TM 审定后 approved_by 非空才可执行（case-running 前置核对，校验器对 JSON 轨检查 approved_by）。",
   "type": "object",
   "required": ["run", "items"],

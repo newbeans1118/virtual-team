@@ -1,6 +1,6 @@
 ---
 name: case-structure
-description: 把测试用例结构化存储并与功能点、数据单元关联时使用。触发场景：需要生成分片 case-模块.json、建立用例与功能编号（CASE↔fr）及数据单元（dataset_refs）的双向关联、登记 automation 自动化信息、检测孤立用例与未覆盖功能点、提到用例结构化、用例关联、覆盖率。
+description: 把测试用例结构化存储并与功能点、数据单元关联时使用。触发场景：需要生成分片 case.json、建立用例与功能编号（CASE↔fr）及数据单元（dataset_refs）的双向关联、登记 automation 自动化信息、检测孤立用例与未覆盖功能点、提到用例结构化、用例关联、覆盖率。
 ---
 
 # 测试用例结构化（case-structure）
@@ -17,16 +17,16 @@ description: 把测试用例结构化存储并与功能点、数据单元关联�
 
 - `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（PRD 侧锚）
-- 本分片注册表 `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`（数据侧锚，若已生成；SQLite 轨=查库）
+- 本分片注册表 `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`（数据侧锚，若已生成；SQLite 轨=查库）
 
 ## 输出（按存储轨道）
 
-- **JSON 轨**（默认）：`test/trace/$COMPONENT/case-$MODULE.json`（**每组件/模块一片**，与 PRD 分片对称）
+- **JSON 轨**（默认）：`test/trace/$COMPONENT/$MODULE/case.json`（**每组件/模块一片**，与 PRD 分片对称）
 - **SQLite 轨**：写 `test/trace/metrics.db` 的 `cases` 表（module 列保留分片语义；字段一一对应；DDL 见 `templates/SQLITE-SCHEMA.sql`）
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写分片文件 `test/trace/$COMPONENT/case-$MODULE.json`；`store=sqlite` → UPSERT `cases` 表。配置缺失 → BLOCKED 报 PM。
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写分片文件 `test/trace/$COMPONENT/$MODULE/case.json`；`store=sqlite` → UPSERT `cases` 表。配置缺失 → BLOCKED 报 PM。
 
 ## 数据结构
 
@@ -49,7 +49,7 @@ description: 把测试用例结构化存储并与功能点、数据单元关联�
       "status": "draft | active | deprecated",
       "preconditions": ["…"],
       "automation": { "automatable": false, "script_ref": null, "last_verified_run": null },
-      "latest_result_ref": "test/runs/RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl#L3"
+      "latest_result_ref": "test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC.jsonl#L3"
     }
   ]
 }
@@ -64,7 +64,7 @@ description: 把测试用例结构化存储并与功能点、数据单元关联�
 | `dataset_refs` | 用例 → 数据 | 本用例可用的数据单元；**必须与 TD 注册表的 `owner_cases` 双向一致** |
 | `prd_source_hash` | 源同步 | 声明"基于哪版需求结构化"；与 PRD 分片 hash 不一致 = stale |
 | `automation` | 复用支撑 | `automatable` + `script_ref`（自动化脚本路径）+ 最近验证轮。**case-running 执行时若 script_ref 存在则调用该脚本，否则人工按步骤执行** |
-| `latest_result_ref` | 用例 → 执行 | **指针**不存值；最近一次执行明细在本分片 EXEC-$COMPONENT-$MODULE.jsonl 中 |
+| `latest_result_ref` | 用例 → 执行 | **指针**不存值；最近一次执行明细在本分片 EXEC.jsonl 中 |
 | ❌ **无 `result` 字段** | — | 执行结果只存 EXEC（追加式），用例是静态资产 |
 
 ## 流程

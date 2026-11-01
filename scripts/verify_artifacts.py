@@ -7,8 +7,8 @@
 
 校验范围（rules/storage-track.md 两轨）：
     JSON 轨   test/STORE-CONFIG.json、docs/prd/**/trace/prd.json、
-              test/trace/*/case-*.json、TD-REGISTRY-*.json、
-              test/runs/RUN-*.json、RUN-*/EXEC-PLAN-*.json、RUN-*/EXEC-*.jsonl、
+              test/trace/*/{case,TD-REGISTRY}.json（组件/模块分层，模块层可省）、
+              test/runs/RUN-*.json、RUN-*/**/EXEC-PLAN.json、RUN-*/**/EXEC.jsonl、
               test/bugs/BUG-*.json
     SQLite 轨 test/trace/metrics.db（七表存在、execs 只追加触发器、td_biz_* 孤儿检查、
               closed/verify_pass 缺陷须 verification.result=pass）
@@ -153,12 +153,12 @@ def run_json_track(root, schemas):
     prd_files = rglob(root, "docs/prd/*/*/trace/prd.json") + rglob(root, "docs/prd/*/*/*/trace/prd.json")
     check_group(root, prd_files, schemas["prd-structure"], "prd-json", "PRD 分片")
 
-    # 3) 用例分片
-    case_files = rglob(root, "test/trace/*/case-*.json")
+    # 3) 用例分片（模块层可省略：trace/<组件>/ 或 trace/<组件>/<模块>/）
+    case_files = rglob(root, "test/trace/*/case.json") + rglob(root, "test/trace/*/*/case.json")
     check_group(root, case_files, schemas["case-structure"], "case-json", "用例分片")
 
-    # 4) TD 注册表分片
-    td_files = rglob(root, "test/trace/*/TD-REGISTRY-*.json")
+    # 4) TD 注册表分片（同上，模块层可省略）
+    td_files = rglob(root, "test/trace/*/TD-REGISTRY.json") + rglob(root, "test/trace/*/*/TD-REGISTRY.json")
     check_group(root, td_files, schemas["td-registry"], "td-json", "TD 注册表分片")
 
     # 5) RUN 头
@@ -170,7 +170,9 @@ def run_json_track(root, schemas):
     check_bugs(root, schemas, exec_ids)
 
     # 7) 引用闭合：EXEC.plan_ref ∈ EXEC-PLAN.plan_ids（同 RUN 目录内）
-    plan_files = rglob(root, "test/runs/RUN-*/EXEC-PLAN-*.json")
+    plan_files = (rglob(root, "test/runs/RUN-*/EXEC-PLAN.json")
+                  + rglob(root, "test/runs/RUN-*/*/EXEC-PLAN.json")
+                  + rglob(root, "test/runs/RUN-*/*/*/EXEC-PLAN.json"))
     plan_ids = set()
     for path in plan_files:
         try:
@@ -202,7 +204,10 @@ def check_group(root, paths, schema, rule, label):
 
 
 def check_execs(root, schemas):
-    files = rglob(root, "test/runs/RUN-*/EXEC-*.jsonl")
+    # EXEC 明细：RUN-*/[组件/[模块/]]EXEC.jsonl（模块层、甚至组件层都可省略）
+    files = (rglob(root, "test/runs/RUN-*/EXEC.jsonl")
+             + rglob(root, "test/runs/RUN-*/*/EXEC.jsonl")
+             + rglob(root, "test/runs/RUN-*/*/*/EXEC.jsonl"))
     exec_ids, rows = [], []
     if not files:
         skip("exec-jsonl", "未发现 EXEC 明细（阶段未到即 SKIP，非失败）")

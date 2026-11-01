@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "EXEC 执行明细行（test/runs/RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl 每行）",
+  "title": "EXEC 执行明细行（test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC.jsonl 每行）",
   "comment": "对应 templates/EXEC.jsonl 单行。追加式红线由代码检查（同文件 exec_id 重复 = 改写嫌疑）。",
   "type": "object",
   "required": ["exec_id", "plan_ref", "run", "case", "td", "env", "result", "started_at"],

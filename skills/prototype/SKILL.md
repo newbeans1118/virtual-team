@@ -15,7 +15,7 @@ description: 在需求分析阶段生成界面原型供用户确认时使用。�
 
 ## 输入
 
-- `docs/prd/overview.md`、各组件/模块 `biz.md`、`prd.md`
+- `docs/prd/overview.md`、各组件/模块 `ba.md`、`prd.md`
 
 ## 输出
 

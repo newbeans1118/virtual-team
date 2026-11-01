@@ -38,9 +38,9 @@ enabledAutoRun: true
   - **按需**：设计用例依据 → `design/$COMPONENT/func.md` 对应功能；造数据依据 → `design/$COMPONENT/database.md` 表结构 + `design/INTERFACE.md` 契约；NFR 用例负载模型 → `design/ARCH-NFR.md` §2；复用他人数据 → 该 TD 的 `load_entry` 与 `data_scope`。
   - **禁读**：其他模块的 `trace/prd.json`、`func.md`；全量 `design/`；全量 `test/runs/`（只看本分片）。
 - **输出**：
-  - 测试用例 `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md` + 结构化 `test/trace/$COMPONENT/case-$MODULE.json`
-  - 数据单元 `test/data/$COMPONENT/TD-$COMPONENT-NNN/` + 本分片注册表 `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json`（SQLite 轨：td_registry 行）
-  - 执行轮 `test/runs/RUN-xxx.json`（**test-manager 建头**，TE 只读）+ 本分片 `EXEC-PLAN-$COMPONENT-$MODULE.json`（实例计划，`case-instantiate`）+ `EXEC-$COMPONENT-$MODULE.jsonl`（执行明细，`case-running`）
+  - 测试用例 `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md` + 结构化 `test/trace/$COMPONENT/$MODULE/case.json`
+  - 数据单元 `test/data/$COMPONENT/TD-$COMPONENT-NNN/` + 本分片注册表 `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`（SQLite 轨：td_registry 行）
+  - 执行轮 `test/runs/RUN-xxx.json`（**test-manager 建头**，TE 只读）+ 本分片 `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json`（实例计划，`case-instantiate`）+ `EXEC.jsonl`（执行明细，`case-running`，同目录）
   - 轮次测试报告 `test/report/RPT-xxx.md`（`case-running` 产出）
   - 缺陷单 `test/bugs/BUG-xxx.json`
   - 度量报告 `test/report/test-metrics-$RUN.md`（派生）

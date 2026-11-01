@@ -25,7 +25,7 @@ description: 独立评估非功能需求（性能/安全/可用性/兼容性）�
 ## 输出（全部落 `test/nfr/`）
 
 - `test/nfr/plan-nfr.md`（NFR 方案，模版 `templates/NFR-PLAN.md`）
-- `test/nfr/cases/NFR-CASE-$COMPONENT-NNN.md` + `test/nfr/trace/nfr-case-$MODULE.json`（模版 `templates/NFR-CASE.json`）
+- `test/nfr/cases/NFR-CASE-$COMPONENT-NNN.md` + `test/nfr/trace/$COMPONENT/nfr-case.json`（模版 `templates/NFR-CASE.json`）
 - `test/nfr/data/NFR-TD-$COMPONENT-NNN/`（可选；沿用 TD 六字段结构，但 **`owner_cases` 指向 `NFR-CASE-*` 而非 FR CASE**，`suitable_for` 可留空——NFR 不按 kind 配对；也可 `reuse:TD-*` 只读复用 FR 数据）
 - `test/nfr/runs/NFR-RUN-NNN.json`（模版 `templates/NFR-RUN.json`）
 - `test/nfr/report/NFR-RPT-<NFR-RUN>.md`（模版 `templates/NFR-REPORT.md`）

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "TD-REGISTRY 分片（test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json）",
+  "title": "TD-REGISTRY 分片（test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json）",
   "comment": "对应 templates/TD-REGISTRY.json。黑盒红线：只暴露 {id, description, load_entry, verified}，禁写 expected 与业务字段值（additionalProperties: false 固化）。",
   "type": "object",
   "required": ["project", "component", "module", "entries"],

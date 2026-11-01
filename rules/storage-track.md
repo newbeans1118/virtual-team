@@ -19,12 +19,14 @@
 | 数据 | 文件 | 生产者 |
 |------|------|--------|
 | PRD 侧 | `docs/prd/$COMPONENT/$MODULE/trace/prd.json` | prd-structure |
-| 用例侧 | `test/trace/$COMPONENT/case-$MODULE.json` | case-structure |
-| TD 注册表 | `test/trace/$COMPONENT/TD-REGISTRY-$MODULE.json` | test-data-gen |
+| 用例侧 | `test/trace/$COMPONENT/$MODULE/case.json` | case-structure |
+| TD 注册表 | `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json` | test-data-gen |
 | RUN 头 | `test/runs/RUN-xxx.json` | test-manager |
-| 实例计划 | `test/runs/RUN-xxx/EXEC-PLAN-$COMPONENT-$MODULE.json` | case-instantiate（TM 审定） |
-| 执行明细 | `test/runs/RUN-xxx/EXEC-$COMPONENT-$MODULE.jsonl`（追加式） | case-running |
+| 实例计划 | `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json` | case-instantiate（TM 审定） |
+| 执行明细 | `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC.jsonl`（追加式） | case-running |
 | 缺陷 | `test/bugs/BUG-$COMPONENT-NNN.json` | case-running |
+
+> **模块层可省**：组件不细分模块时（模块位 `all`），不建 `$MODULE/` 目录，分片直接放组件目录（`test/trace/workbench/case.json`）；文件名恒定，**不带模块位、不出现 `all`**（见 `team-charter` §2 模块层省略规则）。
 
 - **stale 判定**：git 提交对比（`prd.json` 提交早于 `prd.md` 提交 = 未同步）——结构文件不写 source_hash 副本到下游（PRD 分片写 `source_hash` 声明基线，case 分片写 `prd_source_hash`）。
 - 累计 EXEC > 1 万行时，test-rebuild 先做聚合索引再计算。
