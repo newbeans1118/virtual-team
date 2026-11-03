@@ -1,7 +1,7 @@
 # 功能设计：$COMPONENT（$PROJECT_NAME）
 
 > 模版：FUNC.md ｜ 产出角色：architect ｜ 存放：`design/$COMPONENT/func.md`
-> **拆分规则**：组件 FR > 12 条，或本文件 > 300 行 → 按模块拆为 `design/$COMPONENT/$MODULE/func.md`；**拆分后不再保留组件级 func.md**（禁止双写）。
+> **拆分规则**：以架构给出的 `$MODULE` 为基本单位、高内聚为硬约束拆分；架构未划分子模块（单模块组件）则不拆。FR 数/行数仅为审视信号，非硬限；拆分后不保留组件级 func.md（禁止双写）。
 > **合并内容**：数据结构与算法、日志事件在本文件内成节，不再单独建文件。
 
 ## 1. 组件/模块信息
@@ -48,6 +48,10 @@ flowchart TD
 |------|------|----------|
 | A-xxx | 自动化可验证 | |
 | A-xxx | 人工评审 | |
+
+> **写法指引**：断言必须是可判真假的明确状态，禁止"系统正常"这类空话。
+> - 自动化可验证示例：`createOrder` 返回 HTTP 201；`orders` 表新增 1 条且 `status='PENDING_PAYMENT'`；库存扣减后 `inventory.available_quantity` 减少量 = 请求量。
+> - 人工评审示例：支付超时发出的 `order.payment.timeout` 消息 payload 含完整 orderId 与失败原因；高并发下同一订单两次重复支付仅首次成功落流水。
 
 ## 4. 数据结构与算法（按需）
 

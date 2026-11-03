@@ -27,7 +27,11 @@ description: 设计组件功能、接口与日志时使用。触发场景：需�
 | `design/$COMPONENT/interface.md` | 组件 | `templates/INTERFACE-COMP.md` | 对外接口 + 跨模块接口 + 模块内接口 |
 | `design/$COMPONENT/func.md` | 组件 | `templates/FUNC.md` | 功能设计 + FR 映射 + 算法 + 日志事件 |
 
-**FUNC 拆分规则**：组件 FR > 12 条，或 `func.md` > 300 行 → 按模块拆为 `design/$COMPONENT/$MODULE/func.md`；**拆分后不再保留组件级 func.md**（禁止双写）。
+**FUNC 拆分规则**：以架构已划分的模块边界（`$MODULE`）为基本单位、以高内聚为硬约束：
+- 组件 `func.md` 默认按架构给出的 `$MODULE` 拆为 `design/$COMPONENT/$MODULE/func.md`；架构未划分子模块（单模块组件）则不拆。
+- **高内聚优先**：不得为压行数/FR 数把同一高内聚功能单元拆散，也不得为凑阈值强行合并本应独立的模块。
+- **FR 数 / 行数 是审视信号，非硬限**：单模块 FR 偏多或内容过长时，提示回架构确认模块边界是否该进一步细分；未达阈值但架构已明确划分子模块，仍应按模块拆。
+- 拆分后**不再保留组件级 func.md**（禁止双写）。
 
 ## 内容要求
 
@@ -41,7 +45,7 @@ description: 设计组件功能、接口与日志时使用。触发场景：需�
 ## 工作流
 
 1. **收输入**：确认 `docs/prd/`、`design/ARCH.md`、`design/DATABASE.md` 及本组件 `database.md` 就绪；组件清单须来自架构设计输出。
-2. **按组件产出**：套用对应模板逐组件写 `interface.md` 与 `func.md`（超阈值按模块拆，禁止双写）；全局 `INTERFACE.md`/`LOGGER.md` 按模板填横切契约与规范。
+2. **按组件产出**：套用对应模板逐组件写 `interface.md` 与 `func.md`（按架构模块边界拆分、禁止双写）；全局 `INTERFACE.md`/`LOGGER.md` 按模板填横切契约与规范。
 3. **FR 覆盖核对**：逐条 FR 在 `func.md` 有落点，未覆盖在"追溯与缺口"写理由；接口与功能编号互相关联。
 4. **设计者自检**：按下方"设计者自检门禁"逐条自过。
 5. **移交评审**：自检通过后转 `design-review` 走设计评审门禁（修订 → 评审员验证 → 关闭，闭环经 PM 中转）。
@@ -58,7 +62,7 @@ description: 设计组件功能、接口与日志时使用。触发场景：需�
 
 > 本门禁由 architect 交付前逐条自过；通过后**转 `design-review` 走设计评审门禁**（设计修订 → 评审员验证 → 关闭，闭环经 PM 中转）。
 
-- [ ] 全局 INTERFACE 含横切契约与组件接口索引（且指向 `templates/INTERFACE.md`）
+- [ ] 全局 INTERFACE 含横切契约与组件接口索引（索引列各组件 `design/$COMPONENT/interface.md`，模板见 `templates/INTERFACE.md`）
 - [ ] 每个组件有 interface.md 与 func.md（或按模块拆分的 func.md）
 - [ ] 每条 FR 在设计中有落点；未覆盖已写理由
 - [ ] 满足复杂判据的流程有算法设计（在 func.md 内）
@@ -70,7 +74,7 @@ description: 设计组件功能、接口与日志时使用。触发场景：需�
 
 **该用**：架构与数据库设计确定后，做组件级详细设计。
 
-**轻量档（见 `rules/team-charter.md` §9）**：单组件、FR ≤ 12 的一般不触发 FUNC 按模块拆分，全局 INTERFACE/LOGGER 可精简；大型/高风险项目按需走完整分层。
+**轻量档（见 `rules/team-charter.md` §9）**：指评审强度，不等同于文件组织。单组件、FR ≤ 12 的组件按其架构模块边界组织 `func.md`（无子模块则不拆），全局 INTERFACE/LOGGER 可精简；**每个组件仍须有 `func.md`（FR 可追溯性红线，不可省）**。高风险/核心/受监管组件不论 FR 数量，均须产出完整分层并过 `design-review`。注意：拆分规则（是否按 `$MODULE` 拆文件）由架构模块边界与高内聚约束决定，与是否轻量档无关。
 
 **不该用**：
 - 定架构与选型 → 用 `architecting`
