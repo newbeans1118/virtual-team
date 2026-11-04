@@ -19,7 +19,6 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 |----|------|------|
 | 需求 | `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（分片） | 功能点全集 + **acceptance 验证条件条列**（测试点级分母） |
 | 用例 | `test/trace/$COMPONENT/$MODULE/case.json`（分片） | 覆盖关系（function_refs / **acceptance_refs** / dataset_refs） |
-| 数据 | `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`（**分片**，合并读取；SQLite 轨=td_registry 表） | 数据单元（黑盒：id + description + load_entry） |
 | 执行 | `test/runs/RUN-xxx.json`（**计划态，TM 建**）+ `RUN-xxx/EXEC-PLAN.json` + `EXEC.jsonl`（**按组件/模块分片**） | 计划配对 + 执行明细（**轮次汇总唯一来源**） |
 | 缺陷 | `test/bugs/BUG-xxx.json` | 缺陷状态机 |
 
@@ -27,14 +26,16 @@ description: 从执行记录派生覆盖率矩阵与度量报告、执行一致�
 
 - `test/trace/coverage-matrix.md`——需求×用例×执行 覆盖率矩阵
 - `test/trace/index.json`——轻量索引（模块清单/统计摘要，供检索）
-- `test/report/test-metrics-$RUN.md`——本轮度量报告（模板 `templates/TEST-METRICS.md`）
+- `test/report/test-metrics-$RUN.md`——本轮度量报告，**用 `python scripts/gen_docs.py --root . --type metrics --run $RUN` 生成**（禁手写，契约见 `templates/TEST-METRICS.md`）
 - 校验结论（写在各派生文件头部）
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 读五方文件全量计算；`store=sqlite` → SQL 聚合查询（八项指标现成 SQL 见 `templates/SQLITE-SCHEMA.sql` 尾部）。输出物两轨相同。配置缺失 → BLOCKED 报 PM。
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`（`store=json`），**按 JSON 单轨规则**读五方文件全量计算；输出度量报告。配置缺失 → BLOCKED 报 PM。
 
-## 一致性校验（每次必跑，四项）
+## 一致性校验（每次必跑，五项）
+
+> **与脚本的分工**：下列 1/2/5 项已被 `verify_artifacts.py`（结构/闭合）与 `gen_docs.py`（覆盖率/缺口）机械覆盖，**以脚本输出为准**，人工只复核脚本判不了的：第 3 项源同步 hash、第 4 项状态机迁移合法性、以及「数字是否与原始记录一致」的抽查。
 
 | # | 校验 | 规则 | 违规处理 |
 |---|------|------|---------|

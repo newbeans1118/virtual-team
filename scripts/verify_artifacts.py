@@ -3,15 +3,17 @@
 """virtual-team 运行时产物结构校验（仅用标准库）。
 
 用法：
-    python scripts/verify_artifacts.py <项目根目录>
+    python scripts/verify_artifacts.py <项目根目录> [--stage <阶段>]
 
-校验范围（rules/storage-track.md 两轨）：
+--stage 声明当前流程阶段（kickoff/prd/design/coding/review/build-test/test/accept/release）。
+声明后按 STAGE_REQUIRED 检查该阶段必需产物；未声明时若全部产物组都 SKIP（空项目）则 FAIL，
+避免「什么都没做也判全部通过」。阶段未到的产物仍按 SKIP 处理，不算失败。
+
+校验范围（rules/storage-track.md，JSON 单轨）：
     JSON 轨   test/STORE-CONFIG.json、docs/prd/**/trace/prd.json、
               test/trace/*/{case,TD-REGISTRY}.json（组件/模块分层，模块层可省）、
               test/runs/RUN-*.json、RUN-*/**/EXEC-PLAN.json、RUN-*/**/EXEC.jsonl、
               test/bugs/BUG-*.json
-    SQLite 轨 test/trace/metrics.db（七表存在、execs 只追加触发器、td_biz_* 孤儿检查、
-              closed/verify_pass 缺陷须 verification.result=pass）
     通用      docs/prd/*/prd*.md 的需求状态（draft/gated/closed）与占位符闭合：
               closed 须零占位、gated 须占位与 §7.3 回填清单双向一致
 
@@ -26,7 +28,6 @@ import glob
 import json
 import os
 import re
-import sqlite3
 import sys
 
 FAILURES = []
@@ -50,6 +51,52 @@ def ok(rule, detail):
 
 def skip(rule, detail):
     SKIPS.append((rule, detail))
+
+
+# 产物组规则：每条要么 PASS、要么 SKIP（阶段未到）。全 SKIP = 空项目。
+ARTIFACT_RULES = ("prd-json", "case-json", "td-json", "run-json",
+                  "exec-plan-json", "exec-jsonl", "bug-json", "prd-status")
+
+# 各阶段必需产物（只列该阶段确实会产出、且能被本脚本机械判定的产物组）。
+# 未列出的产物组允许 SKIP；release/ 下的发布证据不在此列——真实性靠人工回执，机械校验无解。
+STAGE_REQUIRED = {
+    "kickoff": (),
+    "prd": ("prd-json",),
+    "design": ("prd-json",),
+    "coding": ("prd-json",),
+    "review": ("prd-json",),
+    "build-test": ("prd-json",),
+    "test": ("case-json", "td-json", "run-json", "exec-plan-json", "exec-jsonl"),
+    "accept": ("case-json", "td-json", "run-json", "exec-plan-json", "exec-jsonl"),
+    "release": ("case-json", "td-json", "run-json", "exec-plan-json", "exec-jsonl"),
+}
+
+
+def check_stage(stage):
+    """fail-closed：未声明阶段且空项目 → FAIL；声明阶段则必需产物缺一即 FAIL。"""
+    passed = {r for r, _ in PASSES}
+    skipped = {r for r, _ in SKIPS}
+    if stage is None:
+        if all(r in skipped for r in ARTIFACT_RULES):
+            fail("stage", "项目根",
+                 "未声明 --stage 且 %d 类产物全部缺失（空项目不得判全部通过）；"
+                 "按阶段校验请传 --stage <阶段>" % len(ARTIFACT_RULES))
+        else:
+            produced = [r for r in ARTIFACT_RULES if r in passed]
+            ok("stage", "未声明阶段，按已产物校验（%d/%d 类产物已产生）"
+               % (len(produced), len(ARTIFACT_RULES)))
+        return
+    if stage not in STAGE_REQUIRED:
+        fail("stage", "--stage=%s" % stage,
+             "未知阶段，可选：%s" % ", ".join(STAGE_REQUIRED))
+        return
+    required = STAGE_REQUIRED[stage]
+    missing = [r for r in required if r not in passed]
+    if missing:
+        fail("stage", "--stage=%s" % stage,
+             "必需产物缺失或未通过：%s" % ", ".join(missing))
+    else:
+        ok("stage", "阶段=%s 的 %d 类必需产物齐备" % (stage, len(required)))
 
 
 def load_json(path):
@@ -146,7 +193,7 @@ def run_json_track(root, schemas):
     # 1) STORE-CONFIG（缺失 = FAIL，fail-closed，storage-track §0）
     cfg_path = os.path.join(root, "test", "STORE-CONFIG.json")
     if not os.path.exists(cfg_path):
-        fail("store-config", "test/STORE-CONFIG.json", "存储轨道配置缺失（立项未完成存储决策，不得默认选轨）")
+        fail("store-config", "test/STORE-CONFIG.json", "存储配置缺失（立项时未创建 STORE-CONFIG.json，不得代为默认创建）")
         return None
     cfg = check_file(root, cfg_path, schemas["store-config"], "store-config")
     if cfg is None:
@@ -316,71 +363,6 @@ def check_bugs(root, schemas, exec_ids):
         ok("bug-json", "%d 个缺陷单合规（评审/验证门禁闭合）" % len(files))
 
 
-# --------------------------------------------------------------- SQLite 轨
-MECH_TABLES = ["prd_functions", "cases", "td_registry", "runs", "exec_plans", "execs", "bugs"]
-
-
-def run_sqlite_track(root, db_path):
-    if not os.path.exists(db_path):
-        fail("sqlite", rel(root, db_path), "metrics.db 不存在（store=sqlite 但未建库）")
-        return
-    con = sqlite3.connect("file:%s?mode=ro" % db_path.replace("\\", "/"), uri=True)
-    try:
-        cur = con.cursor()
-        names = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        missing = [t for t in MECH_TABLES if t not in names]
-        if missing:
-            fail("sqlite", rel(root, db_path), "缺机制表: %s" % ", ".join(missing))
-        else:
-            ok("sqlite", "机制七表齐全")
-
-        trig = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='trigger'")}
-        need = {"trg_execs_no_update", "trg_execs_no_delete"}
-        if not need <= trig:
-            fail("sqlite", rel(root, db_path), "execs 只追加触发器缺失: %s" % sorted(need - trig))
-        else:
-            ok("sqlite", "execs 只追加触发器在位（UPDATE/DELETE → ABORT）")
-
-        # td_biz_* 孤儿检查（storage-track：无 td_id 关联 = P0）
-        biz_tables = sorted(t for t in names if t.startswith("td_biz_"))
-        orphans = 0
-        for table in biz_tables:
-            cols = {r[1] for r in cur.execute("PRAGMA table_info(%s)" % table)}
-            if "td_id" not in cols:
-                fail("sqlite", table, "业务表缺 td_id 列（违反外键红线）")
-                continue
-            n = cur.execute(
-                "SELECT COUNT(*) FROM %s WHERE td_id IS NULL OR td_id NOT IN (SELECT id FROM td_registry)" % table
-            ).fetchone()[0]
-            if n:
-                fail("sqlite", table, "%d 行 td_id 孤儿（无注册表关联 = P0）" % n)
-                orphans += n
-        if biz_tables and orphans == 0 and not any(f[0] == "sqlite" for f in FAILURES):
-            ok("sqlite", "%d 张业务表 td_id 外键闭合" % len(biz_tables))
-        if not biz_tables:
-            skip("sqlite", "尚无 td_biz_* 业务表")
-
-        # verify_pass/closed 须验证证据（与 JSON 轨同门禁）
-        n_bad = cur.execute(
-            "SELECT COUNT(*) FROM bugs WHERE status IN ('verify_pass','closed') "
-            "AND (verification IS NULL OR json_extract(verification,'$.result') != 'pass')"
-        ).fetchone()[0]
-        if n_bad:
-            fail("sqlite", "bugs", "%d 个 %s 状态缺陷无 verification.result=pass 证据" % (n_bad, "verify_pass/closed"))
-        # P0/P1 修复评审门禁
-        n_rev = cur.execute(
-            "SELECT COUNT(*) FROM bugs WHERE severity IN ('P0','P1') AND status IN ('verify_pass','closed') "
-            "AND (fix IS NULL OR json_extract(fix,'$.review.result') != 'pass')"
-        ).fetchone()[0]
-        if n_rev:
-            fail("sqlite", "bugs", "%d 个 P0/P1 到达 verify_pass/closed 但修复评审非 pass" % n_rev)
-        n_total = cur.execute("SELECT COUNT(*) FROM bugs").fetchone()[0]
-        if n_total and not any(f[1] == "bugs" for f in FAILURES):
-            ok("sqlite", "%d 个缺陷单门禁闭合（验证 + 修复评审）" % n_total)
-    finally:
-        con.close()
-
-
 # ------------------------------------------- PRD 需求状态与占位符闭合（skills/prd）
 STATE_WORDS = ("draft", "gated", "closed")
 OCC_RE = re.compile(r"【占位[^】]*】")
@@ -448,11 +430,98 @@ def check_prd_status(root):
 
 
 # ------------------------------------------------------------------- main
+def check_derived(root):
+    """派生文档来源检查（`derived-docs` 规则）。
+
+    均为**内容级**逐字比对（重算后比字符串，手改或源已变即 FAIL）：
+    - RTM：由 `prd.json` / `case.json` 完全决定；
+    - 测试度量：由 prd / case / RUN / EXEC-PLAN / EXEC / BUG 完全决定。
+
+    骨架类（RPT / NFR-RPT）含人工结论，不参与内容比对——只要求首部带生成声明。
+    """
+    generated = "由 `scripts/gen_docs.py` 生成"
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    try:
+        import gen_docs  # 同目录脚本，仅作渲染复用
+    except Exception:  # noqa: BLE001
+        skip("derived-docs", "gen_docs.py 不可导入，跳过派生文档比对")
+        return
+
+    def compare(path, expected, label, hint):
+        try:
+            actual = open(path, encoding="utf-8").read()
+        except OSError as exc:
+            fail("derived-docs", label, "无法读取：%s" % exc)
+            return
+        if actual.strip() != expected.strip():
+            fail("derived-docs", label, "与 JSON 原始记录不一致（手改或源已变）→ %s" % hint)
+        else:
+            ok("derived-docs", "%s（与源一致）" % label)
+
+    funcs = gen_docs.load_prd(root)
+    cases = gen_docs.load_cases(root)
+
+    rtm = os.path.join(root, "docs", "prd", "RTM.md")
+    if os.path.exists(rtm) and funcs:
+        compare(rtm, gen_docs.render_rtm(root, funcs, cases),
+                "docs/prd/RTM.md", "重跑 scripts/gen_docs.py --type rtm")
+
+    bugs = gen_docs.load_bugs(root)
+    for path in sorted(glob.glob(os.path.join(root, "test", "report", "test-metrics-*.md"))):
+        label = os.path.relpath(path, root).replace(os.sep, "/")
+        rid = os.path.basename(path)[len("test-metrics-"):-len(".md")]
+        run = gen_docs.pick_run(root, rid)
+        if run is None:
+            fail("derived-docs", label, "对应执行轮 %s 不存在——孤儿文档，应删除" % rid)
+            continue
+        plans, execs = gen_docs.load_run_detail(root, rid)
+        compare(path, gen_docs.render_metrics(root, run, plans, execs, funcs, cases, bugs),
+                label, "重跑 scripts/gen_docs.py --type metrics --run %s" % rid)
+
+    for path in sorted(glob.glob(os.path.join(root, "test", "report", "RPT-*.md")) +
+                       glob.glob(os.path.join(root, "test", "nfr", "report", "NFR-RPT-*.md"))):
+        label = os.path.relpath(path, root).replace(os.sep, "/")
+        if generated not in open(path, encoding="utf-8").read(400):
+            fail("derived-docs", label, "缺少生成声明——骨架须由 gen_docs.py 生成，人工只补待填段")
+
+
 def main():
-    if len(sys.argv) != 2:
-        print("用法: python scripts/verify_artifacts.py <项目根目录>")
+    usage = ("用法: python scripts/verify_artifacts.py <项目根目录> [--stage <阶段>] [--json]\n"
+             "      或 python scripts/verify_artifacts.py --root <项目根目录> [--stage <阶段>] [--json]")
+    args = sys.argv[1:]
+    stage = None
+    as_json = False
+    positional = []
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--stage":
+            if i + 1 >= len(args):
+                print(usage)
+                return 2
+            stage = args[i + 1]
+            i += 2
+        elif arg.startswith("--stage="):
+            stage = arg.split("=", 1)[1]
+            i += 1
+        elif arg == "--root":
+            if i + 1 >= len(args):
+                print(usage)
+                return 2
+            positional.append(args[i + 1])
+            i += 2
+        elif arg == "--json":
+            as_json = True
+            i += 1
+        else:
+            positional.append(arg)
+            i += 1
+    if len(positional) != 1:
+        print(usage)
         return 2
-    root = os.path.abspath(sys.argv[1])
+    root = os.path.abspath(positional[0])
     if not os.path.isdir(root):
         print("[FAIL] 参数 项目根目录不存在: %s" % root)
         return 2
@@ -483,8 +552,19 @@ def main():
 
     run_json_track(root, schemas)
     check_prd_status(root)
-    if track == "sqlite":
-        run_sqlite_track(root, os.path.join(root, "test", "trace", "metrics.db"))
+    check_derived(root)
+    check_stage(stage)
+
+    if as_json:
+        payload = {
+            "root": root,
+            "stage": stage,
+            "pass": [{"rule": r, "detail": d} for r, d in PASSES],
+            "skip": [{"rule": r, "detail": d} for r, d in SKIPS],
+            "fail": [{"rule": r, "location": loc, "detail": d} for r, loc, d in FAILURES],
+        }
+        print(json.dumps(payload, ensure_ascii=False, indent=1))
+        return 1 if FAILURES else 0
 
     for rule, detail in PASSES:
         print("[PASS] %-14s %s" % (rule, detail))

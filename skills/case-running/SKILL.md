@@ -19,13 +19,12 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 
 ## 输入
 
-- **已审定的实例计划分片** `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json`（SQLite 轨：`exec_plans.approved=1` 的行）
 - `test/runs/RUN-xxx.json`（RUN 头，test-manager 创建，含 `envs` 池——build/commit 引用**测试版构建产物**）
 - 本分片 `test/trace/$COMPONENT/$MODULE/case.json`（用例与 automation 信息）
 - `test/automation/`（`script_ref` 指向的自动化脚本）
 - 测试版构建产物 + `release/manual-install.md`（环境部署依据；**测试环境必须来自测试版构建，不得用开发工作区充当**——缺失 → BLOCKED 报 PM）
 
-## 输出（按存储轨道 × 分片）
+## 输出（按分片）
 
 **分片规则**：执行分片 = **组件/模块**（一分片一文件，彻底避免同文件并发写）。**env 由 test-manager 审定时静态分配**——审定结论中"分片 → env"映射固定（同一 env 同刻只承载一个分片），TE 按**分配表**使用 env，不做运行时抢占。分片执行期间独占该 env，结束（含清理）后归还；同一分片可先后在多个 env 执行（EXEC 行以 `env` 字段区分）。**分片异常终止**（崩溃/BLOCKED）→ 报 PM，PM 通知 TM 重验环境（重跑 `test/baseline/` 初始化确认干净态）后再分配后续分片。
 
@@ -34,7 +33,6 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
   - `test/bugs/BUG-xxx.json`（缺陷单）
   - `test/report/RPT-xxx.md`（轮次测试报告）
   - 更新本分片 `test/trace/$COMPONENT/$MODULE/case.json` 的 `latest_result_ref`
-- **SQLite 轨**（STORE-CONFIG.store=sqlite）：写 `test/trace/metrics.db`
   - `execs` 表（**只追加**，由触发器强制：UPDATE/DELETE 直接 ABORT）
   - `bugs` 表
   - 更新 `cases.latest_result_ref` 列
@@ -43,13 +41,13 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写文件（EXEC.jsonl / BUG / RPT）；`store=sqlite` → 入库（`execs` 只追加由触发器强制；`bugs`）。配置缺失 → BLOCKED 报 PM。
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`（`store=json`），**按 JSON 单轨规则**： 写文件（EXEC.jsonl / BUG / RPT）；单轨写 `EXEC.jsonl` / `BUG-*.json`。配置缺失 → BLOCKED 报 PM。
 
 ## 流程（五步，顺序固定）
 
 ### 1. 核对前置
 
-- 确认本分片 EXEC-PLAN **已经 TM 审定**（JSON 轨：`approved_by` 非空；SQLite 轨：`exec_plans.approved=1`）。**未审定 → BLOCKED 报项目经理，不得开跑。**
+- 确认本分片 EXEC-PLAN **已经 TM 审定**（`approved_by` 非空）。**未审定 → BLOCKED 报项目经理，不得开跑。**
 - 从**审定结论的 env 分配表**中取本分片被分配的 env（静态分配，不抢占）；记录使用开始。
 
 ### 2. 执行（本分片 = 本组件/模块 × 分配的 env）
@@ -80,7 +78,7 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 - **汇总归属**：轮次汇总（total/pass/fail/blocked）**不回写 RUN 头**——由 `test-rebuild` 从全部分片 EXEC 派生（只派生不回写，防并发竞态与双写）。
 - 更新用例侧 `latest_result_ref` 指针（各分片实例更新自己模块的）。
 - 触发 `test-rebuild` 生成度量报告（消费全部分片），交 `test-manager` 评估。
-- 按 `templates/TEST-REPORT.md` 产出本轮**测试报告** `test/report/RPT-$RUN.md`（人工可读的轮次总结；与 test-metrics 度量报告并存——前者面向交付、后者面向度量），交 `test-manager` 汇总。
+- 跑 `python scripts/gen_docs.py --root . --type report --run $RUN` 生成 `test/report/RPT-$RUN.md` 骨架（数字自动填、P0/P1 自动列），再补三处 `<!-- 待填 -->`（执行摘要 / 遗留风险 / 结论）；契约见 `templates/TEST-REPORT.md`。交 `test-manager` 汇总。
 
 ## 分片粒度决策规则
 
@@ -106,7 +104,7 @@ description: 执行已审定的测试实例、记录执行明细、提交并跟�
 - [ ] 失败项全部建 BUG 且回指 exec；blocked 项已记原因且不计入通过率
 - [ ] 回归轮已跑、verify 结果已回写 BUG
 - [ ] latest_result_ref 已更新、未回写 RUN 头（汇总由 test-rebuild 派生）
-- [ ] RPT-xxx 测试报告已产出
+- [ ] RPT 骨架已生成且三处 `<!-- 待填 -->` 已补全（残留占位 = 未完成）
 - [ ] test-rebuild 已触发
 
 ## 触发与边界

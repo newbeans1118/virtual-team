@@ -1,23 +1,23 @@
 {
-  "_comment": "模版：CASE-STRUCTURE.json（用例侧结构化分片）｜ 产出角色：test-engineer（case-structure）｜ 每组件/模块一片：test/trace/$COMPONENT/$MODULE/case.json。双轨：JSON 轨=本文件；SQLite 轨=cases 表（component+module 双列承载分片键；用例有主组件，可跨组件引用功能点）。用例是五方追踪的中枢：function_refs→需求，acceptance_refs→验证条件（测试点，只存标识不复制文本），dataset_refs→数据，latest_result_ref→执行（指针不存值）。执行结果不入本文件（属 EXEC，追加式）。",
-  "project": "$PROJECT_NAME",
-  "component": "$COMPONENT",
-  "module": "$MODULE",
-  "updated_at": "",
-  "prd_source_hash": "sha1:…（仅 SQLite 轨写入 cases.prd_source_hash；JSON 轨留空，stale 由 git 提交对比判定）",
+  "_comment": "模版：CASE-STRUCTURE.json（用例侧结构化分片）｜ 产出角色：test-engineer（case-structure）｜ 每组件/模块一片：test/trace/$COMPONENT/$MODULE/case.json。单轨：本文件为 JSON 分片（用例有主组件，可跨组件引用功能点）。用例是五方追踪的中枢：function_refs→需求，acceptance_refs→验证条件（测试点，只存标识不复制文本），dataset_refs→数据，latest_result_ref→执行（指针不存值）。执行结果不入本文件（属 EXEC，追加式）。**本模板即合法实例样例**，编号与引用填真实合法值；枚举与格式以 `schemas/case-structure.schema.json` 为准。",
+  "project": "order_center",
+  "component": "order",
+  "module": "all",
+  "updated_at": "2026-01-01T00:00:00Z",
+  "prd_source_hash": "sha1:REPLACE_WITH_REAL_HASH",
   "cases": [
     {
-      "id": "CASE-$COMPONENT-NNN",
+      "id": "CASE-order-001",
       "title": "用例标题",
-      "function_refs": ["fr-$COMPONENT-$MODULE-NNN"],
-      "acceptance_refs": ["fr-$COMPONENT-$MODULE-NNN:c1"],
-      "dataset_refs": ["TD-$COMPONENT-NNN"],
+      "function_refs": ["fr-order-all-001"],
+      "acceptance_refs": ["fr-order-all-001:c1"],
+      "dataset_refs": ["TD-order-001"],
       "type": "functional",
       "priority": "P1",
       "status": "active",
       "preconditions": ["前置条件"],
       "automation": { "automatable": false, "script_ref": null, "last_verified_run": null },
-      "latest_result_ref": "test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC.jsonl#L3"
+      "latest_result_ref": "test/runs/RUN-001/order/all/EXEC.jsonl#L3"
     }
   ]
 }

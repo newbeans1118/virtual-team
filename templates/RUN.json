@@ -1,11 +1,11 @@
 {
-  "_comment": "模版：RUN.json（执行轮，纯计划态）｜ 创建：test-manager（建头：id/trigger/scope/envs/defect_refs，含执行派发建议交 PM）｜ 消费：test-engineer（case-instantiate/case-running，只读）｜ 存放：test/runs/RUN-xxx.json。执行轮是度量的分母单位。分片=模块；envs 为环境池（每个含 build/commit 证据——测试版构建产物），由 test-manager 审定时静态分配到分片（一 env 一分片，活跃分片数 ≤ envs 数）。注意：本文件不含 summary/finished_at——轮次汇总（total/pass/fail/blocked）由 test-rebuild 从 EXEC 明细派生（只派生不回写，防并发竞态与双写），人工可读总结见 RPT 报告。",
-  "id": "RUN-xxx",
-  "trigger": "full | regression | smoke | defect-verify",
+  "_comment": "模版：RUN.json（执行轮，纯计划态）｜ 创建：test-manager（建头：id/trigger/scope/envs/defect_refs，含执行派发建议交 PM）｜ 消费：test-engineer（case-instantiate/case-running，只读）｜ 存放：test/runs/RUN-xxx.json。执行轮是度量的分母单位。分片=模块；envs 为环境池（每个含 build/commit 证据——测试版构建产物），由 test-manager 审定时静态分配到分片（一 env 一分片，活跃分片数 ≤ envs 数）。注意：本文件不含 summary/finished_at——轮次汇总（total/pass/fail/blocked）由 test-rebuild 从 EXEC 明细派生（只派生不回写，防并发竞态与双写），人工可读总结见 RPT 报告。**本模板即合法实例样例**：`trigger` 取单值，可选 full/regression/smoke/defect-verify；编号由 `scripts/id_alloc.py` 分配；格式以 `schemas/run.schema.json` 为准。",
+  "id": "RUN-001",
+  "trigger": "full",
   "defect_refs": [],
   "scope": { "modules": [], "case_ids": null, "tags": null },
   "envs": [
-    { "name": "env-a", "build": "", "commit": "" }
+    { "name": "env-a", "build": "build-001", "commit": "a1b2c3d" }
   ],
-  "started_at": ""
+  "started_at": "2026-01-01T00:00:00Z"
 }

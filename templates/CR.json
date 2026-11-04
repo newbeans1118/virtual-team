@@ -1,29 +1,34 @@
 {
-  "_comment": "模版：CR.json（变更单）｜ 提出：任何角色（报 PM 登记，不直接改文档）｜ 评估：PM 按涉及面派发对应角色列影响清单 ｜ 批准：用户（用户主权）｜ 实施：责任角色修订 + 下游同步 ｜ 关闭：PM 校验 ｜ 存放：docs/changes/CR-$COMPONENT-NNN.json。状态机：draft → assessing → approved → implementing → verified → closed；任一环节拒绝 → rejected。边界：缺陷修复走 BUG 状态机、评审打回走评审闭环，均不走 CR。",
-  "id": "CR-$COMPONENT-NNN",
-  "title": "",
-  "source": "用户 | 角色名 | 外部事件",
-  "raised_by": "提出角色",
-  "raised_at": "",
-  "type": "requirement | design | code | test-asset",
-  "description": "变更内容（改什么、为什么）",
+  "_comment": "模版：CR.json（变更单）｜ 提出：任何角色（报 PM 登记，不直接改文档）｜ 评估：PM 按涉及面派发对应角色列影响清单 ｜ 批准：用户（用户主权）｜ 实施：责任角色修订 + 下游同步 ｜ 关闭：PM 校验 ｜ 存放：docs/changes/CR-$COMPONENT-NNN.json。状态机：draft → assessing → approved → implementing → verified → closed；任一环节拒绝 → rejected。边界：缺陷修复走 BUG 状态机、评审打回走评审闭环，均不走 CR。**本模板即合法实例样例**：编号由 `scripts/id_alloc.py . cr --component order` 分配；`type` 可选 requirement/design/code/test-asset；`approval.decision` 可选 approved/rejected；`verification.result` 可选 verified/failed；`status` 七值，均取单值。",
+  "id": "CR-order-001",
+  "title": "示例变更：订单取消后的库存回补改为异步",
+  "source": "用户",
+  "raised_by": "product-manager",
+  "raised_at": "2026-01-01T00:00:00Z",
+  "type": "requirement",
+  "description": "变更内容：取消订单的库存回补由同步改为异步消息。原因：高峰期同步回补导致接口 P95 超阈值。",
   "impact": {
-    "fr": ["fr-$COMPONENT-$MODULE-NNN"],
-    "biz": ["biz-$COMPONENT-$MODULE-NNN"],
-    "cases": ["CASE-$COMPONENT-NNN"],
-    "td": ["TD-$COMPONENT-NNN"],
-    "docs": ["受影响文档与章节"],
-    "assessment": "影响评估结论（由责任角色给出：范围/工作量/风险）",
-    "assessed_by": "",
-    "assessed_at": ""
+    "fr": ["fr-order-all-003"],
+    "biz": ["biz-order-all-002"],
+    "cases": ["CASE-order-004"],
+    "td": ["TD-order-005"],
+    "docs": ["docs/prd/order/prd.md §3.2", "design/order/interface.md §2"],
+    "assessment": "影响评估：涉及 1 个功能点、1 个用例、1 个数据单元；接口签名不变，新增消息消费方；工作量约 1 人日；风险为回补延迟导致库存短暂不一致，需补偿任务兜底。",
+    "assessed_by": "architect",
+    "assessed_at": "2026-01-01T00:00:00Z"
   },
-  "approval": { "by": "user", "decision": "approved | rejected", "note": "", "at": "" },
+  "approval": { "by": "user", "decision": "approved", "note": "用户确认：接受短暂不一致，须有补偿任务。", "at": "2026-01-01T00:00:00Z" },
   "implementation": {
-    "steps": ["实施步骤（含 prd-structure 重跑、case/TD 对齐等下游同步）"],
-    "commit": "",
-    "by": "",
-    "at": ""
+    "steps": [
+      "修订 design/order/interface.md §2 新增消息定义",
+      "重跑 prd-structure 同步 prd.json",
+      "case-structure 更新 CASE-order-004 的 acceptance_refs",
+      "TD-order-005 增加不一致场景数据"
+    ],
+    "commit": "a1b2c3d",
+    "by": "backend-developer",
+    "at": "2026-01-01T00:00:00Z"
   },
-  "verification": { "result": "verified | failed", "evidence": "test-rebuild 源同步无 stale / 评审通过结论", "at": "" },
-  "status": "draft | assessing | approved | implementing | verified | closed | rejected"
+  "verification": { "result": "verified", "evidence": "test-rebuild 源同步无 stale（prd.json hash 与 prd.md 一致）+ RV-DESIGN-order-002 评审通过", "at": "2026-01-01T00:00:00Z" },
+  "status": "closed"
 }

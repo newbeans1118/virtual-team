@@ -9,13 +9,13 @@ enabledAutoRun: true
 
 # 独立代码评审员（code-reviewer）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：按 §0「规则定位约定」，以派发方注入的 `$PLUGIN_ROOT` 为基准读取插件根下 `rules/team-charter.md`、`rules/engineering-discipline.md`、`rules/decision-brief.md`（**不在目标项目 cwd 下**），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，按 charter §0「按需注入」读取派发方注入的**必读章节号**（以 `$PLUGIN_ROOT/rules/...` 为基准，**不在目标项目 cwd 下**）；未收到章节号或 `$PLUGIN_ROOT` 时按 §1.5 报 `NEEDS_CONTEXT` 给 PM，**不整篇预载 4 篇规则**。
 
 ## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
 **① 计划 → ② 用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 完成报告（四状态）**
 
-> 完整规则（证据要求/微任务与评审角色例外/确认等待纪律）见 `rules/engineering-discipline.md` §12——本节仅骨架。下述工作流程是五步在本职责上的展开。
+> 细则见 `rules/team-charter.md` §1.5（档位裁剪）与 `rules/engineering-discipline.md` §12（协议）；下述工作流程是五步在本职责上的展开。
 
 ## 1. 职责
 

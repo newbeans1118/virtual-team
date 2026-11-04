@@ -27,5 +27,11 @@ $ARGUMENTS
    - `diagramming` → 架构图/ER 图/时序图（Mermaid）
 3. **搭建工程目录与构建系统并验证**（实际执行构建命令）。
 4. 校验：每条 FR 在设计中有落点；组件 interface/func 齐全；DDL 与数据字典一致；FUNC 拆分阈值合规。
-5. 完成后**按组件提交设计评审第一轮**（用户 + design-reviewer，报告 `RV-DESIGN-$COMPONENT-xxx.md`），数据层可加做 `datamodel-review`（`RV-DM-$COMPONENT-xxx.md`）；PM 汇总全部组件结论。
+5. 完成后**按档位提交设计评审第一轮**（charter §9，用户 + design-reviewer）：完整档按组件出 `RV-DESIGN-$COMPONENT-xxx.md` + PM 汇总，数据层可加做 `datamodel-review`；标准 / 微项目档出**单次全量报告** `review/design/RV-DESIGN-ALL-xxx.md`。
 6. 第一轮通过并完成设计修订定稿后，**由 PM 派发 architect** 用 `task-breakdown` 产出 `design/DEV-TASKS.md`，提交**设计评审第二轮（分解评审）**——同一 design-reviewer、同一门禁、同一批报告；PM 汇总两轮均通过才放行进入 `/vt-coding`（charter §5）。本命令不产出 DEV-TASKS。
+
+## 档位裁剪（判据与不可裁红线见 charter §9；档位读 `board/KANBAN.md` 首行，未定档按标准档）
+
+- **微项目**：设计评审出**单次全量报告**；无存量数据时免 `datamodel-review`。
+- **标准（默认）**：单次全量设计报告，两轮检查合入一份 `RV-DESIGN`。
+- **完整**：按组件出报告 + PM 汇总，数据模型专项评审照做。

@@ -1,16 +1,16 @@
 {
-  "_comment": "模版：EXEC-PLAN.json（实例计划 = 实例化产物）｜ 产出：case-instantiate 生成 → test-manager 审定后才可执行 ｜ 存放：test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json。每行=一个可执行实例（用例×验证条件×数据配对）；condition = 所验证的条件标识 {fr-id}:{key}（kind 从 PRD 侧派生，配对时须 ∈ TD.suitable_for；未声明 acceptance_refs 的用例走功能点级 fallback 时置 null）；expected 是实例属性，落定在实例行（不属于数据单元），优先取该条件 GWT 的 then。source 取值见下（acceptance 为优先来源）。",
-  "run": "RUN-xxx",
+  "_comment": "模版：EXEC-PLAN.json（实例计划 = 实例化产物）｜ 产出：case-instantiate 生成 → test-manager 审定后才可执行 ｜ 存放：test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json。每行=一个可执行实例（用例×验证条件×数据配对）；condition = 所验证的条件标识 {fr-id}:{key}（kind 从 PRD 侧派生，配对时须 ∈ TD.suitable_for；未声明 acceptance_refs 的用例走功能点级 fallback 时置 null）；expected 是实例属性，落定在实例行（不属于数据单元），优先取该条件 GWT 的 then。source 取值见下（acceptance 为优先来源）。**本模板即合法实例样例**：`source` 取单值，可选 acceptance/case-expected/expected-hints/manual；`plan_id` 由 `scripts/id_alloc.py` 分配且跨 RUN 全局唯一；格式以 `schemas/exec-plan.schema.json` 为准。",
+  "run": "RUN-001",
   "approved_by": "test-manager",
-  "approved_at": "",
+  "approved_at": "2026-01-01T00:00:00Z",
   "items": [
     {
-      "plan_id": "P-xxx",
-      "case": "CASE-$COMPONENT-NNN",
-      "condition": "fr-$COMPONENT-$MODULE-NNN:c1",
-      "td": "TD-$COMPONENT-NNN",
+      "plan_id": "P-001",
+      "case": "CASE-order-001",
+      "condition": "fr-order-all-001:c1",
+      "td": "TD-order-001",
       "expected": "本实例的预期结果（优先取该条件 GWT 的 then；或从用例预期语义 / TD expected_hints / 项目补充）",
-      "source": "acceptance | case-expected | expected-hints | manual"
+      "source": "acceptance"
     }
   ]
 }

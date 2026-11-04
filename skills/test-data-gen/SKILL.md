@@ -20,34 +20,20 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 - `test/plan.md`（测试范围与环境约束）
 - `design/INTERFACE.md`、`design/$COMPONENT/database.md`（本组件表结构）、`design/$COMPONENT/func.md`（或 `$MODULE/func.md`）；全局数据规范见 `design/DATABASE.md` §2（加载方法的依据，只读）
 
-## 输出（按存储轨道 × 分片）
+## 输出（按分片）
 
 **分片规则**：数据生成**按组件/模块分片**——一个 test-engineer 实例只负责一个 `$COMPONENT/$MODULE` 的 TD，产出该分片注册表；多实例并行时零交叉（红线：**只写本分片产物**）。
 
 - **JSON 轨**（默认）：
   - `test/data/$COMPONENT/TD-$COMPONENT-NNN/`（数据文件+加载脚本）
   - `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`——**注册表分片**（每组件/模块一片，与 case/PRD 分片对称；全局视图由 test-rebuild 合并，禁止实例间互相改写对方分片）
-- **SQLite 轨**（STORE-CONFIG.store=sqlite）：
-  - 机制数据 → `test/trace/metrics.db` 的 `td_registry` 表（字段同上，双向一致约束同；行级 INSERT 无并行冲突）
-  - **数据本体 → 业务表 `td_biz_*`**（本技能设计并建表，INSERT 数据行；**必须含 `td_id` 列外键关联 `td_registry(id)`**，见 `templates/SQLITE-SCHEMA.sql` 样例）
   - **加载脚本仍单独存文件**：`test/data/$COMPONENT/scripts/TD-$COMPONENT-NNN-load.*`——职责为"从业务表 SELECT 数据 → 装入被测系统"；`load_entry` 登记该脚本路径
   - 配套清理脚本（DELETE 该 td_id 业务行 + 环境回收）
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写文件（TD 目录 + 注册表分片）；`store=sqlite` → 机制数据写 `td_registry` 表 + 数据本体写业务表 `td_biz_*`（必含 td_id 外键，见「SQLite 轨附加流程」）。配置缺失 → BLOCKED 报 PM。
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`（`store=json`），**按 JSON 单轨规则**写文件（TD 目录 + 注册表分片）。配置缺失 → BLOCKED 报 PM。
 
-### SQLite 轨附加流程
-
-`store=sqlite` 时，除主体流程外追加以下步骤：
-
-1. **设计业务表**：按项目数据域设计 `td_biz_<domain>` 表结构（DDL 参考 `templates/SQLITE-SCHEMA.sql` 样例：必含 `row_id` + `td_id`(FK→`td_registry(id)`) + 建议 `tags`）。
-2. **建表并写入**：执行 DDL 建表 → 生成数据行 INSERT（数据本体入库，不落文件）。
-3. **生成加载脚本**（单独文件 `test/data/$COMPONENT/scripts/TD-$COMPONENT-NNN-load.*`）：从业务表 SELECT 取数 → 装入被测系统；**幂等** + 可清理。
-4. **登记**：INSERT `td_registry`（**含 `module` 分片键** + description 六字段语义与 JSON 轨完全一致；`owner_cases` 与用例侧 `dataset_refs` 双向一致）。
-5. **实测验证**：执行加载脚本，验证结果写入 `td_registry.verified`。
-
-> **关联完整性（红线）**：业务表每行必须经 `td_id` 关联注册表——无 `td_id` 的业务数据行 = 孤儿数据（P0）；删除 TD 时须级联清理业务行。
 
 ## 前置（硬门禁，缺任一 → BLOCKED 报 PM）
 
@@ -99,7 +85,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 3. **设计数据内容**：写 `test/data/$COMPONENT/TD-$COMPONENT-NNN/` 内部文件（业务相关，形态项目自定：JSON/CSV/脚本生成均可）。
 4. **编写加载方法**：`load_entry` 可执行脚本——负责"把数据装入被测系统"（走 API / 数据库 / 静态配置，依设计文档定）；**必须幂等**（重复加载不残留），配套清理逻辑。
 5. **实测验证**：执行 `load_entry`，确认加载成功且可清理；验证命令与结果写入注册表 `verified` 字段。
-6. **登记**：更新本分片注册表 `TD-REGISTRY.json`（编号顺序分配 `TD-$COMPONENT-NNN`；description 六字段；owner_cases 与本分片 `case.json` 双向一致）。
+6. **登记**：更新本分片注册表 `TD-REGISTRY.json`（编号由 `scripts/id_alloc.py . td --component $COMPONENT` 分配，**不手工编号**；description 六字段；owner_cases 与本分片 `case.json` 双向一致）。
 7. **提交审定**：注册表交 `test-manager` 审定（description 规范性、加载入口可执行、owner_cases 完整）。
 
 ## 质量要求
@@ -111,7 +97,7 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 
 ## 检查清单
 
-- [ ] 已按所选轨道执行（json 写文件 / sqlite 入库），无两轨混写
+- [ ] 已按 JSON 单轨写入分片文件
 - [ ] 每个 TD 六字段齐全（purpose / suitable_for / preconditions / owner_cases / load_entry / data_scope）
 - [ ] `owner_cases` 与用例侧 `dataset_refs` **双向一致**
 - [ ] `suitable_for` 与所支撑验证条件的 kind 一致
@@ -137,4 +123,3 @@ description: 生成测试数据单元并登记供用例引用时使用。触发�
 - 加载脚本不幂等（第二次执行残留脏数据 → 后续 EXEC 全部失真）。
 - 数据未实测加载就登记（违背证据先于结论）。
 - 一份数据被新用例引用却未更新 owner_cases（影响面失明）。
-- **SQLite 轨**：业务表缺 `td_id` 外键（孤儿数据）；或建了业务表却仍把数据写文件（两轨混用）。

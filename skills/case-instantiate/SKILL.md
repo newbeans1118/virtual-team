@@ -24,22 +24,20 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 - **已存在的 RUN 头** `test/runs/RUN-xxx.json`（test-manager 创建：id/trigger/defect_refs/scope/envs）
 - `test/plan.md`（测试方案，含范围与环境要求）
 - 本分片 `test/trace/$COMPONENT/$MODULE/case.json`（用例分片，含 `function_refs`/`acceptance_refs`/`dataset_refs`）
-- 本分片注册表 `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`（SQLite 轨：查库）
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（acceptance 文本，expected 来源之一）
 
-## 输出（按存储轨道 × 分片）
+## 输出（按分片）
 
 **分片规则**：实例计划**按组件/模块分片**——一个 test-engineer 实例只负责一个 `$COMPONENT/$MODULE`，只产出本分片实例计划；多实例并行零交叉。
 
 - **JSON 轨**（默认）：
   - `test/runs/RUN-xxx/$COMPONENT/$MODULE/EXEC-PLAN.json`（本分片实例计划，**TM 审定后生效**）
-- **SQLite 轨**（STORE-CONFIG.store=sqlite）：写 `test/trace/metrics.db`
   - `exec_plans` 行（plan_id / module / run_id / case_id / td_id / expected / source / approved=0）
   - `approved` 列承载 TM 审定标记（未审定行禁止执行）
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写 `EXEC-PLAN.json`；`store=sqlite` → 写 `exec_plans` 行。配置缺失 → BLOCKED 报 PM。（RUN 头由 test-manager 创建，本技能不建头。）
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`（`store=json`），**按 JSON 单轨规则**： 写 `EXEC-PLAN.json`；单轨只写 `EXEC-PLAN.json`。配置缺失 → BLOCKED 报 PM。（RUN 头由 test-manager 创建，本技能不建头。）
 
 ## 执行轮类型（trigger）
 
@@ -54,7 +52,7 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
 
 ### 1. 核对 RUN 头（test-manager 已建）
 
-- 确认 `test/runs/RUN-xxx.json` 存在且由 test-manager 创建（含 `envs` 池声明，每项 build/commit 引用**测试版构建产物**——证据）。
+- 确认 `test/runs/RUN-xxx.json` 存在且由 test-manager 创建（含 `envs` 池；build/commit 证据见 charter §5）。
 - **RUN 头缺失 → BLOCKED 报项目经理**（TM 未建头，不得由本技能代建——多分片并发代建会撞头）。
 
 ### 2. 配对生成实例（按模块分片，**逐验证条件**）
@@ -66,7 +64,7 @@ description: 在 test-manager 已建的执行轮（RUN）内、按组件/模块�
   - **`condition`**：`{fr-id}:{key}`（该实例验证的条件标识，如 `fr-workbench-task_list-001:c2`）——EXEC 与 BUG 回指的锚点。
   - **`expected`** 是实例属性——**优先取该条件 GWT 的 `then`**（source=acceptance）；也可从用例预期语义 / TD 单元 `expected_hints` 提炼，或项目补充；**同一 TD 配不同条件预期不同**。
   - **`source`** 取值：`acceptance | case-expected | expected-hints | manual`（acceptance 为优先来源）。
-  - **`plan_id`（P-xxx）全局唯一（跨 RUN）**——TM 审定时全局查重（含历史 RUN）；EXEC 的 `plan_ref` 与复合格式 exec_id 据此回指。
+  - **`plan_id`（P-xxx）全局唯一（跨 RUN）**——用 `scripts/id_alloc.py . p --count <片内行数>` 批量分配（账本+全项目扫描保证不重号）；TM 审定时再跑 `id_alloc.py . check` 复核。EXEC 的 `plan_ref` 与复合格式 exec_id 据此回指。
 - **一用例跨多 kind** → 每个条件各生成实例行，各行挂 kind 匹配的 TD（dataset_refs 本就是数组，天然支持）。
 - **fallback（未声明 acceptance_refs 的用例）**：功能点级配对——从 `dataset_refs` 中选 `suitable_for` 含 normal 的 TD，`condition` 置 null、source 标 `manual`；缺口报告呈现（point-untagged）。
 - 参考用例侧 `dataset_refs`（该用例声明的可用数据单元）与 TD 侧 `owner_cases`（双向一致），确定候选集。

@@ -26,15 +26,15 @@ $ARGUMENTS
 2. `test-manager`：
    - 用 `case-design` 产出 `test/plan.md`（范围/功能/非功能策略 + **环境基线定义**）
    - 定义环境基线并产出 `test/baseline/`（初始化脚本、种子数据、恢复方式；执行由 test-engineer 搭环境时进行）
-   - **建 RUN 头**（trigger/scope/envs——build/commit 引用测试版构建产物），连执行派发建议交 PM
+   - **建 RUN 头**（trigger/scope/envs；证据见 charter §5），连执行派发建议交 PM
 3. `test-engineer`：
    - 用 `case-design` 生成 `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`（与功能点编号关联）
-   - 用 `case-structure` 结构化用例并关联功能点与数据单元（覆盖率矩阵由 `test-rebuild` 派生）
+   - 用 `case-structure` 结构化用例并关联功能点与数据单元（覆盖率矩阵由 `test-rebuild` 派生）；结构化后重跑 `python scripts/gen_docs.py --root . --type rtm`，让 RTM 的用例列与覆盖率齐全
    - 用 `test-data-gen` 生成 TD 并登记注册表（加载脚本在测试版构建产物上实测通过后才登记）
    - 按测试版构建产物 + `release/manual-install.md` 搭建环境（**环境必须来自测试版构建**）
    - 用 `case-instantiate` 在 TM 已建的 RUN 内配对生成**可执行实例**（交 test-manager 审定）
    - 用 `case-running` 执行已审定实例、记录 EXEC，提交缺陷 `BUG-xxx` 并跟踪修复
-4. `test-manager` 评估结果（读 test-rebuild 度量——轮次汇总亦由其派生），判定是否通过。
+4. 派生本轮文档：`python scripts/gen_docs.py --root . --type metrics`（数字，禁手改）与 `--type report`（RPT 骨架，补三处待填）；`test-manager` 据此判定是否通过（轮次汇总亦由 test-rebuild 派生，数字冲突以 metrics 为准）。
 
 ## 通过标准（硬性）
 
@@ -45,4 +45,10 @@ $ARGUMENTS
 
 - test-manager **只读、不编译、不运行**代码。
 - test-engineer **不得修改代码或非测试文档**。
-- 用开发工作区充当测试环境（必须走测试版构建产物）。
+- 用开发工作区充当测试环境（违反 charter §5）。
+
+## 档位裁剪（判据与不可裁红线见 charter §9；档位读 `board/KANBAN.md` 首行，未定档按标准档）
+
+- **微项目**：RUN 单分片单 env、**免覆盖率矩阵**、TD 注册表只登记不审定、NFR 轨不启用。
+- **标准（默认）**：按组件分片，覆盖率矩阵按需生成，TD 注册表与实例计划仍须 TM 审定。
+- **完整**：多 env 并行 + 覆盖率矩阵 + 逐条件配对审定。

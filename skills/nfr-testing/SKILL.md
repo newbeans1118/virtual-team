@@ -28,7 +28,7 @@ description: 独立评估非功能需求（性能/安全/可用性/兼容性）�
 - `test/nfr/cases/NFR-CASE-$COMPONENT-NNN.md` + `test/nfr/trace/$COMPONENT/nfr-case.json`（模版 `templates/NFR-CASE.json`）
 - `test/nfr/data/NFR-TD-$COMPONENT-NNN/`（可选；沿用 TD 六字段结构，但 **`owner_cases` 指向 `NFR-CASE-*` 而非 FR CASE**，`suitable_for` 可留空——NFR 不按 kind 配对；也可 `reuse:TD-*` 只读复用 FR 数据）
 - `test/nfr/runs/NFR-RUN-NNN.json`（模版 `templates/NFR-RUN.json`）
-- `test/nfr/report/NFR-RPT-<NFR-RUN>.md`（模版 `templates/NFR-REPORT.md`）
+- `test/nfr/report/NFR-RPT-<NFR-RUN>.md`（骨架由 `python scripts/gen_docs.py --root . --type nfr` 生成，影响面/风险等级/转缺陷三处人工填，契约见 `templates/NFR-REPORT.md`）
 
 ## 流程（五步，顺序固定）
 
@@ -54,12 +54,11 @@ description: 独立评估非功能需求（性能/安全/可用性/兼容性）�
 
 ### 5. 出报告
 
-按 `templates/NFR-REPORT.md` 产出 `NFR-RPT-*`：指标总表 / 未达标与风险 / 建议转缺陷 / 结论。
+先跑 `gen_docs.py --type nfr` 生成 `NFR-RPT-*` 骨架（指标总表自动填入），再补影响面与风险等级、建议转缺陷、结论三处人工判断。
 
 ## 隔离红线（硬性）
 
 - **不写** FR 的 `test/trace/case-*.json`、`test/data/TD-*`、`test/runs/RUN-*`、`test/bugs/BUG-*`
-- **不进** `metrics.db`（NFR 轨仅 JSON，量小无需双轨）
 - **不直接建 BUG**：未达标项写入报告「建议转缺陷」，由 PM 决定是否登记
 - **不影响** FR 通过率、FR 覆盖缺口、发布判定
 - 可复用 FR 的 TD（只读）与测试版构建，但不得改动它们
@@ -78,7 +77,6 @@ description: 独立评估非功能需求（性能/安全/可用性/兼容性）�
 - [ ] `metrics` 的 target/op/unit 齐全
 - [ ] NFR-RUN 记录了 build/commit、env、actual、evidence
 - [ ] 报告含未达标项、风险与「建议转缺陷」
-- [ ] 未写入 FR 资产、未建 BUG、未改 metrics.db
 
 ## 触发与边界
 

@@ -1,21 +1,21 @@
 {
-  "_comment": "模版：TD-REGISTRY.json（数据单元注册表分片）｜ 产出角色：test-engineer（test-data-gen）｜ 每组件/模块一片：test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json。双轨：JSON 轨=本文件；SQLite 轨=td_registry 表（component+module 双列承载分片键，与 prd_functions/cases 对齐）。黑盒红线：注册表只暴露 {id, module, description(六字段), load_entry, verified}，禁写 expected 与业务字段值。suitable_for 值域 = normal/boundary/negative（与 PRD 侧 acceptance.kind 同枚举，case-instantiate 逐条件配对的匹配键；混合底座用数组多值表达，不设 combination）。",
-  "project": "$PROJECT_NAME",
-  "component": "$COMPONENT",
-  "module": "$MODULE",
-  "updated_at": "",
+  "_comment": "模版：TD-REGISTRY.json（数据单元注册表分片）｜ 产出角色：test-engineer（test-data-gen）｜ 每组件/模块一片：test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json。单轨：本文件为 JSON 分片。黑盒红线：注册表只暴露 {id, module, description(六字段), load_entry, verified}，禁写 expected 与业务字段值。suitable_for 值域 = normal/boundary/negative（与 PRD 侧 acceptance.kind 同枚举，case-instantiate 逐条件配对的匹配键；混合底座用数组多值表达，不设 combination）。**本模板即合法实例样例**：`verified.result` 取单值 pass/fail，编号按 `scripts/id_alloc.py` 分配；枚举与格式以 `schemas/td-registry.schema.json` 为准。",
+  "project": "order_center",
+  "component": "order",
+  "module": "all",
+  "updated_at": "2026-01-01T00:00:00Z",
   "entries": [
     {
-      "id": "TD-$COMPONENT-NNN",
+      "id": "TD-order-001",
       "description": {
         "purpose": "这组数据验证什么场景（一句话）",
         "suitable_for": ["normal", "boundary", "negative"],
         "preconditions": ["对环境/前置的要求"],
         "data_scope": "覆盖/不覆盖的范围说明（防误配对；共享时必填）",
-        "owner_cases": ["CASE-$COMPONENT-NNN"]
+        "owner_cases": ["CASE-order-001"]
       },
-      "load_entry": "test/data/$COMPONENT/TD-$COMPONENT-NNN-load.sh",
-      "verified": { "command": "加载命令", "result": "pass | fail", "at": "" }
+      "load_entry": "test/data/order/TD-order-001-load.sh",
+      "verified": { "command": "bash test/data/order/TD-order-001-load.sh", "result": "pass", "at": "2026-01-01T00:00:00Z" }
     }
   ]
 }

@@ -17,15 +17,14 @@ description: 把功能点结构化存储、供测试用例关联与追踪时使�
 
 - `docs/prd/$COMPONENT/$MODULE/prd.md`（组件不细分模块时省略 `$MODULE/`）
 
-## 输出（按存储轨道）
+## 输出
 
 - **JSON 轨**（默认）：`docs/prd/$COMPONENT/$MODULE/trace/prd.json`（**每模块一片**，禁止合并为单文件——并行写互不冲突）
 - **JSON 轨模板**：`templates/PRD-STRUCTURE.json`
-- **SQLite 轨**：写 `test/trace/metrics.db` 的 `prd_functions` 表（`component` + `module` 双列承载分片语义；字段与模板一一对应；DDL 见 `templates/SQLITE-SCHEMA.sql`）
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写分片文件 `docs/prd/$COMPONENT/$MODULE/trace/prd.json`；`store=sqlite` → UPSERT `prd_functions` 表。配置缺失 → BLOCKED 报 PM。
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`（`store=json`），**按 JSON 单轨规则**： 写分片文件 `docs/prd/$COMPONENT/$MODULE/trace/prd.json`；单轨只写分片文件。配置缺失 → BLOCKED 报 PM。
 
 ## 数据结构
 
@@ -62,7 +61,7 @@ description: 把功能点结构化存储、供测试用例关联与追踪时使�
 | `functions[]` | **追踪锚，非全文**——功能完整描述（处理逻辑/输入输出/流程图）以该组件/模块的 `prd.md` 为权威源，按 fr 编号回溯 |
 | `acceptance` | **验证条件条列（测试点）+ GWT**——每个功能点的验收标准拆为一组可判定的条件条目，是**测试点级覆盖率的分母**。条目 `{key, given, when, then, kind}`：`given/when/then` 三段（前置/操作/可观察结果，`then` 可判定）；`kind ∈ normal/boundary/negative`（供路径覆盖度派生）。**生成时对照 `prd` 技能的「acceptance 条件生成清单」与「FR 粒度五条检验」** |
 | `biz_refs` | **归属关联**：本功能点**所属**的业务（业务=粗粒度价值，由多个功能点组成；fr 是细粒度可验收单元）。追溯读法：biz ← fr ← 用例 ← 执行。典型单元素；跨业务公共功能可多项 |
-| `source_hash` | **仅 SQLite 轨**写入 `prd_functions.source_hash`（.db 不可 git diff，需行内自证"基于哪版 PRD"）。JSON 轨**不写**——stale 由 git 提交对比判定（`prd.json` 提交早于 `prd.md` 提交 = 未同步） |
+| `source_hash` | 写本分片 `source_hash` 声明 PRD 基线；stale 另由 git 提交对比判定（`prd.json` 提交早于 `prd.md` 提交 = 未同步） |
 | `status: deprecated` | 需求删除时**标记废弃而非物理删除**——保住历史执行/缺陷记录的可回溯性 |
 | ❌ **无 `verification_cases`** | 用例关联只存用例侧（`function_refs`）；反向视图由 `test-rebuild` 派生，**不双写** |
 | ❌ **无 `change_log`** | 变更审计走 **git diff（PRD 内容级）+ hash 链（结构级 stale 判定）**，表/文件不重复承载 |
@@ -79,7 +78,7 @@ description: 把功能点结构化存储、供测试用例关联与追踪时使�
 ## 流程
 
 1. 解析各组件/模块的 `prd.md`，抽取 `fr-$COMPONENT-$MODULE-NNN`。
-2. 校验编号唯一性与连续性，发现冲突报告产品经理。
+2. 编号一律用 `scripts/id_alloc.py` 分配（`fr`/`biz`，`--component`/`--module`），**不手工编号**；分配后跑 `id_alloc.py . check` 校验唯一性与 snake_case 合规，冲突报告产品经理。
 3. 计算 `source_hash`（PRD 文件内容哈希）。
 4. 若已有旧分片：`version+1`、被删功能点置 `deprecated`（变更内容审计走 git diff PRD 文件）。
 5. 写入分片文件。

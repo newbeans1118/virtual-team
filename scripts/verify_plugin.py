@@ -213,11 +213,19 @@ def check_readme_counts():
 
 
 # -------------------------------------------------------- 7. 模板/技能引用存在
+# 插件自带的脚本：引用必须能在插件根下找到
+PLUGIN_SCRIPTS = {'verify_plugin.py', 'verify_artifacts.py', 'id_alloc.py'}
+# 目标项目侧脚本：由同名模板生成，不在插件根下
+PROJECT_SCRIPTS = {'verify.sh'}
+
+
 def check_references():
     checked = 0
+    # 注意：jsonl 必须排在 json 之前，否则 templates/EXEC.jsonl 会被截成不存在的 EXEC.json
+    tpl_re = re.compile(r'templates/([A-Za-z0-9._-]+\.(?:jsonl|json|md|sql|sh))')
     for path in iter_files(('.md', '.txt')):
         text = read(path)
-        for match in re.finditer(r'templates/([A-Za-z0-9._-]+\.(?:md|json|sql|jsonl))', text):
+        for match in tpl_re.finditer(text):
             checked += 1
             target = os.path.join(ROOT, 'templates', match.group(1))
             if not os.path.exists(target):
@@ -227,7 +235,20 @@ def check_references():
             target = os.path.join(ROOT, 'skills', match.group(1))
             if not os.path.isdir(target):
                 fail('ref-skill', '%s' % rel(path), 'skills/%s 不存在' % match.group(1))
-    ok('refs', '%d 条模板/技能引用已校验' % checked)
+        for match in re.finditer(r'scripts/([A-Za-z0-9._-]+\.(?:py|sh))', text):
+            name = match.group(1)
+            if name in PLUGIN_SCRIPTS:
+                checked += 1
+                target = os.path.join(ROOT, 'scripts', name)
+                if not os.path.exists(target):
+                    fail('ref-script', '%s' % rel(path), 'scripts/%s 不存在' % name)
+            elif name in PROJECT_SCRIPTS:
+                # 目标项目侧脚本（由模板生成），不在插件根下；改验模板是否存在
+                checked += 1
+                if not os.path.exists(os.path.join(ROOT, 'templates', name)):
+                    fail('ref-script', '%s' % rel(path),
+                         'scripts/%s 属目标项目产物，但 templates/%s 模板缺失' % (name, name))
+    ok('refs', '%d 条模板/技能/脚本引用已校验' % checked)
 
 
 # --------------------------------------------------------- 8. README 命令存在
@@ -242,6 +263,69 @@ def check_commands():
     ok('refs', '%d 个命令入口已校验' % checked)
 
 
+# ------------------------------------- 9. 模板即合法实例（模板 ↔ schema 一致性）
+TEMPLATE_SCHEMA_PAIRS = (
+    ('STORE-CONFIG.json', 'store-config'),
+    ('PRD-STRUCTURE.json', 'prd-structure'),
+    ('CASE-STRUCTURE.json', 'case-structure'),
+    ('TD-REGISTRY.json', 'td-registry'),
+    ('RUN.json', 'run'),
+    ('EXEC-PLAN.json', 'exec-plan'),
+    ('BUG.json', 'bug'),
+)
+
+
+def check_template_schema():
+    """模板必须是能通过对应 schema 的合法实例样例；AI 照抄不得产出非法产物。"""
+    import json as _json
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from verify_artifacts import schema_validate
+    except Exception as exc:  # noqa: BLE001
+        fail('template-schema', 'scripts/verify_artifacts.py', '无法导入 schema_validate: %s' % exc)
+        return
+    checked = 0
+    total = len(TEMPLATE_SCHEMA_PAIRS) + 1  # + EXEC.jsonl
+    for tpl, name in TEMPLATE_SCHEMA_PAIRS:
+        try:
+            with open(os.path.join(ROOT, 'templates', tpl), encoding='utf-8') as fh:
+                data = _json.load(fh)
+            with open(os.path.join(ROOT, 'schemas', name + '.schema.json'), encoding='utf-8') as fh:
+                schema = _json.load(fh)
+        except Exception as exc:  # noqa: BLE001
+            fail('template-schema', tpl, '读取/解析失败: %s' % exc)
+            continue
+        errs = schema_validate(data, schema, tpl)
+        if errs:
+            for e in errs[:5]:
+                fail('template-schema', tpl, e)
+        else:
+            checked += 1
+    try:
+        with open(os.path.join(ROOT, 'templates', 'EXEC.jsonl'), encoding='utf-8') as fh:
+            lines = [ln.strip() for ln in fh if ln.strip()]
+        with open(os.path.join(ROOT, 'schemas', 'exec-line.schema.json'), encoding='utf-8') as fh:
+            line_schema = _json.load(fh)
+        ok_line = True
+        for idx, line in enumerate(lines, 1):
+            try:
+                errs = schema_validate(_json.loads(line), line_schema, 'EXEC.jsonl:%d' % idx)
+            except Exception as exc:  # noqa: BLE001
+                fail('template-schema', 'EXEC.jsonl:%d' % idx, 'JSONL 行解析失败: %s' % exc)
+                ok_line = False
+                continue
+            if errs:
+                ok_line = False
+                for e in errs[:5]:
+                    fail('template-schema', 'EXEC.jsonl:%d' % idx, e)
+        if ok_line:
+            checked += 1
+    except Exception as exc:  # noqa: BLE001
+        fail('template-schema', 'EXEC.jsonl', '读取失败: %s' % exc)
+    if checked == total:
+        ok('template-schema', '%d 个模板全部通过对应 schema（合法实例样例）' % checked)
+
+
 def main():
     check_json()
     check_frontmatter()
@@ -251,6 +335,7 @@ def main():
     check_readme_counts()
     check_references()
     check_commands()
+    check_template_schema()
 
     for rule, detail in passes:
         print('[PASS] %-14s %s' % (rule, detail))

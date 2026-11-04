@@ -24,7 +24,7 @@ description: 把业务分析落地为可验收的功能需求、编写 PRD（产
 - `docs/prd/prd-nonfunc.md`（模版 `templates/PRD-NONFUNC.md`）
 - `docs/prd/dict.md`（模版 `templates/DICT.md`；实体标注所属组件/模块）
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（结构化分片，经 `prd-structure`）
-- `docs/prd/RTM.md`（模版 `templates/RTM.md`）
+- `docs/prd/RTM.md`（**生成物**，`gen_docs.py --type rtm`；契约见 `templates/RTM.md`）
 
 ## 流程
 
@@ -35,7 +35,7 @@ description: 把业务分析落地为可验收的功能需求、编写 PRD（产
 3. **功能归模块**：先划分**组件**（`$COMPONENT`，系统的高层可部署/实现单元），再按关联紧密程度把功能分配到组件内的**模块**（`$MODULE`）；组件较小时可不细分模块（模块位用 `all`）。
 4. **数据字典**：定义业务实体、字段、类型、约束、状态枚举。
 5. **非功能需求**：安全需求、性能需求（量化指标）。
-6. **一致性校验**：确认所有 biz-xxx 均被 fr 覆盖；产出 RTM（含页面/原型列）。
+6. **一致性校验**：确认所有 biz-xxx 均被 fr 覆盖；跑 `python scripts/gen_docs.py --root . --type rtm` 生成 RTM，§4 结论须为**通过**（不通过则回源补 `biz_refs`/`acceptance`，不改 RTM）。
 
 ## L1–L4 四层结构（粒度归属，硬性）
 
@@ -177,7 +177,7 @@ grep -rc "【占位" docs/prd/                   # 仅作快速核查总量，�
 |---------|---------|-----------|------|------|
 | biz-workbench-task_list-001 | 用户注册 | fr-workbench-task_list-001, ... | workbench | task_list |
 
-> **RTM（PRD 追踪矩阵）**：包含「页面/原型」列，见 `templates/RTM.md` 与 `prototype` 技能的「页面 × FR 覆盖矩阵」。
+> **RTM（PRD 追踪矩阵）**：**由脚本生成，不手写**——§1 取自 `prd.json`/`case.json`，§2「页面 × FR」取自原型页面的 `data-fr`，见 `templates/RTM.md`。
 
 ## PRD 文件命名与存放
 
@@ -204,7 +204,7 @@ grep -rc "【占位" docs/prd/                   # 仅作快速核查总量，�
 - [ ] 数据字典与业务实体一致
 - [ ] 非功能需求量化
 - [ ] PRD 覆盖 biz 全部内容
-- [ ] RTM 已产出（含页面/原型列）
+- [ ] RTM 已生成（`gen_docs.py --type rtm`）且 §4 覆盖校验通过
 
 ## 触发与边界
 

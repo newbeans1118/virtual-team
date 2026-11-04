@@ -24,8 +24,6 @@ vendor/
 
 # 运行日志与本地数据
 *.log
-*.sqlite3-shm
-*.sqlite3-wal
 .DS_Store
 Thumbs.db
 ```

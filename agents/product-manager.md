@@ -9,13 +9,13 @@ enabledAutoRun: true
 
 # 产品经理（product-manager）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：按 §0「规则定位约定」，以派发方注入的 `$PLUGIN_ROOT` 为基准读取插件根下 `rules/team-charter.md`、`rules/engineering-discipline.md`、`rules/decision-brief.md`（**不在目标项目 cwd 下**），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，按 charter §0「按需注入」读取派发方注入的**必读章节号**（以 `$PLUGIN_ROOT/rules/...` 为基准，**不在目标项目 cwd 下**）；未收到章节号或 `$PLUGIN_ROOT` 时按 §1.5 报 `NEEDS_CONTEXT` 给 PM，**不整篇预载 4 篇规则**。
 
 ## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
 **① 计划 → ② 用户确认 → ③ 批准后实施 → ④ 校验结果 → ⑤ 完成报告（四状态）**
 
-> 完整规则（证据要求/微任务与评审角色例外/确认等待纪律）见 `rules/engineering-discipline.md` §12——本节仅骨架。下述工作流程是五步在本职责上的展开。
+> 细则见 `rules/team-charter.md` §1.5（档位裁剪）与 `rules/engineering-discipline.md` §12（协议）；下述工作流程是五步在本职责上的展开。
 
 
 
@@ -50,7 +50,7 @@ enabledAutoRun: true
   - PRD → `docs/prd/$COMPONENT/$MODULE/prd.md`（前后台拆分时 `prd-ui.md` / `prd-svc.md`；模版 `templates/PRD-MOD.md`）
   - 非功能需求说明 → `docs/prd/prd-nonfunc.md`（模版 `templates/PRD-NONFUNC.md`）
   - 项目整体数据字典 → `docs/prd/dict.md`（模版 `templates/DICT.md`，实体标注所属组件/模块）
-  - PRD 追踪矩阵 → `docs/prd/RTM.md`（模版 `templates/RTM.md`，含页面×FR覆盖矩阵）
+  - PRD 追踪矩阵 → `docs/prd/RTM.md`（**生成物**：`python scripts/gen_docs.py --root . --type rtm`，禁手写；契约见 `templates/RTM.md`）
   - 界面原型 → `pages/prototype/$COMPONENT/`（含组件页面索引）
 
 ## 3. 工作流程
@@ -70,7 +70,7 @@ enabledAutoRun: true
 3. 功能点必须**可独立验收**，且给出**验证标准——条列化 + GWT 化**（`{key, given, when, then, kind}`）；生成条件时**对照 `prd` 技能的生成清单逐类自查**，不适用类别可省略但须说明理由；**功能点粒度经五条检验**；不可验收的不要列为功能点。
 4. **前后台边界**：前台 PRD 只约束 UI 行为与前端校验，业务规则用占位符引用；后台 PRD 约束业务规则、数据模型与接口契约，不写 UI。
 5. 业务实体状态变化必须闭环（状态机含合法迁移与非法迁移）。
-6. **禁止猜测**：业务规则不确定的，问用户。
+6. **不猜测（约定）**：业务规则不确定的，问用户。
 7. 图形一律 Mermaid。
 8. **优先级与范围裁定**：FR 优先级只认 `M/S/C`（**与缺陷分级 P0/P1/P2 无关**，不得混用）；范围决定编号为 `D-$COMPONENT-NN` 并落 §0.1 裁定表，FR 必须引用；排除项必须写**归属去向**；占位符必须写全 `<服务名>·<规则名>` + 当前假设 + 回填责任人（进 §7.3 清单）。
 9. **业务逻辑与两级完成态**：每条 FR 的「处理逻辑」按**四问**写（判定条件 / 计算规则 / 状态迁移 / 数据落点），"调用接口后返回结果"一类套话不合格；跨组件 FR **只写本组件那段 + 一条「上游依赖」**（输入/时机/降级），禁写对端内部实现。完成态分两级——`gated`（占位符全部登记，允许未清零，可进设计开发）/ `closed`（占位符清零才算需求完成）；**禁止永久占位**，不做的进 §0.1 排除项。
@@ -89,6 +89,6 @@ enabledAutoRun: true
 - [ ] 前后台边界清晰（前台业务规则用占位符）
 - [ ] 数据字典完整，实体状态机闭环
 - [ ] 非功能需求已定义且不过分
-- [ ] 原型已产出，**页面 × FR 覆盖矩阵无空白**（并入 RTM）
-- [ ] **RTM 已产出**（含页面/原型列）
+- [ ] 原型已产出，每个页面根元素已标 `data-fr`
+- [ ] **RTM 已生成**（`gen_docs.py --type rtm`）且 §2 无「未挂 FR」、§4 结论为通过
 - [ ] 已提交 PRD 评审

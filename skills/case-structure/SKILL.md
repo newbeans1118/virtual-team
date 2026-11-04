@@ -17,16 +17,14 @@ description: 把测试用例结构化存储并与功能点、数据单元关联�
 
 - `test/cases/$COMPONENT/CASE-$COMPONENT-NNN.md`
 - `docs/prd/$COMPONENT/$MODULE/trace/prd.json`（PRD 侧锚）
-- 本分片注册表 `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json`（数据侧锚，若已生成；SQLite 轨=查库）
 
-## 输出（按存储轨道）
+## 输出
 
 - **JSON 轨**（默认）：`test/trace/$COMPONENT/$MODULE/case.json`（**每组件/模块一片**，与 PRD 分片对称）
-- **SQLite 轨**：写 `test/trace/metrics.db` 的 `cases` 表（module 列保留分片语义；字段一一对应；DDL 见 `templates/SQLITE-SCHEMA.sql`）
 
 ## 存储选择（开工第一步）
 
-读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`，**只加载所选轨道一节的规则**：`store=json` → 写分片文件 `test/trace/$COMPONENT/$MODULE/case.json`；`store=sqlite` → UPSERT `cases` 表。配置缺失 → BLOCKED 报 PM。
+读 `rules/storage-track.md`（唯一规则源）+ `test/STORE-CONFIG.json`（`store=json`），**按 JSON 单轨规则**： 写分片文件 `test/trace/$COMPONENT/$MODULE/case.json`；单轨只写分片文件。配置缺失 → BLOCKED 报 PM。
 
 ## 数据结构
 

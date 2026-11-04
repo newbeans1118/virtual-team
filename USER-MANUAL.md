@@ -13,7 +13,7 @@ Virtual Team 是一个可编排的插件，内含：
 | 角色 Agent | 12 | 项目经理、产品经理、架构师、前后端工程师、代码评审员、测试经理/工程师、发布工程师、需求/设计/项目评审员 |
 | 技能 Skill | 24 | 规划、业务分析、PRD、架构、数据建模、设计评审、用例设计、代码评审、发布…… |
 | 命令 Command | 13 | `/vt-start` `/vt-kickoff` `/vt-prd` `/vt-design` `/vt-coding` `/vt-code-review` `/vt-test` `/vt-build-test` `/vt-review` `/vt-release` `/vt-accept` `/vt-status` `/vt-nfr-test` |
-| 交付物模板 | 40 | PRD、架构、用例、执行计划、缺陷单、看板…… |
+| 交付物模板 | 37 | PRD、架构、用例、执行计划、缺陷单、看板…… |
 
 它的核心不是「更多 AI」，而是**用流程约束 AI 不乱来**：证据先于结论、评审闭环、最简代码（YAGNI）、缺陷必须闭环。
 
@@ -54,10 +54,10 @@ Virtual Team 是一个可编排的插件，内含：
 | **完整** | 大型 / 高风险 / 受监管 | 核心系统、合规场景 |
 
 - 立项时 PM 与你在「决策简报」里定档，写进**看板首行**：`档位: <微项目|标准|完整>`。
-- **未选档 = 完整档**（最严，与 `rules/team-charter.md` §9 一致）。上表「推荐」是选型建议，**不是缺省值**；不选档时不会自动落到标准档。
+- **未选档 = 标准档**（与 `rules/team-charter.md` §9 一致）。上表「推荐」即缺省值；需完整档须在立项时显式选定。
 - 中途要升降档，走变更请求（CR），不偷偷改。
 
-> 不论哪个档位，以下红线**不可裁**：证据先于结论、verify 门禁、缺陷闭环、关键确认（四方确认）、EXEC 只追加。
+> 不论哪个档位，以下红线**不可裁**：证据先于结论、verify 门禁、缺陷闭环、关键确认（用户放行）、EXEC 只追加。
 
 ---
 
@@ -111,16 +111,18 @@ Virtual Team 是一个可编排的插件，内含：
 
 ---
 
-## 7. 测试数据双轨（json / sqlite）
+## 7. 测试数据存储（JSON 单轨）
 
-立项时一次性选定，写进 `test/STORE-CONFIG.json`，全程跟随，只允许一次 json → sqlite 单向迁移：
+立项时由 project-manager 按 `templates/STORE-CONFIG.json` 创建 `test/STORE-CONFIG.json`（`store` 固定 `json`）——**无需选轨、无需迁移**。机制数据全部为**分片文件**（可 git diff 审计、并行写零冲突）：
 
-- **json 轨**：人读、轻量，适合中小执行量。
-- **sqlite 轨**：量大时选，含触发器（execs 只追加）与八项指标预置 SQL。
+| 数据 | 文件 |
+|------|------|
+| PRD 侧 | `docs/prd/$COMPONENT/$MODULE/trace/prd.json` |
+| 用例侧 | `test/trace/$COMPONENT/$MODULE/case.json` |
+| TD 注册表 | `test/trace/$COMPONENT/$MODULE/TD-REGISTRY.json` |
+| RUN 头 / 实例计划 / EXEC / BUG | `test/runs/`、`test/bugs/` |
 
-> 选 sqlite 轨的技能（建库/查库）需要 Bash 工具权限，插件已为该角色配好。
-
----
+> 运行时校验：`python scripts/verify_artifacts.py <项目根> [--stage <阶段>]`。配置缺失即 FAIL（fail-closed）；**未声明阶段且全部产物 SKIP 也判 FAIL**，避免空项目拿绿灯；`derived-docs` 规则核对派生文档（RTM 与测试度量按 JSON 重算后逐字比对，手改即 FAIL；对不上执行轮的孤儿文档也 FAIL）。完整规则见 `rules/storage-track.md`。
 
 ## 8. 校验（保护自己，也防 AI 编造）
 
@@ -138,6 +140,17 @@ python scripts/verify_artifacts.py <你的项目根目录>
 ```
 
 失败退出码 1，输出 `规则 | 位置 | 明细`，可直接贴给 AI 让它修。
+
+**派生文档生成器**（第三种脚本：不是校验，是把人读文档算出来）：
+
+```bash
+python scripts/gen_docs.py --root . --type rtm      # PRD 追踪矩阵（含页面×FR，扫原型 data-fr）
+python scripts/gen_docs.py --root . --type metrics  # 本轮测试度量（覆盖率/通过率/缺陷密度…）
+python scripts/gen_docs.py --root . --type report   # 测试报告骨架（三处待填留人工）
+python scripts/gen_docs.py --root . --type nfr      # NFR 报告骨架
+```
+
+要点：**RTM 与测试度量是纯派生，手改会被校验器拦下**；测试报告与 NFR 报告的结论由人写，脚本只填数字、不代写判断；无法从 JSON 得出的指标标「不可得」而不是 0。
 
 ---
 
@@ -163,4 +176,4 @@ python scripts/verify_artifacts.py <你的项目根目录>
 
 ---
 
-*本手册为简版。完整规则见插件内 `rules/team-charter.md`（团队宪章）、`rules/engineering-discipline.md`（工程纪律）、`rules/decision-brief.md`（决策简报）、`rules/storage-track.md`（存储双轨）。*
+*本手册为简版。完整规则见插件内 `rules/team-charter.md`（团队宪章）、`rules/engineering-discipline.md`（工程纪律）、`rules/decision-brief.md`（决策简报）、`rules/storage-track.md`（存储规则）。*

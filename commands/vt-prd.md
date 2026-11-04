@@ -27,9 +27,9 @@ $ARGUMENTS
    - `prototype` → `pages/prototype/$COMPONENT/`
    - `prd-structure` → `docs/prd/$COMPONENT/$MODULE/trace/prd.json`
    - `diagramming` → 业务流程图（Mermaid）
-3. 所有输出遵循 `templates/` 对应模版。
+3. 所有输出遵循 `templates/` 对应模版。**RTM 不手写**：`prd-structure` 与原型完成后跑 `python scripts/gen_docs.py --root . --type rtm`，§4 覆盖校验须为「通过」（不通过回源补 `biz_refs`/`acceptance`，不改 RTM）。
 4. 校验：所有 `biz` 被 `fr` 覆盖（附追溯矩阵）；`ba.md` §8 待确认台账**未处理完不得进入 `prd`**（有假设 + 有责任人 + 有回填点者可放行，同 gated 标准）。
-5. 完成后**按组件提交 PRD 评审**（用户 + prd-reviewer，报告 `RV-PRD-$COMPONENT-xxx.md`）；PM 汇总全部组件结论。
+5. 完成后**按档位提交 PRD 评审**（charter §9，评审人须含用户）：完整档按组件出 `RV-PRD-$COMPONENT-xxx.md` 并由 PM 汇总；标准 / 微项目档出**单次全量报告** `review/prd/RV-PRD-ALL-xxx.md`。
 
 ## 两个强制确认门（业务分析阶段，必停）
 
@@ -50,3 +50,9 @@ $ARGUMENTS
 - 禁止跳过与用户确认业务规则。
 - 禁止用行业惯例填充未知规则——一律标 `[TBD: 待确认]` 并进台账。
 - 禁止只画 happy path（每个菱形必须有否分支）。
+
+## 档位裁剪（判据与不可裁红线见 charter §9；档位读 `board/KANBAN.md` 首行，未定档按标准档）
+
+- **微项目**：界面原型可免（写理由）；PRD 评审出**单次全量报告**。
+- **标准（默认）**：原型按需；PRD 评审单次全量报告。
+- **完整**：必出原型；按组件出评审报告并由 PM 汇总。

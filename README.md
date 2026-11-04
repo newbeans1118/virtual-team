@@ -1,6 +1,6 @@
 # virtual-team — 虚拟软件开发团队插件
 
-按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 40 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
+按 `statement.txt` 描述的软件开发团队与流程，为 CodeBuddy / WorkBuddy 构建的可编排插件：**12 个角色 agent + 24 个技能 skill + 13 个工作流命令 + 37 个交付物模版**，覆盖 立项 → 需求 → 设计 → 编码 → 评审 → 测试 → 验收 → 发布 全流程。
 
 插件在设计上遵循业界成熟实践：**证据先于结论**（验证后才声称完成）、**两阶段代码评审**（先规格符合性、后代码质量）、**完成状态协议**（DONE/BLOCKED 等必报）、**决策简报格式**（提问结构化）、**用户主权**（模型建议、用户决定）、**评审闭环**、**最简代码 / YAGNI**、**反合理化红线**。规则集中在 `rules/`，所有角色开工前必读。
 
@@ -17,7 +17,7 @@ virtual-team-plugin/
 │   ├── team-charter.md                # 团队公约：角色纪律、编号规范、目录结构、评审闭环
 │   ├── engineering-discipline.md      # 工程纪律：证据先于结论、两阶段评审、完成状态协议、YAGNI、版本控制
 │   ├── decision-brief.md              # 决策简报格式：向用户提问的统一结构（轻量/完整两档）
-│   └── storage-track.md               # 存储轨道规则：json/sqlite 双轨唯一规则源（按需加载所选轨道）
+│   └── storage-track.md               # 存储规则：JSON 单轨唯一规则源
 ├── agents/                            # 12 个角色
 │   ├── project-manager.md     product-manager.md   architect.md
 │   ├── backend-developer.md   ui-developer.md      code-reviewer.md
@@ -31,11 +31,13 @@ virtual-team-plugin/
 │   ├── test-data-gen / test-rebuild / nfr-testing
 │   ├── diagramming / doc-writing / accepting / prototype / releasing
 ├── commands/                          # 13 个工作流入口
-├── templates/                         # 40 个交付物模版
+├── templates/                         # 37 个交付物模版
 ├── schemas/                           # 8 个运行时产物 JSON Schema（verify_artifacts 消费）
 ├── scripts/
 │   ├── verify_plugin.py               # 插件结构校验（提交前）
-│   └── verify_artifacts.py            # 运行时产物校验（JSON/SQLite 双轨）
+│   ├── verify_artifacts.py            # 运行时产物校验（JSON 单轨 + --stage 阶段契约）
+│   ├── id_alloc.py                    # 编号分配（13 类编号 + 查重校验，永不复用）
+│   └── gen_docs.py                    # 派生文档生成（RTM / 测试度量，禁手改）
 ├── design/                            # 设计交付（全局 + 组件）
 │   ├── ARCH.md / ARCH-NFR.md / DATABASE.md / INTERFACE.md / LOGGER.md / DEV-TASKS.md
 │   └── $COMPONENT/  interface.md / func.md（过大按 $MODULE/func.md 拆）/ database.md
@@ -61,10 +63,10 @@ flowchart TD
   CR -->|通过| TB[release-engineer<br/>测试版构建<br/>worktree构建+手册+冒烟]
   TB --> TEST[test-manager / test-engineer<br/>测试]
   TEST --> ACC{项目验收}
-  ACC -->|通过| REL[release-engineer<br/>生产版发布<br/>四方确认+tag]
+  ACC -->|通过| REL[release-engineer<br/>生产版发布<br/>用户放行+tag]
 ```
 
-> **设计评审 = 一个门禁、两轮检查、一个放行点**：第一轮按组件评设计（角度 1–10/12）→ 设计修订定稿 → 架构师产出 `design/DEV-TASKS.md` → 同一 design-reviewer 做第二轮分解评审（角度 11）→ 两轮结论合入同一批 `RV-DESIGN-*` 报告，PM 汇总两轮均通过才放行。**不新增独立门禁，顺序不可颠倒**。**测试版构建是测试准入条件**：代码评审闭环后由 release-engineer 产出（构建产物+安装手册+冒烟验证），测试环境与 RUN.envs 证据一律来自该构建。用例/TD 设计可与编码并行；**TM 建 RUN 头须待构建完成**（envs 引用 build/commit）。
+> **设计评审 = 一个门禁、两轮检查、一个放行点**：第一轮按组件评设计（角度 1–10/12）→ 设计修订定稿 → 架构师产出 `design/DEV-TASKS.md` → 同一 design-reviewer 做第二轮分解评审（角度 11）→ 两轮结论合入同一批 `RV-DESIGN-*` 报告，PM 汇总两轮均通过才放行。**不新增独立门禁，顺序不可颠倒**。**测试版构建是测试准入条件**；测试环境、`RUN.envs`、并行边界与重建规则以 `rules/team-charter.md` §5 为唯一规则源，此处不复述。
 
 | 阶段 | 角色 | 技能 |
 |------|------|------|
@@ -91,7 +93,7 @@ flowchart TD
 | `/vt-build-test` | 测试版构建（测试准入：worktree 构建 + 手册 + 冒烟） |
 | `/vt-test` | 测试（前置：`/vt-build-test` 已完成） |
 | `/vt-nfr-test` | NFR 独立评估（性能/安全/兼容，仅参考报告） |
-| `/vt-release` | 生产版发布（验收通过后：四方确认 + tag） |
+| `/vt-release` | 生产版发布（验收通过后：用户放行 + tag） |
 | `/vt-accept` | 项目验收 |
 | `/vt-status` | 更新并展示进度看板 |
 | `/vt-review` | 通用评审入口（PRD/设计/数据模型） |
@@ -138,7 +140,7 @@ flowchart TD
 - **编号**：组件 `$COMPONENT` ⊃ 模块 `$MODULE`（均 snake_case）。业务 `biz-<组件>-<模块>-NNN`、功能点 `fr-<组件>-<模块>-NNN`（固定 4 段，无模块用 `all`）、用例 `CASE-<组件>-NNN`、数据单元 `TD-<组件>-NNN`、变更 `CR-<组件>-NNN`、缺陷 `BUG-<组件>-NNN`；执行轮 `RUN-NNN`（test-manager 创建）；实例计划行 `P-xxx`（全局唯一）；执行明细 `{plan_ref}-{seq}`（如 `P-003-1`，重跑序号递增——零撞号）。
 - **纪律**：职责边界、文件化输入输出、禁止猜测、目录纯净、**任务五步流程**（计划→用户确认→批准后实施→校验→完成报告，微任务可合并确认批准）、交付物须评审、图形用 Mermaid。
 - **门禁**：无 P0/P1 不得进入下一阶段；测试需覆盖全部功能点。
-- **发布**：四方（产品经理/测试经理/架构师/代码评审员）联合确认方可为生产版并打 tag。
+- **发布**：**用户一次显式放行**方可为生产版并打 tag（用户是唯一真人签字点；AI 角色评审结论为输入材料，见 charter §4 / §8）。
 
 **工程纪律**（`rules/engineering-discipline.md`）
 
@@ -155,16 +157,16 @@ flowchart TD
 
 **决策简报**（`rules/decision-brief.md`）
 
-- 向用户提问/确认统一用 `D<N>` 简报，**两档**：轻量档（单事实澄清，一句直问）与完整档（ELI10 + 建议 + 完整性评分 + ✅❌ 选项优缺点 + `Net`）；不可逆操作永远走完整档。
+- 向用户提问/确认统一用 `D<N>` **最小简报**（选项 + 建议 + 选错代价，`rules/decision-brief.md`）；**默认最小格式**，不可逆操作须显式确认，未响应转 `NEEDS_CONTEXT` 收束。
 - 工具不可用时 prose 降级；**不可逆/破坏性操作必须显式确认**，含糊回复视为未确认。
 
-- **存储轨道**（`rules/storage-track.md`）
+- **存储规则**（`rules/storage-track.md`）
 
-- 测试数据双轨（json / sqlite）**唯一规则源**：立项时一次性选定（`test/STORE-CONFIG.json`），技能开工**只加载所选轨道一节的规则**（不整读）；仅允许一次 json→sqlite 单向迁移。
+- 测试数据 **JSON 单轨**（`rules/storage-track.md` 唯一规则源）：立项时创建 `test/STORE-CONFIG.json`（`store` 固定 `json`），**无需选轨、无需迁移**；技能开工按 charter §0 章节索引读对应节。
 
 **流程档位**（`rules/team-charter.md` §9）
 
-- YAGNI 也适用于流程：立项时定档（**微项目 / 标准 / 完整**，默认完整档），决定评审合并、原型/NFR 轨/测试分片等裁剪项；证据先于结论、verify 门禁、P0/P1 阻塞、缺陷闭环、发布四方确认为**不可裁红线**。
+- YAGNI 也适用于流程：立项时定档（**微项目 / 标准 / 完整**，默认标准档），决定评审合并、原型/NFR 轨/测试分片等裁剪项；证据先于结论、verify 门禁、P0/P1 阻塞、缺陷闭环、**发布用户一次显式放行**为**不可裁红线**。
 
 ## 安装
 
@@ -232,7 +234,30 @@ python scripts/verify_plugin.py
 python scripts/verify_artifacts.py <项目根目录>
 ```
 
-校验项：`schemas/` 下 8 个 JSON Schema 覆盖 STORE-CONFIG / PRD 分片 / 用例分片 / TD 注册表 / RUN 头 / EXEC-PLAN / EXEC 明细行 / BUG 单；跨产物闭合（fail→BUG 回指、blocked→evidence、exec_id 全局唯一、plan_ref 回指、P0/P1 修复评审与验证证据）；SQLite 轨校验机制七表、execs 只追加触发器、td_biz_* 孤儿、关闭缺陷的证据。阶段未到的产物 SKIP 不算失败；`test/STORE-CONFIG.json` 缺失即 FAIL（fail-closed，对齐 storage-track §0）。
+校验项：`schemas/` 下 8 个 JSON Schema 覆盖 STORE-CONFIG / PRD 分片 / 用例分片 / TD 注册表 / RUN 头 / EXEC-PLAN / EXEC 明细行 / BUG 单；跨产物闭合（fail→BUG 回指、blocked→evidence、exec_id 全局唯一、plan_ref 同 RUN 回指、P0/P1 修复评审与验证证据）；`--stage` 阶段必需产物契约；`derived-docs` 派生文档（RTM 与测试度量均按 JSON 重算后**逐字比对**，手改或源已变即 FAIL；RPT/NFR-RPT 骨架只查生成声明）。阶段未到的产物 SKIP 不算失败，但**未声明阶段且全 SKIP 判 FAIL**；`test/STORE-CONFIG.json` 缺失即 FAIL（fail-closed，对齐 storage-track §0）。
+
+**编号分配**（记账字段不靠 AI 手写，永不复用、账本防重号）：
+
+```bash
+python scripts/id_alloc.py <项目根> fr --component order --module all --count 3
+python scripts/id_alloc.py <项目根> bug --component order
+python scripts/id_alloc.py <项目根> exec --plan-ref P-003
+python scripts/id_alloc.py <项目根> check          # 全项目编号查重 + 格式校验
+```
+
+支持 13 类编号：`biz` / `fr` / `case` / `td` / `bug` / `cr` / `run` / `p` / `nfr-case` / `nfr-td` / `nfr-run` / `nfr-p` / `exec`。输出 JSON（`ids` 为分配结果）；分配结果记入 `test/trace/id-ledger.json`，删除产物也不会重号。组件/模块名强制 snake_case（含连字符直接报错退出 2）。
+
+**派生文档生成**（人读文档不再手写，避免"文档说一套、JSON 是另一套"）：
+
+```bash
+python scripts/gen_docs.py --root . --type rtm       # docs/prd/RTM.md（每次覆盖）
+python scripts/gen_docs.py --root . --type metrics   # test/report/test-metrics-RUN-xxx.md（每次覆盖）
+python scripts/gen_docs.py --root . --type report    # RPT 骨架（存在即跳过，留人工结论）
+python scripts/gen_docs.py --root . --type nfr       # NFR-RPT 骨架（同上）
+python scripts/gen_docs.py --root . --type all --check   # 只比对；陈旧（手改/源已变）退出 1
+```
+
+分两类：**纯派生**（RTM、测试度量）每次重写，手改必被 `derived-docs` 判 FAIL；**骨架+人工结论**（RPT、NFR-RPT）只在缺失时生成，避免覆盖人工叙事。指标口径见 `templates/TEST-METRICS.md`，其中「重开率」因 BUG 无状态历史字段而明确标注**不可得**，不填 0。
 
 ## 许可证
 
