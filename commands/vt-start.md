@@ -33,28 +33,29 @@ $ARGUMENTS
 | 技术栈（语言/框架/存储/关键依赖） | 是 | 纯文本追问 |
 | 约束（用户规模/性能/安全） | 否 | 记「待定」，不阻塞立项 |
 | 流程档位（微项目/标准/完整） | 否 | 缺省 **完整**（charter §9） |
-| 测试存储轨道（json/sqlite） | 否 | 缺省 **JSON** |
+| 测试存储轨道（json/sqlite） | **是** | **无缺省**：必须经用户确认选定后创建 `test/STORE-CONFIG.json`；用户未选 → BLOCKED 报 PM（`rules/storage-track.md` §1 唯一规则源） |
 | 落地目录 | 否 | 缺省 `D:/projects/<项目名>` |
 
 **追问方式**：离散项（档位、轨道）用 AskUserQuestion 给选项；开放项（目标、用户、技术栈）用纯文本一次问清。每轮只问当前缺失项，用户答完再继续。
 
 ## 你的任务
 
-1. 读取 `rules/team-charter.md` 与 `rules/engineering-discipline.md`，理解角色、编号规范、目录结构、评审闭环与工程纪律。
-2. **从立项简报提取项目构思**（项目名 `$PROJECT_NAME`、目标、范围、技术栈、约束），按「立项简报字段表」补齐缺失项：必填项缺失必须追问，**不得假设**。立项时仍须确认**流程档位**与**存储轨道**——简报已写明则跳过，缺省见字段表。
+1. **定位插件规则目录**（charter §0「规则定位约定」）：所有 `rules/xxx.md` 均相对**插件安装根目录**，不是目标项目工作目录。先用 Glob/Bash 定位本插件 `rules/team-charter.md` 的绝对路径，把去掉 `/rules/team-charter.md` 后的根路径记为 `$PLUGIN_ROOT`，写入 `board/KANBAN.md` 头部；**每次派发子代理时把 `$PLUGIN_ROOT` 注入任务输入**。随后读取 `rules/team-charter.md` 与 `rules/engineering-discipline.md`，理解角色、编号规范、目录结构、评审闭环与工程纪律。
+2. **从立项简报提取项目构思**（项目名 `$PROJECT_NAME`、目标、范围、技术栈、约束），按「立项简报字段表」补齐缺失项：必填项缺失必须追问，**不得假设**。立项时仍须确认**流程档位**与**存储轨道**——简报已写明则跳过；档位未选可缺省完整档，**存储轨道无缺省、不得代为默认选轨**，须追问并创建 `test/STORE-CONFIG.json`（`rules/storage-track.md` §1）。
 3. 从**立项**阶段开始，按阶段推进：
 
 ```
 立项 → [立项评审] → 需求分析 → [PRD 评审] → 架构设计
-     → [设计评审（含分解评审）] → 架构师产出 design/DEV-TASKS.md
+     → [设计评审 第一轮·设计] → 设计修订定稿
+     → 架构师产出 design/DEV-TASKS.md → [设计评审 第二轮·分解]
      → PM 指派并派发(spawn) → 编码（前后端）→ 代码评审（两阶段）
      → 测试版构建 → 测试 → 项目验收评审 → 生产版发布
 ```
 
-> 分解评审**并入设计评审**（同一门禁、同一评审员，见 `rules/team-charter.md` §5）：设计评审通过后由架构师产出 `design/DEV-TASKS.md`（任务可独立开发与验收、依赖无环、功能编号全覆盖），再由 PM 按 DEV-TASKS 派发建议指派 + spawn。**顺序不可颠倒**——在未定稿的设计上先分解，设计一改则分解全部作废。
+> **设计评审是一个门禁、两轮检查**（同一 design-reviewer、同一批 `RV-DESIGN-*` 报告，见 `rules/team-charter.md` §5）：第一轮按组件评设计，全部组件通过并完成设计修订定稿后，架构师用 `task-breakdown` 产出 `design/DEV-TASKS.md`（任务可独立开发与验收、依赖无环、功能编号全覆盖），再由同一评审员做第二轮分解评审；PM 汇总两轮均通过才据 DEV-TASKS 派发建议指派 + spawn。**不新增独立门禁，顺序不可颠倒**——在未定稿的设计上先分解，设计一改则分解全部作废。
 
 4. 每个阶段：
-   - 委派对应角色 agent 完成该阶段交付物（写入 `rules/team-charter.md` 规定的目录）。
+   - **经 PM 派发**对应角色 agent 完成该阶段交付物（写入 `rules/team-charter.md` 规定的目录）；PM 不在场时先 spawn `project-manager` 再派发（charter §5 说明 2b），用户显式指示代演须留痕。
    - 组织对应评审员评审；未通过则打回责任角色修订后重审。
    - 通过后由 **project-manager 回写** `board/KANBAN.md`（charter §1.8 单一写者），再进入下一阶段。
 

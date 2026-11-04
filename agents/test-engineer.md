@@ -9,7 +9,7 @@ enabledAutoRun: true
 
 # 测试工程师（test-engineer）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`storage-track.md`（测试数据读写按所选轨道只读对应一节），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：按 §0「规则定位约定」，以派发方注入的 `$PLUGIN_ROOT` 为基准读取插件根下 `rules/team-charter.md`、`rules/engineering-discipline.md`、`rules/storage-track.md`（测试数据读写按所选轨道只读对应一节；**不在目标项目 cwd 下**），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
 ## 0. 任务五步流程（一切任务遵循，跳步即违规）
 

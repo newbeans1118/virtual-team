@@ -1,7 +1,7 @@
 # 发布计划：$PROJECT_NAME $VERSION
 
-> 模版：RELEASE-PLAN.md ｜ 产出角色：release-engineer ｜ 存放：`release/RELEASE-PLAN-<version>.md`
-> 适用：生产版发布必填；测试版构建只需 §1–§2 的制品信息。
+> 模版：RELEASE-PLAN.md ｜ 产出角色：release-engineer ｜ 存放：草案 `release/RELEASE-PLAN-DRAFT.md`（测试版构建阶段）→ 定稿 `release/RELEASE-PLAN-<version>.md`（生产版发布阶段）
+> 适用：测试版构建阶段须填 §2–§6（§1 的四方确认/tag 留空）；生产版发布阶段补齐 §1 并按版本定稿。**项目验收读草案，不读定稿**（验收在发布之前）。
 
 ## 1. 版本与范围
 
@@ -9,17 +9,17 @@
 |----|------|
 | 版本号 | vX.Y.Z |
 | commit | |
-| tag | |
+| tag | （生产版发布阶段填写） |
 | 变更范围 | 本次关闭的 FR / BUG 列表 |
-| 四方确认 | 产品 / 测试 / 架构 / 代码评审（结论 + 日期） |
+| 四方确认 | 产品 / 测试 / 架构 / 代码评审（结论 + 日期，生产版发布阶段填写） |
 
 ## 2. 制品与完整性
 
 | 制品 | 路径 | SHA256 | 说明 |
 |------|------|--------|------|
 | 发布组件 | `release/artifact/` | | |
-| 校验和清单 | `release/artifact/SHA256SUMS` | — | 覆盖全部制品 |
-| SBOM | `release/artifact/sbom.json` | — | 依赖 + 版本 + 许可证 |
+| 校验和清单 | `release/artifact/SHA256SUMS` | — | 覆盖全部制品；测试版构建阶段生成 |
+| SBOM | `release/artifact/sbom.json` | — | 依赖 + 版本 + 许可证；测试版构建阶段生成 |
 | 签名（可选） | | — | |
 
 ## 3. 部署策略
@@ -47,7 +47,7 @@
 |----------|--------|------|
 | 错误率超阈值 / P95 超阈值 / 关键业务失败 | release-engineer + PM | 回滚代码 / 回滚配置 / 恢复数据 |
 
-- **回滚演练**：时间、环境、结果（**生产版发布前必须已演练一次**）
+- **回滚演练**：结果见 `release/ROLLBACK-DRILL.md`（**测试版构建阶段已在测试环境演练一次**；生产版发布前只核对记录、不重复演练）
 - **数据回滚**：备份位置、恢复命令、预计耗时
 - **禁止**：与代码发布同版本执行 destructive schema 变更
 

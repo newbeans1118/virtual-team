@@ -6,6 +6,8 @@
 
 ## 目录结构
 
+> 上半段（`virtual-team-plugin/` 至 `scripts/`）是**插件自身文件**；`design/`、`pages/`、`board/`、`docs/ src/ review/ test/ release/`、`build/` 是**目标项目运行时目录约定**（见 `rules/team-charter.md` §3），不随插件包分发。
+
 ```
 virtual-team-plugin/
 ├── .codebuddy-plugin/
@@ -51,10 +53,10 @@ flowchart TD
   PRJ -->|通过| PROD[product-manager<br/>需求分析]
   PROD --> RR{PRD 评审}
   RR -->|通过| ARCH[architect<br/>架构设计]
-  ARCH --> DR{设计评审}
-  DR -->|通过| TASK[architect<br/>分解 DEV-TASKS]
-  TASK --> TR{分解评审}
-  TR -->|通过| DEV[backend / ui-developer<br/>编码]
+  ARCH --> DR1{设计评审<br/>第一轮·设计}
+  DR1 -->|通过·设计定稿| TASK[architect<br/>分解 DEV-TASKS]
+  TASK --> DR2{设计评审<br/>第二轮·分解}
+  DR2 -->|两轮均通过·PM汇总放行| DEV[backend / ui-developer<br/>编码]
   DEV --> CR{代码评审<br/>规格→质量 两阶段}
   CR -->|通过| TB[release-engineer<br/>测试版构建<br/>worktree构建+手册+冒烟]
   TB --> TEST[test-manager / test-engineer<br/>测试]
@@ -62,7 +64,7 @@ flowchart TD
   ACC -->|通过| REL[release-engineer<br/>生产版发布<br/>四方确认+tag]
 ```
 
-> 分解评审**并入设计评审**（同一门禁）；设计评审通过后由架构师产出 `design/DEV-TASKS.md`，再行分解评审。**测试版构建是测试准入条件**：代码评审闭环后由 release-engineer 产出（构建产物+安装手册+冒烟验证），测试环境与 RUN.envs 证据一律来自该构建。用例/TD 设计可与编码并行；**TM 建 RUN 头须待构建完成**（envs 引用 build/commit）。
+> **设计评审 = 一个门禁、两轮检查、一个放行点**：第一轮按组件评设计（角度 1–10/12）→ 设计修订定稿 → 架构师产出 `design/DEV-TASKS.md` → 同一 design-reviewer 做第二轮分解评审（角度 11）→ 两轮结论合入同一批 `RV-DESIGN-*` 报告，PM 汇总两轮均通过才放行。**不新增独立门禁，顺序不可颠倒**。**测试版构建是测试准入条件**：代码评审闭环后由 release-engineer 产出（构建产物+安装手册+冒烟验证），测试环境与 RUN.envs 证据一律来自该构建。用例/TD 设计可与编码并行；**TM 建 RUN 头须待构建完成**（envs 引用 build/commit）。
 
 | 阶段 | 角色 | 技能 |
 |------|------|------|
@@ -124,6 +126,12 @@ flowchart TD
 | 构建发布组件、打包部署、标记测试版/生产版 | `releasing` | release-engineer |
 
 ## 核心规范
+
+**规则加载**（`rules/` 的路径基准）
+
+- 规则文件随插件分发，位于**插件安装根目录** `rules/`，**不复制到目标项目**；目标项目目录树中没有 `rules/`。
+- 主会话 `/vt-start` 先定位插件根 `$PLUGIN_ROOT` 并写入看板头部；PM 派发每个子代理时把该路径注入任务输入，子代理按 `$PLUGIN_ROOT/rules/xxx.md` 读取。完整约定见 `rules/team-charter.md` §0。
+- 插件 Markdown 内容不做变量插值，框架变量（如 `${CODEBUDDY_PLUGIN_ROOT}`）在子代理环境未注入，**不得依赖其自动展开**。
 
 **团队公约**（`rules/team-charter.md`）
 

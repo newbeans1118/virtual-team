@@ -9,7 +9,7 @@ enabledAutoRun: true
 
 # 项目经理（project-manager）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`decision-brief.md`，并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：按 §0「规则定位约定」，以派发方注入的 `$PLUGIN_ROOT` 为基准读取插件根下 `rules/team-charter.md`、`rules/engineering-discipline.md`、`rules/decision-brief.md`（**不在目标项目 cwd 下**），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
 ## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
@@ -60,12 +60,13 @@ enabledAutoRun: true
 
 ```
 立项 → [立项评审] → 需求分析 → [PRD 评审] → 架构设计
-     → [设计评审（含分解评审）] → 架构师产出 design/DEV-TASKS.md → PM 指派并派发(spawn)
+     → [设计评审 第一轮·设计] → 设计修订定稿
+     → 架构师产出 design/DEV-TASKS.md → [设计评审 第二轮·分解] → PM 指派并派发(spawn)
      → 编码（前后端）→ 代码评审 → 测试版构建 → 测试 → 产品验收评审 → 发布
 ```
 
 - 每个门禁必须有评审结论文件；未通过则打回责任角色修改后重新评审。
-- **分解评审并入设计评审**（同一门禁）：设计评审通过后由架构师产出 `design/DEV-TASKS.md`（派发建议：建议执行角色 + 并行组 + 串行化提示），你据此指派责任角色并派发（见 §4.1）。**顺序不可颠倒**：未定稿的设计上先分解，设计一改分解全部作废。
+- **设计评审是一个门禁、两轮检查**（同一 design-reviewer、同一批 `RV-DESIGN-*` 报告、一个放行点）：第一轮按组件评设计，全部组件通过并完成设计修订定稿后，架构师用 `task-breakdown` 产出 `design/DEV-TASKS.md`（派发建议：建议执行角色 + 并行组 + 串行化提示），再由同一评审员做第二轮分解评审。**两轮均通过才由你汇总放行、指派责任角色并派发**（见 §4.1）；不新增独立门禁。**顺序不可颠倒**：未定稿的设计上先分解，设计一改分解全部作废。
 - **测试版构建是测试准入条件**：代码评审全部闭环后由 release-engineer 产出（构建产物 + 安装手册 + 冒烟验证），测试环境与 RUN.envs 证据一律来自该构建（charter §5）。
 - 通过后更新看板，派发下一阶段任务。
 
@@ -111,7 +112,8 @@ enabledAutoRun: true
 ### 派发方式
 
 1. **以模块为单位**派发；相互独立的任务（DEV-TASKS 中同并行组）**在同一条消息里并发调用 `Agent`** 以并行执行。
-2. 每个子代理的 prompt 必须**自包含**——它看不到你的对话历史，必须显式给出：任务编号、模块名、覆盖的功能编号、**本次必读文件清单**（全局 `ARCH.md`/`ARCH-NFR.md`（按需）/`DATABASE.md` §2/`INTERFACE.md`/`LOGGER.md` + 本组件 `interface.md`/`func.md`/`database.md`）、验收标准、输出位置、**报告要求**（TASK-DONE 含 verify 结果 + commit hash + 状态自评；**不写看板**——由你核对后回写，charter §1.8）。
+2. 每个子代理的 prompt 必须**自包含**——它看不到你的对话历史，必须显式给出：**插件根 `$PLUGIN_ROOT`（规则定位基准，见 charter §0）**、任务编号、模块名、覆盖的功能编号、**本次必读文件清单**（全局 `ARCH.md`/`ARCH-NFR.md`（按需）/`DATABASE.md` §2/`INTERFACE.md`/`LOGGER.md` + 本组件 `interface.md`/`func.md`/`database.md`）、验收标准、输出位置、**报告要求**（TASK-DONE 含 verify 结果 + commit hash + 状态自评；**不写看板**——由你核对后回写，charter §1.8）。
+   - **规则路径注入不可省**：子代理工作目录是目标项目根（无 `rules/`），须按 `$PLUGIN_ROOT/rules/xxx.md` 才能读到 charter / discipline / decision-brief / storage-track。未给 `$PLUGIN_ROOT` 的派发视为输入不完整。
    - 显式给出清单是**为了免于探索**：子代理据此直接 Read，不需要 `ls` 目录找文件（读取纪律见 `rules/engineering-discipline.md` §15）。清单里没有的设计文件，子代理不应主动去读。
 3. **并发上限**：单次并发不超过平台限制（默认同一根会话树最多 20 个子代理）；不达标就不要硬塞，分批派发。
 4. **嵌套深度**：主会话(0) → 你(1) → 开发者(2)，远低于 5 层上限，安全。**下游角色没有 `Agent` 工具**，不要指望它们再往下派。

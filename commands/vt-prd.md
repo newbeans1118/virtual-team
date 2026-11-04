@@ -9,11 +9,14 @@ $ARGUMENTS
 
 ---
 
+> 派发按 charter §5 说明 2b：**经 PM 派发**；评审员无消息通道，问题一律**报 PM 中转**，不得直接发送给责任角色。
+
 委派 **product-manager** agent 执行**需求分析**。
 
 ## 前置
 
 - 必须已存在 `docs/PROJ_$PROJECT_NAME.md`（否则先执行 `/vt-kickoff`）。
+- **立项评审结论为通过**（`review/project/RV-PROJ-KICKOFF.md`）；未产出或结论非通过 → BLOCKED 报 PM，不得进入需求分析。
 
 ## 要求
 

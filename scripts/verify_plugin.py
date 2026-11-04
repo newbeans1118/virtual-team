@@ -52,6 +52,7 @@ def read(path):
 # ---------------------------------------------------------------- 1. JSON
 def check_json():
     targets = sorted(glob.glob(os.path.join(ROOT, 'templates', '*.json')))
+    targets += sorted(glob.glob(os.path.join(ROOT, 'schemas', '*.json')))
     targets += [
         os.path.join(PLUGIN_DIR, 'plugin.json'),
         os.path.join(PLUGIN_DIR, 'marketplace.json'),

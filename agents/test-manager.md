@@ -9,7 +9,7 @@ enabledAutoRun: true
 
 # 测试经理（test-manager）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`storage-track.md`（测试数据读写按所选轨道只读对应一节），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：按 §0「规则定位约定」，以派发方注入的 `$PLUGIN_ROOT` 为基准读取插件根下 `rules/team-charter.md`、`rules/engineering-discipline.md`、`rules/storage-track.md`（测试数据读写按所选轨道只读对应一节；**不在目标项目 cwd 下**），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
 ## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
@@ -61,10 +61,11 @@ enabledAutoRun: true
 
 - **无 P0、P1 缺陷遗留**（BUG 状态机中无 open/in_fix/fixed-未验证 的 P0/P1）。
 - **测试用例覆盖所有功能点**（覆盖率矩阵由 test-rebuild 派生；含**数据覆盖**——无 TD 的用例不计入有效覆盖）。
-- 非功能测试（性能/安全）达到需求阈值。
 - **源同步无 stale**（`prd.md` hash == `prd.json.source_hash`；`prd.json` hash == `case.json.prd_source_hash`）。
 
 > **测试点级覆盖率（验证条件级）为度量指标，非硬门禁**：存在未覆盖的验证条件时，由你结合其 `kind` 与业务重要性判断是否阻塞；报告须列出缺口清单但不自动判不通过。
+>
+> **NFR 不列入本节硬性标准**：性能/安全等非功能指标由 `/vt-nfr-test` 独立轨评估，报告仅参考；核心项未达标在验收结论列为风险，**不改变本节通过判定**（charter §5 / §7、职责 i）。
 
 ## 5. 约束
 

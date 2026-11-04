@@ -61,21 +61,11 @@ def load_json(path):
 def schema_validate(instance, schema, path):
     """支持子集：type / enum / pattern / required / properties /
     additionalProperties(false) / items / minItems / minimum / minLength。
-    `_` 前缀键跳过（模板注释字段）。"""
+    `_` 前缀键跳过（模板注释字段）。
+
+    注意：dict 实例同样要先过 type/enum 检查，再校验 properties/required；
+    提前 return 会让「本应为 array 却写成 object」的实例蒙混过关。"""
     errs = []
-    if isinstance(instance, dict):
-        declared = schema.get("properties", {})
-        for key, value in instance.items():
-            if IGNORE_KEY.match(key):
-                continue
-            if key in declared:
-                errs += schema_validate(value, declared[key], "%s.%s" % (path, key))
-            elif schema.get("additionalProperties") is False:
-                errs.append("%s: 禁止的额外字段 %r" % (path, key))
-        for req in schema.get("required", []):
-            if req not in instance:
-                errs.append("%s: 缺必填字段 %r" % (path, req))
-        return errs
 
     stype = schema.get("type")
     if stype:
@@ -101,6 +91,20 @@ def schema_validate(instance, schema, path):
 
     if "enum" in schema and instance not in schema["enum"]:
         errs.append("%s: %r 不在值域 %s" % (path, instance, schema["enum"]))
+
+    if isinstance(instance, dict):
+        declared = schema.get("properties", {})
+        for key, value in instance.items():
+            if IGNORE_KEY.match(key):
+                continue
+            if key in declared:
+                errs += schema_validate(value, declared[key], "%s.%s" % (path, key))
+            elif schema.get("additionalProperties") is False:
+                errs.append("%s: 禁止的额外字段 %r" % (path, key))
+        for req in schema.get("required", []):
+            if req not in instance:
+                errs.append("%s: 缺必填字段 %r" % (path, req))
+
     if isinstance(instance, str):
         pat = schema.get("pattern")
         if pat and not re.search(pat, instance):
@@ -169,26 +173,51 @@ def run_json_track(root, schemas):
     exec_ids, exec_data = check_execs(root, schemas)
     check_bugs(root, schemas, exec_ids)
 
-    # 7) 引用闭合：EXEC.plan_ref ∈ EXEC-PLAN.plan_ids（同 RUN 目录内）
+    # 7) EXEC-PLAN：schema 校验 + 审定门禁 + plan_id 全局唯一 + plan_ref 同 RUN 回指
     plan_files = (rglob(root, "test/runs/RUN-*/EXEC-PLAN.json")
                   + rglob(root, "test/runs/RUN-*/*/EXEC-PLAN.json")
                   + rglob(root, "test/runs/RUN-*/*/*/EXEC-PLAN.json"))
-    plan_ids = set()
+    if not plan_files:
+        skip("exec-plan-json", "未发现 EXEC-PLAN（阶段未到即 SKIP，非失败）")
+    plan_ids_by_run = {}   # run_id -> set(plan_id)，回指只在所属 RUN 内成立
+    plan_owner = {}        # plan_id -> 首次出现路径（跨 RUN 全局查重）
+    bad = 0
     for path in plan_files:
-        try:
-            data = load_json(path)
-        except Exception:  # noqa: BLE001
+        data = check_file(root, path, schemas["exec-plan"], "exec-plan-json")
+        if data is None:
+            bad += 1
             continue
+        # 审定门禁（charter §5：实例计划未经 test-manager 审定不得执行）
+        if not data.get("approved_by"):
+            fail("exec-plan-json", rel(root, path),
+                 "approved_by 为空（实例计划未经 test-manager 审定，不得执行）")
+            bad += 1
+        run_id = data.get("run", "?")
+        bucket = plan_ids_by_run.setdefault(run_id, set())
         for item in data.get("items", []):
             pid = item.get("plan_id")
-            if pid:
-                plan_ids.add(pid)
-    dangling = sorted({e["plan_ref"] for e in exec_data if e.get("plan_ref") not in plan_ids})
+            if not pid:
+                continue
+            if pid in plan_owner:
+                fail("plan-unique", rel(root, path),
+                     "plan_id=%s 重复（首次见 %s）——charter §5 要求跨 RUN 全局唯一"
+                     % (pid, plan_owner[pid]))
+                bad += 1
+            else:
+                plan_owner[pid] = rel(root, path)
+            bucket.add(pid)
+    if plan_files and bad == 0:
+        ok("exec-plan-json", "%d 个 EXEC-PLAN 合规（schema + approved_by 审定 + plan_id 全局唯一）"
+           % len(plan_files))
+
+    dangling = sorted({(e.get("run", "?"), e["plan_ref"]) for e in exec_data
+                       if e.get("plan_ref") not in plan_ids_by_run.get(e.get("run", "?"), set())})
     if dangling:
-        for ref in dangling[:10]:
-            fail("exec-closure", rel(root, "test/runs"), "EXEC.plan_ref=%s 无对应 EXEC-PLAN 行" % ref)
+        for run_id, ref in dangling[:10]:
+            fail("exec-closure", rel(root, os.path.join(root, "test", "runs")),
+                 "RUN=%s 的 EXEC.plan_ref=%s 在本 RUN 内无对应 EXEC-PLAN 行" % (run_id, ref))
     elif exec_data:
-        ok("exec-closure", "%d 条 EXEC 的 plan_ref 全部回指 EXEC-PLAN" % len(exec_data))
+        ok("exec-closure", "%d 条 EXEC 的 plan_ref 在所属 RUN 内全部回指 EXEC-PLAN" % len(exec_data))
 
 
 def check_group(root, paths, schema, rule, label):

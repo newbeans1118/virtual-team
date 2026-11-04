@@ -9,6 +9,8 @@ $ARGUMENTS
 
 ---
 
+> 派发按 charter §5 说明 2b：**经 PM 派发**；评审员无消息通道，问题一律**报 PM 中转**，不得直接发送给责任角色。
+
 委派 **project-manager** agent 更新并展示进度看板。
 
 ## 要求

@@ -25,6 +25,7 @@ mkdir -p "$LOG_DIR"
 
 # ---------------- 适配区（改这里，别改骨架） ----------------
 # 格式："步骤名|fast也跑(1/0)|命令"
+# 命令经 bash -c 解释执行，允许 && / || / 管道等复合命令；退出码即该步结果。
 STEPS=(
   "lint|1|echo 'TODO_ADAPT: 替换为本项目 lint 命令，例如 npx eslint . || make lint'"
   "typecheck|1|echo 'TODO_ADAPT: 替换为本项目类型检查，例如 npx tsc --noEmit'"
@@ -55,7 +56,7 @@ for entry in "${STEPS[@]}"; do
     continue
   fi
 
-  if output=$("$cmd" 2>&1); then
+  if output=$(bash -c "$cmd" 2>&1); then
     echo "PASS: $name" | tee -a "$LOG"
     printf '%s\n' "$output" | tail -n 20 >> "$LOG"
   else

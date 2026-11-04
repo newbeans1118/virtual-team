@@ -9,6 +9,8 @@ $ARGUMENTS
 
 ---
 
+> 派发按 charter §5 说明 2b：**经 PM 派发**；评审员无消息通道，问题一律**报 PM 中转**，不得直接发送给责任角色。
+
 委派 **architect** agent 执行**架构设计**。
 
 ## 前置
@@ -25,4 +27,5 @@ $ARGUMENTS
    - `diagramming` → 架构图/ER 图/时序图（Mermaid）
 3. **搭建工程目录与构建系统并验证**（实际执行构建命令）。
 4. 校验：每条 FR 在设计中有落点；组件 interface/func 齐全；DDL 与数据字典一致；FUNC 拆分阈值合规。
-5. 完成后**按组件提交设计评审**（用户 + design-reviewer，报告 `RV-DESIGN-$COMPONENT-xxx.md`），数据层可加做 `datamodel-review`（`RV-DM-$COMPONENT-xxx.md`）；PM 汇总全部组件结论。
+5. 完成后**按组件提交设计评审第一轮**（用户 + design-reviewer，报告 `RV-DESIGN-$COMPONENT-xxx.md`），数据层可加做 `datamodel-review`（`RV-DM-$COMPONENT-xxx.md`）；PM 汇总全部组件结论。
+6. 第一轮通过并完成设计修订定稿后，**由 PM 派发 architect** 用 `task-breakdown` 产出 `design/DEV-TASKS.md`，提交**设计评审第二轮（分解评审）**——同一 design-reviewer、同一门禁、同一批报告；PM 汇总两轮均通过才放行进入 `/vt-coding`（charter §5）。本命令不产出 DEV-TASKS。

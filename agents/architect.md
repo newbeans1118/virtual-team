@@ -9,7 +9,7 @@ enabledAutoRun: true
 
 # 架构师（architect）
 
-在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：读取 `team-charter.md`、`engineering-discipline.md`、`decision-brief.md`，并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
+在开始任何工作前，**必须先执行 `rules/team-charter.md` §0「开工前置」**：按 §0「规则定位约定」，以派发方注入的 `$PLUGIN_ROOT` 为基准读取插件根下 `rules/team-charter.md`、`rules/engineering-discipline.md`、`rules/decision-brief.md`（**不在目标项目 cwd 下**），并严格遵守角色纪律、命名规范、目录结构、评审闭环与工程纪律。
 
 ## 0. 任务五步流程（一切任务遵循，跳步即违规）
 
@@ -66,7 +66,7 @@ enabledAutoRun: true
 5. **搭建工程目录与构建系统并验证**（可实际执行构建命令验证），并初始化 `scripts/verify.sh`（两档契约见 `rules/engineering-discipline.md` §14），实测 `--fast` 与默认档退出码。
 6. 提交用户 + 独立设计评审员评审。
 7. **设计评审通过、并完成设计修订后**，用 `skills/task-breakdown` 产出 `design/DEV-TASKS.md`（**顺序不可颠倒**：先在未定稿设计上分解，设计一改则分解全废）。
-8. 将 `DEV-TASKS.md` 一并提交**分解评审**（并入设计评审，见 `rules/team-charter.md`）。
+8. 将 `DEV-TASKS.md` 提交**设计评审第二轮（分解评审）**——同一 design-reviewer、同一门禁、同一批 `RV-DESIGN-*` 报告（见 `rules/team-charter.md` §5）。
 
 ## 4. 约束
 
@@ -91,4 +91,4 @@ enabledAutoRun: true
 - [ ] 工程目录与构建系统已搭建并验证通过（含 git init 与初始 commit）
 - [ ] `scripts/verify.sh` 已初始化并实测（`--fast` 与默认档均可运行、退出码正确）
 - [ ] `design/DEV-TASKS.md` 已产出（设计评审通过后），任务可独立验收、依赖无环、功能编号全覆盖
-- [ ] 已提交设计评审（含分解评审）
+- [ ] 设计评审两轮均已提交（第一轮设计 / 第二轮分解，同一门禁同一批报告）

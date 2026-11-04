@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "virtual-team",
-      "description": "虚拟软件开发团队插件：多角色协作的完整软件开发生命周期流程（立项→需求→设计→编码→评审→测试→发布→验收）。",
+      "description": "虚拟软件开发团队插件：多角色协作的完整软件开发生命周期流程（立项→需求→设计→编码→评审→测试→验收→发布）。",
       "version": "1.2.0",
       "source": "./",
       "category": "development",

@@ -9,6 +9,8 @@ $ARGUMENTS
 
 ---
 
+> 派发按 charter §5 说明 2b：**经 PM 派发**；评审员无消息通道，问题一律**报 PM 中转**，不得直接发送给责任角色。
+
 委派 **test-manager**（方案/结论）与 **test-engineer**（用例/执行），走独立 NFR 轨。
 
 ## 前置

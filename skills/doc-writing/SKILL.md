@@ -15,7 +15,7 @@ description: 编写面向使用与运维的文档时使用。触发场景：需�
 
 ## 输入
 
-- **必读**：`release/artifact/`（产物清单与校验和）；`design/ARCH.md` §1/§5（技术栈与构建方式、部署视图与环境配置）；`release/RELEASE-PLAN-<version>.md`（部署策略/迁移顺序/回滚/验证阈值）。
+- **必读**：`release/artifact/`（产物清单与校验和）；`design/ARCH.md` §1/§5（技术栈与构建方式、部署视图与环境配置）；`release/RELEASE-PLAN-DRAFT.md`（部署策略/迁移顺序/回滚/验证阈值；**测试版构建阶段产出**，手册与之同期编写）。
 - **按需**：数据库迁移步骤 → `design/DATABASE.md` §4 + 各组件 `database.md` §8；发布后验证阈值 → `design/ARCH-NFR.md` §4；用户手册配图 → `pages/prototype/$COMPONENT/`。
 - **禁读**：`src/`、`test/`（手册面向使用与运维，不写实现细节）；组件设计正文。
 
@@ -38,8 +38,8 @@ description: 编写面向使用与运维的文档时使用。触发场景：需�
 ### 发布手册
 - 版本信息、commit、构建命令
 - 打包产物清单与说明；**SHA256 校验和与 SBOM 引用**
-- 部署步骤与**部署策略/窗口**（引用 `release/RELEASE-PLAN-<version>.md`）
-- **回滚步骤**（引用回滚演练结论）
+- 部署步骤与**部署策略/窗口**（引用 `release/RELEASE-PLAN-DRAFT.md`，定稿后同步指向 `RELEASE-PLAN-<version>.md`）
+- **回滚步骤**（引用 `release/ROLLBACK-DRILL.md` 的演练结论）
 - **发布后验证**方法与阈值
 - 发布状态标记规则（测试版/生产版）
 
